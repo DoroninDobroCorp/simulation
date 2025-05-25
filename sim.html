@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Симулятор стратегий ставок</title>
+  <!-- Подключаем Chart.js и плагин зума -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .input-group { margin-bottom: 10px; }
+    label { display: block; margin-bottom: 5px; }
+    input, select { width: 100%; padding: 5px; }
+    fieldset { margin-bottom: 15px; padding: 10px; }
+    #chartContainer { width: 100%; height: 500px; }
+    canvas { background: #f9f9f9; }
+    /* Скрываем список симуляций (он больше не нужен) */
+    #simList { display: none; }
+    /* Стили для модальных окон */
+    .modal {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 1px solid #333;
+      padding: 20px;
+      max-height: 80%;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+    .modal .close {
+      cursor: pointer;
+      color: red;
+      float: right;
+    }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 5px; text-align: center; }
+    tr:hover { background: #eef; cursor: pointer; }
+    /* Стили для прогресс-бара перебора гиперпараметров */
+    #progressContainer { display: none; margin-bottom: 10px; }
+    #progressBar { width: 100%; }
+    /* Стили для кнопок в модальном окне деталей */
+    .modal-buttons { margin-top: 15px; text-align: right; }
+    .modal-buttons button { margin-left: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Симулятор стратегий ставок</h1>
+    <form id="simulationForm">
+      <fieldset>
+        <legend>Параметры симуляции</legend>
+        <div class="input-group">
+          <label for="numSimulations">Количество симуляций:</label>
+          <input type="number" id="numSimulations" value="50" min="1">
+        </div>
+        <div class="input-group">
+          <label for="betsPerSim">Ставок в симуляции:</label>
+          <input type="number" id="betsPerSim" value="1500" min="1">
+        </div>
+        <div class="input-group">
+          <label for="bankrollRecalc">Период перерасчёта банкролла (ставки):</label>
+          <input type="number" id="bankrollRecalc" value="50" min="1">
+        </div>
+        <div class="input-group">
+          <label for="initialBank">Начальный банк:</label>
+          <input type="number" id="initialBank" value="10000" min="1">
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Параметры распределения odds и ROI</legend>
+        <div class="input-group">
+          <label for="oddsMin">Минимальный коэффициент (odds):</label>
+          <input type="number" id="oddsMin" value="1.5" step="0.1">
+        </div>
+        <div class="input-group">
+          <label for="oddsMax">Максимальный коэффициент (odds):</label>
+          <input type="number" id="oddsMax" value="3.5" step="0.1">
+        </div>
+        <div class="input-group">
+          <label for="oddsAvg">Средний коэффициент (ожидается ~2.8):</label>
+          <input type="number" id="oddsAvg" value="2.8" step="0.1">
+        </div>
+        <div class="input-group">
+          <label for="desiredAvgROI">Желаемый средний ROI (%):</label>
+          <input type="number" id="desiredAvgROI" value="4" step="0.1">
+        </div>
+        <fieldset>
+          <legend>Распределение ROI</legend>
+          <p>80% ставок: ROI 3–5%; 7.5%: 0–3%; 7.5%: 5–10%; 2.5%: -5–0%; 2.5%: 10–20%</p>
+        </fieldset>
+      </fieldset>
+      <fieldset>
+        <legend>Стратегия Adaptive Constant Profit Bet</legend>
+        <div class="input-group">
+          <label for="variantSelect">Выберите вариант сглаживания f(odds):</label>
+          <select id="variantSelect">
+            <option value="A">Вариант A</option>
+            <option value="B">Вариант B</option>
+            <option value="C">Вариант C</option>
+            <option value="D">Вариант D</option>
+            <option value="E">Вариант E</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="minROI">min_roi:</label>
+          <input type="number" id="minROI" value="2.474" step="0.001">
+        </div>
+        <div class="input-group">
+          <label for="maxROI">max_roi:</label>
+          <input type="number" id="maxROI" value="34.033" step="0.001">
+        </div>
+        <div class="input-group">
+          <label for="minProfitPercent">min_profit_percent (%):</label>
+          <input type="number" id="minProfitPercent" value="1.443" step="0.001">
+        </div>
+        <div class="input-group">
+          <label for="maxProfitPercent">max_profit_percent (%):</label>
+          <input type="number" id="maxProfitPercent" value="6.059" step="0.001">
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Режим перебора гиперпараметров</legend>
+        <div class="input-group">
+          <label><input type="checkbox" id="hyperParamMode"> Включить перебор гиперпараметров</label>
+        </div>
+        <div id="hyperParamFields" style="display: none;">
+          <div class="input-group">
+            <label for="numVariants">Количество вариантов:</label>
+            <input type="number" id="numVariants" value="10" min="1">
+          </div>
+          <div class="input-group">
+            <label for="minProfitRange">Диапазон min_profit_percent (например, 1.2-1.6):</label>
+            <input type="text" id="minProfitRange" value="1.2-1.6">
+          </div>
+          <div class="input-group">
+            <label for="maxProfitRange">Диапазон max_profit_percent (например, 5.5-6.5):</label>
+            <input type="text" id="maxProfitRange" value="5.5-6.5">
+          </div>
+          <div class="input-group">
+            <label for="minROIRange">Диапазон min_roi (например, 2.4-2.6):</label>
+            <input type="text" id="minROIRange" value="2.4-2.6">
+          </div>
+          <div class="input-group">
+            <label for="maxROIRange">Диапазон max_roi (например, 33-35):</label>
+            <input type="text" id="maxROIRange" value="33-35">
+          </div>
+          <button type="button" onclick="runHyperParamSearch()">Запустить перебор гиперпараметров</button>
+          <div class="input-group">
+            <label for="filterAvgGrowth">Фильтрация по Avg Growth (%) (минимум):</label>
+            <input type="number" id="filterAvgGrowth" placeholder="Например, 3" step="0.1">
+          </div>
+          <!-- Прогресс-бар перебора гиперпараметров -->
+          <div id="progressContainer">
+            <progress id="progressBar" value="0" max="100"></progress>
+            <span id="progressText"></span>
+          </div>
+        </div>
+      </fieldset>
+      <button type="button" onclick="runSimulation()">Запустить симуляцию</button>
+    </form>
+    
+    <h2>Сводная статистика</h2>
+    <div id="summary"></div>
+    
+    <h2>График банкролла</h2>
+    <div id="chartContainer">
+      <canvas id="bankrollChart"></canvas>
+    </div>
+  </div>
+  
+  <!-- Модальное окно для детального просмотра одной симуляции -->
+  <div id="detailModal" class="modal" style="display:none;">
+    <span class="close" onclick="closeModal()">[Закрыть]</span>
+    <h3>Детали симуляции</h3>
+    <div id="modalContent"></div>
+  </div>
+  
+  <!-- Модальное окно для результатов перебора гиперпараметров (таблица) -->
+  <div id="hyperParamModal" class="modal" style="display:none;">
+    <span class="close" onclick="closeHyperParamModal()">[Закрыть]</span>
+    <h3>Результаты перебора гиперпараметров</h3>
+    <div id="hyperParamResults"></div>
+  </div>
+  
+  <!-- Новое модальное окно для подробного просмотра гиперпараметра -->
+  <div id="hyperDetailModal" class="modal" style="display:none;">
+    <span class="close" onclick="closeHyperDetailModal()">[Закрыть]</span>
+    <h3>Детальный просмотр гиперпараметра</h3>
+    <div id="hyperDetailContent"></div>
+    <div class="modal-buttons">
+      <button type="button" onclick="applyHyperParamDetail()">Применить и запустить симуляцию</button>
+      <button type="button" onclick="closeHyperDetailModal()">Назад</button>
+    </div>
+  </div>
+  
+  <script>
+    // Глобальная переменная для хранения результатов перебора гиперпараметров
+    let hyperResultsGlobal = [];
+    
+    // Обработчик для чекбокса перебора гиперпараметров
+    document.getElementById("hyperParamMode").addEventListener("change", function(){
+      document.getElementById("hyperParamFields").style.display = this.checked ? "block" : "none";
+    });
+    
+    // Генерация odds (степенная функция, чтобы достичь среднего oddsAvg)
+    function generateOdds(oddsMin, oddsMax, oddsAvg) {
+      const target = (oddsAvg - oddsMin) / (oddsMax - oddsMin);
+      const p = 1 / target - 1;
+      return oddsMin + (oddsMax - oddsMin) * Math.pow(Math.random(), p);
+    }
+    
+    // Генерация ROI согласно заданным процентам
+    function generateROI() {
+      const r = Math.random();
+      if (r < 0.80) return 3 + Math.random() * 2;           // 80%: 3–5%
+      else if (r < 0.875) return 0 + Math.random() * 3;         // 7.5%: 0–3%
+      else if (r < 0.95) return 5 + Math.random() * 5;          // 7.5%: 5–10%
+      else if (r < 0.975) return -5 + Math.random() * 5;        // 2.5%: -5–0%
+      else return 10 + Math.random() * 10;                      // 2.5%: 10–20%
+    }
+    
+    // Функции f(odds) для вариантов A–E
+    function fA(odds) { return 0.4 * (odds - 1) + 0.3; }
+    function fB(odds) { return Math.sqrt(odds - 1); }
+    function fC(odds) { return 0.5 * (odds - 1) + 0.4; }
+    function fD(odds) { return 0.3 * (odds - 1) + 0.35; }
+    function fE(odds) { return Math.log(odds); }
+    function getF(variant) {
+      switch(variant) {
+        case 'A': return fA;
+        case 'B': return fB;
+        case 'C': return fC;
+        case 'D': return fD;
+        case 'E': return fE;
+        default: return fA;
+      }
+    }
+    
+    // Стратегия Adaptive Constant Profit Bet
+    function calcBetSize(ROI, odds, currentBank, minROI, maxROI, minProfit, maxProfit, fFunc) {
+      const clampedROI = Math.max(minROI, Math.min(ROI, maxROI));
+      const targetProfitPercent = minProfit + ((maxProfit - minProfit) / (maxROI - minROI)) * (clampedROI - minROI);
+      const targetProfit = (targetProfitPercent * currentBank) / 100;
+      return targetProfit / fFunc(odds);
+    }
+    
+    // Симуляция одной серии ставок
+    function simulateSeries(params, fFunc) {
+      let bank = params.initialBank;
+      let maxBank = bank;
+      let bankrollHistory = [bank];
+      let betSizes = [];
+      let drawdowns = [];
+      
+      for (let i = 0; i < params.betsPerSim; i++) {
+        const odds = generateOdds(params.oddsMin, params.oddsMax, params.oddsAvg);
+        const roi = generateROI();
+        const betSize = calcBetSize(roi, odds, bank, params.minROI, params.maxROI, params.minProfitPercent, params.maxProfitPercent, fFunc);
+        betSizes.push(betSize);
+        let pWin = (1/odds) * (1 + roi/100);
+        if (pWin > 1) pWin = 1;
+        if (Math.random() < pWin) {
+          bank += betSize * (odds - 1);
+        } else {
+          bank -= betSize;
+        }
+        bankrollHistory.push(bank);
+        if (bank > maxBank) { maxBank = bank; }
+        if ((i+1) % params.bankrollRecalc === 0) {
+          const ddPct = ((maxBank - bank)/maxBank)*100;
+          drawdowns.push(ddPct);
+        }
+      }
+      return { finalBank: bank, bankrollHistory: bankrollHistory, avgBetSize: betSizes.reduce((a,b)=>a+b,0)/betSizes.length, drawdowns: drawdowns, betSizes: betSizes };
+    }
+    
+    // Глобальный массив симуляций
+    let simulations = [];
+    
+    // Функция запуска симуляций (режим симуляции)
+    function runSimulation() {
+      const params = {
+        numSimulations: parseInt(document.getElementById("numSimulations").value),
+        betsPerSim: parseInt(document.getElementById("betsPerSim").value),
+        bankrollRecalc: parseInt(document.getElementById("bankrollRecalc").value),
+        initialBank: parseFloat(document.getElementById("initialBank").value),
+        oddsMin: parseFloat(document.getElementById("oddsMin").value),
+        oddsMax: parseFloat(document.getElementById("oddsMax").value),
+        oddsAvg: parseFloat(document.getElementById("oddsAvg").value),
+        desiredAvgROI: parseFloat(document.getElementById("desiredAvgROI").value)
+      };
+      // Стратегия
+      params.minROI = parseFloat(document.getElementById("minROI").value);
+      params.maxROI = parseFloat(document.getElementById("maxROI").value);
+      params.minProfitPercent = parseFloat(document.getElementById("minProfitPercent").value);
+      params.maxProfitPercent = parseFloat(document.getElementById("maxProfitPercent").value);
+      
+      const variant = document.getElementById("variantSelect").value;
+      const fFunc = getF(variant);
+      simulations = [];
+      
+      for (let s = 0; s < params.numSimulations; s++) {
+        simulations.push(simulateSeries(params, fFunc));
+      }
+      
+      // Сводная статистика
+      let totalGrowth = 0, totalBet = 0;
+      let thresholds = [20,30,40,50,60,70,80];
+      let thresholdCounts = {};
+      thresholds.forEach(t => thresholdCounts[t] = 0);
+      
+      simulations.forEach(sim => {
+        totalGrowth += (sim.finalBank - params.initialBank);
+        totalBet += sim.avgBetSize;
+        thresholds.forEach(t => {
+          if (sim.drawdowns.some(dd => dd >= t)) thresholdCounts[t]++;
+        });
+      });
+      const avgGrowthPct = ((totalGrowth / simulations.length) / params.initialBank) * 100;
+      const avgBetSize = totalBet / simulations.length;
+      let summaryHtml = `<p>Средний прирост банка: ${avgGrowthPct.toFixed(2)}%</p>`;
+      summaryHtml += `<p>Средний размер ставки: ${avgBetSize.toFixed(2)}</p>`;
+      summaryHtml += `<h3>Процент симуляций, пересекающих пороги просадки от пика:</h3><ul>`;
+      thresholds.forEach(t => {
+        summaryHtml += `<li>${t}%: ${(thresholdCounts[t] / simulations.length * 100).toFixed(1)}%</li>`;
+      });
+      summaryHtml += `</ul>`;
+      document.getElementById("summary").innerHTML = summaryHtml;
+      
+      // Рисуем график
+      drawChart(simulations, params.betsPerSim);
+    }
+    
+    // Отрисовка графика с поддержкой зума и панорамирования
+    let bankChart;
+    function drawChart(simulations, betsPerSim) {
+      const ctx = document.getElementById('bankrollChart').getContext('2d');
+      if (bankChart) bankChart.destroy();
+      const datasets = [];
+      simulations.forEach((sim, index) => {
+        const hue = (index * 37) % 360;
+        datasets.push({
+          label: 'S' + (index+1),
+          data: sim.bankrollHistory,
+          borderColor: 'hsl(' + hue + ', 70%, 50%)',
+          fill: false,
+          pointRadius: 0,
+          borderWidth: 1
+        });
+      });
+      bankChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: betsPerSim+1}, (_, i) => i),
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: { mode: 'index' },
+            zoom: {
+              pan: { enabled: true, mode: 'x' },
+              zoom: { wheel: { enabled: true }, mode: 'x' }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: 'Номер ставки' }},
+            y: { title: { display: true, text: 'Банк' }}
+          }
+        }
+      });
+    }
+    
+    // Обработчик клавиатуры для перемещения графика стрелками
+    document.addEventListener('keydown', function(e) {
+      if (!bankChart) return;
+      const scale = bankChart.options.scales.x;
+      if(scale.min === undefined || scale.max === undefined) {
+        scale.min = 0;
+        scale.max = bankChart.data.labels.length - 1;
+      }
+      const shiftStep = 20;
+      if(e.key === 'ArrowLeft') {
+        scale.min = Math.max(0, scale.min - shiftStep);
+        scale.max = Math.max(scale.min + (bankChart.data.labels.length - 1 - scale.min), scale.min + (scale.max - scale.min));
+        bankChart.update();
+      } else if(e.key === 'ArrowRight') {
+        scale.max = Math.min(bankChart.data.labels.length - 1, scale.max + shiftStep);
+        scale.min = Math.min(scale.min + shiftStep, scale.max - 1);
+        bankChart.update();
+      }
+    });
+    
+    // Режим перебора гиперпараметров с прогресс-баром и сортировкой результатов
+    function runHyperParamSearch() {
+      function parseRange(val) {
+        const parts = val.split("-").map(x => parseFloat(x.trim()));
+        return { min: parts[0], max: parts[1] };
+      }
+      const numVariants = parseInt(document.getElementById("numVariants").value);
+      const minProfitRange = parseRange(document.getElementById("minProfitRange").value);
+      const maxProfitRange = parseRange(document.getElementById("maxProfitRange").value);
+      const minROIRange = parseRange(document.getElementById("minROIRange").value);
+      const maxROIRange = parseRange(document.getElementById("maxROIRange").value);
+      const params = {
+        numSimulations: parseInt(document.getElementById("numSimulations").value),
+        betsPerSim: parseInt(document.getElementById("betsPerSim").value),
+        bankrollRecalc: parseInt(document.getElementById("bankrollRecalc").value),
+        initialBank: parseFloat(document.getElementById("initialBank").value),
+        oddsMin: parseFloat(document.getElementById("oddsMin").value),
+        oddsMax: parseFloat(document.getElementById("oddsMax").value),
+        oddsAvg: parseFloat(document.getElementById("oddsAvg").value),
+        desiredAvgROI: parseFloat(document.getElementById("desiredAvgROI").value)
+      };
+      const variant = document.getElementById("variantSelect").value;
+      const fFunc = getF(variant);
+      let hyperResults = [];
+      let thresholds = [20,30,40,50,60,70,80];
+      let currentVariant = 0;
+      
+      // Показ прогресс-бара
+      const progressContainer = document.getElementById("progressContainer");
+      const progressBar = document.getElementById("progressBar");
+      const progressText = document.getElementById("progressText");
+      progressContainer.style.display = "block";
+      progressBar.value = 0;
+      progressText.textContent = "0%";
+      
+      function processNextVariant() {
+        if (currentVariant >= numVariants) {
+          progressContainer.style.display = "none";
+          // Сортировка по средней прибыли (avgGrowthPct) от меньшей к большей
+          hyperResults.sort((a, b) => parseFloat(a.avgGrowthPct) - parseFloat(b.avgGrowthPct));
+          hyperResultsGlobal = hyperResults; // сохраняем глобально
+          displayHyperParamResults(hyperResults);
+          return;
+        }
+        let currentMinROI = minROIRange.min + Math.random() * (minROIRange.max - minROIRange.min);
+        let currentMaxROI = maxROIRange.min + Math.random() * (maxROIRange.max - maxROIRange.min);
+        let currentMinProfit = minProfitRange.min + Math.random() * (minProfitRange.max - minProfitRange.min);
+        let currentMaxProfit = maxProfitRange.min + Math.random() * (maxProfitRange.max - maxProfitRange.min);
+        if (currentMaxROI <= currentMinROI || currentMaxProfit <= currentMinProfit) {
+          currentVariant++;
+          let percent = Math.floor((currentVariant / numVariants) * 100);
+          progressBar.value = percent;
+          progressText.textContent = percent + "%";
+          setTimeout(processNextVariant, 10);
+          return;
+        }
+        let simParams = Object.assign({}, params, {
+          minROI: currentMinROI,
+          maxROI: currentMaxROI,
+          minProfitPercent: currentMinProfit,
+          maxProfitPercent: currentMaxProfit
+        });
+        let sims = [];
+        let hyperThresholdCounts = {};
+        thresholds.forEach(t => hyperThresholdCounts[t] = 0);
+        for (let s = 0; s < params.numSimulations; s++) {
+          let sim = simulateSeries(simParams, fFunc);
+          sims.push(sim);
+          thresholds.forEach(t => {
+            if (sim.drawdowns.some(dd => dd >= t)) hyperThresholdCounts[t]++;
+          });
+        }
+        let totalGrowth = 0, totalBet = 0;
+        sims.forEach(sim => {
+          totalGrowth += (sim.finalBank - params.initialBank);
+          totalBet += sim.avgBetSize;
+        });
+        const avgGrowthPct = ((totalGrowth / sims.length) / params.initialBank) * 100;
+        const avgBetSize = totalBet / sims.length;
+        hyperResults.push({
+          minROI: currentMinROI.toFixed(3),
+          maxROI: currentMaxROI.toFixed(3),
+          minProfit: currentMinProfit.toFixed(3),
+          maxProfit: currentMaxProfit.toFixed(3),
+          avgGrowthPct: avgGrowthPct.toFixed(2),
+          avgBetSize: avgBetSize.toFixed(2),
+          thresholds: Object.assign({}, hyperThresholdCounts)
+        });
+        currentVariant++;
+        let percent = Math.floor((currentVariant / numVariants) * 100);
+        progressBar.value = percent;
+        progressText.textContent = percent + "%";
+        setTimeout(processNextVariant, 10);
+      }
+      processNextVariant();
+    }
+    
+    function displayHyperParamResults(results) {
+      let filterVal = parseFloat(document.getElementById("filterAvgGrowth").value) || 0;
+      let html = `<input type="number" id="filterInput" placeholder="Фильтр по Avg Growth (%)" step="0.1" value="${filterVal}" onchange="applyFilter()">`;
+      html += `<table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>minROI</th>
+            <th>maxROI</th>
+            <th>minProfit%</th>
+            <th>maxProfit%</th>
+            <th>Avg Growth (%)</th>
+            <th>Avg Bet Size</th>`;
+      thresholds = [20,30,40,50,60,70,80];
+      thresholds.forEach(t => {
+        html += `<th>${t}%</th>`;
+      });
+      html += `</tr></thead><tbody>`;
+      results.forEach((res, idx) => {
+        if(parseFloat(res.avgGrowthPct) < parseFloat(document.getElementById("filterAvgGrowth").value)) return;
+        html += `<tr onclick="viewHyperParamDetail(${idx})">
+          <td>${idx+1}</td>
+          <td>${res.minROI}</td>
+          <td>${res.maxROI}</td>
+          <td>${res.minProfit}</td>
+          <td>${res.maxProfit}</td>
+          <td>${res.avgGrowthPct}</td>
+          <td>${res.avgBetSize}</td>`;
+        thresholds.forEach(t => {
+          const pct = ((res.thresholds[t] / results.length)*100).toFixed(1);
+          html += `<td>${pct}%</td>`;
+        });
+        html += `</tr>`;
+      });
+      html += `</tbody></table>`;
+      document.getElementById("hyperParamResults").innerHTML = html;
+      document.getElementById("hyperParamModal").style.display = "block";
+    }
+    
+    function applyFilter() {
+      const filterVal = parseFloat(document.getElementById("filterInput").value) || 0;
+      const rows = document.querySelectorAll("#hyperParamResults tbody tr");
+      rows.forEach(row => {
+        const avgGrowth = parseFloat(row.children[5].textContent);
+        row.style.display = (avgGrowth >= filterVal) ? "table-row" : "none";
+      });
+    }
+    
+    function closeHyperParamModal() {
+      document.getElementById("hyperParamModal").style.display = "none";
+    }
+    
+    // Функция для открытия детального просмотра гиперпараметра
+    function viewHyperParamDetail(idx) {
+      const hyperData = hyperResultsGlobal[idx];
+      let html = `<p><strong>minROI:</strong> ${hyperData.minROI}</p>`;
+      html += `<p><strong>maxROI:</strong> ${hyperData.maxROI}</p>`;
+      html += `<p><strong>minProfit%:</strong> ${hyperData.minProfit}</p>`;
+      html += `<p><strong>maxProfit%:</strong> ${hyperData.maxProfit}</p>`;
+      html += `<p><strong>Avg Growth (%):</strong> ${hyperData.avgGrowthPct}</p>`;
+      html += `<p><strong>Avg Bet Size:</strong> ${hyperData.avgBetSize}</p>`;
+      html += `<h4>Просадки по порогам:</h4><ul>`;
+      for (let t in hyperData.thresholds) {
+        html += `<li>${t}%: ${hyperData.thresholds[t]}</li>`;
+      }
+      html += `</ul>`;
+      // Сохраним индекс выбранного варианта в атрибуте data-index для дальнейшего использования
+      document.getElementById("hyperDetailModal").setAttribute("data-index", idx);
+      document.getElementById("hyperDetailContent").innerHTML = html;
+      document.getElementById("hyperDetailModal").style.display = "block";
+    }
+    
+    // Применение выбранных гиперпараметров и запуск симуляции
+    function applyHyperParamDetail() {
+      const idx = document.getElementById("hyperDetailModal").getAttribute("data-index");
+      const hyperData = hyperResultsGlobal[idx];
+      document.getElementById("minROI").value = hyperData.minROI;
+      document.getElementById("maxROI").value = hyperData.maxROI;
+      document.getElementById("minProfitPercent").value = hyperData.minProfit;
+      document.getElementById("maxProfitPercent").value = hyperData.maxProfit;
+      closeHyperDetailModal();
+      closeHyperParamModal();
+      runSimulation();
+    }
+    
+    function closeHyperDetailModal() {
+      document.getElementById("hyperDetailModal").style.display = "none";
+    }
+    
+    // Функция для закрытия детального модального окна (если потребуется)
+    function closeModal() {
+      document.getElementById("detailModal").style.display = "none";
+    }
+  </script>
+</body>
+</html>
