@@ -144,7 +144,13 @@ class BetSimulator:
         self.bet_sizes.append(bet_size)
         
         # Определяем вероятность выигрыша на основе ROI и коэффициента
-        win_probability = (1 / odds) * (1 + roi / 100)
+        # ROI = (win_prob * odds - 1) * 100
+        # Решая относительно win_prob: win_prob = (1 + ROI/100) / odds
+        # Это корректная формула для расчёта вероятности из ROI
+        win_probability = (1 + roi / 100) / odds
+        
+        # Ограничиваем вероятность диапазоном [0, 1] для безопасности
+        win_probability = max(0.0, min(1.0, win_probability))
         
         # Определяем, выиграла ли ставка
         is_win = np.random.random() < win_probability
