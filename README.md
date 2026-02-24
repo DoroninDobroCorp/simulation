@@ -1,3 +1,211 @@
+🇬🇧 [English](#-english) | 🇷🇺 [Русский](#-русский)
+
+---
+
+# 🇬🇧 English
+
+<div align="center">
+
+# 🎰 Bankroll Management Simulator
+
+**A modular system for simulating and optimizing bankroll management strategies**
+
+[![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](test_strategies.py)
+
+[Features](#-features) •
+[Quick Start](#-quick-start) •
+[Strategies](#-strategies) •
+[Architecture](#-architecture) •
+[Documentation](#-documentation)
+
+</div>
+
+---
+
+## 📋 About
+
+A system for simulating betting sequences and finding optimal parameters for bankroll management strategies. This project is intended for **educational and research purposes** — exploring mathematical risk management models, the Kelly criterion, and Monte Carlo simulations.
+
+### Key Objectives
+
+- 📊 Simulate betting sequences while tracking bankroll, drawdowns, and growth
+- 🔬 Compare 12+ bet sizing strategies
+- ⚙️ Automatically find optimal strategy parameters
+- 📈 Visualize results and perform comparative analysis
+
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| **Monte Carlo simulation** | Multiple simulation runs to assess strategy robustness |
+| **12+ strategies** | Kelly, linear, logarithmic, exponential, hybrid, and more |
+| **Parameter optimizer** | Automatic parameter search across 4 risk profiles |
+| **GUI application** | Graphical interface built with PyQt5 for running simulations |
+| **Web simulator** | HTML versions with interactive charts (Chart.js) |
+| **Visualization** | Bankroll history, drawdowns, distributions, strategy comparison charts |
+| **Automated tests** | Validation of calculations and input checks |
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+git clone https://github.com/DoroninDobroCorp/simulation.git
+cd simulation
+pip install -r requirements.txt
+```
+
+### Launch the GUI Application
+
+```bash
+python main.py
+```
+
+### Run Tests
+
+```bash
+python test_strategies.py
+```
+
+### Quick Simulation from Code
+
+```python
+from bet_simulator import BetSimulator
+from bet_strategies import calculate_kelly_bet
+
+simulator = BetSimulator(
+    initial_bank=10000,
+    strategy_func=calculate_kelly_bet,
+    strategy_params={'risk': 2.0, 'kelly_fraction': 0.5}
+)
+
+results = simulator.simulate_series(num_bets=1500)
+print(f"Final bankroll: {results['final_bank']:.2f}")
+print(f"Growth: {results['bank_growth_pct']:.1f}%")
+print(f"Max drawdown: {results['max_drawdown_from_peak']:.1f}%")
+```
+
+### Multiple Simulations (Monte Carlo)
+
+```python
+results = simulator.run_multiple_simulations(
+    num_simulations=500,
+    num_bets=1500
+)
+print(f"Average final bankroll: {results['avg_final_bank']:.2f}")
+print(f"Median growth: {results['median_bank_growth_pct']:.1f}%")
+```
+
+## 🎯 Strategies
+
+<details>
+<summary><b>All 12 implemented strategies</b></summary>
+
+| Strategy | Description | Profile |
+|----------|-------------|---------|
+| `calculate_kelly_bet` | Classic Kelly criterion | Universal |
+| `calculate_dynamic_kelly_bet` | Kelly with dynamic ROI-based fraction | Universal |
+| `calculate_linear_roi_bet` | Linear ROI dependency | Simple |
+| `calculate_sqrt_roi_bet` | Square root of ROI | Conservative |
+| `calculate_log_roi_bet` | Logarithmic ROI dependency | Conservative |
+| `calculate_exp_roi_bet` | Exponential ROI dependency | Aggressive |
+| `calculate_constant_profit_bet` | Fixed target profit | Simple |
+| `calculate_combined_roi_odds_bet` | Combined ROI and odds | Advanced |
+| `calculate_adaptive_bet` | Adapts to bankroll dynamics | Advanced |
+| `calculate_hybrid_bet` | Hybrid with ROI/odds weights | Advanced |
+| `calculate_linear_scaled_bet` | Linear ROI → % scaling | Simple |
+| `calculate_linear_roi_odds_bet` | Linear ROI with odds adjustment | Advanced |
+| `calculate_adaptive_constant_profit_bet` | Adaptive constant profit | Advanced |
+
+</details>
+
+### Kelly Strategy Configuration Example
+
+```python
+# Conservative (half-Kelly, high risk divisor)
+params = {'risk': 3.0, 'kelly_fraction': 0.5}
+
+# Balanced (recommended)
+params = {'risk': 2.0, 'kelly_fraction': 0.5}
+
+# Aggressive (full Kelly)
+params = {'risk': 1.0, 'kelly_fraction': 1.0}
+```
+
+## 🏗 Architecture
+
+```
+simulation/
+├── main.py                    # Entry point (launches GUI)
+├── bet_simulator.py           # Core: betting sequence simulation
+├── bet_strategies.py          # 12+ bet sizing strategies
+├── distribution_generator.py  # Odds and ROI distribution generation
+├── strategy_optimizer.py      # Strategy parameter optimization
+├── visualization.py           # Charts and visualization (matplotlib)
+├── gui.py                     # GUI application (PyQt5)
+├── test_strategies.py         # Automated tests
+├── sim.html                   # Web simulator (basic)
+├── simulation.html            # Web simulator (extended)
+├── supersim.html              # Web simulator (full)
+├── requirements.txt           # Python dependencies
+└── optimization_report.txt    # Parameter optimization results
+```
+
+### Modules
+
+- **`bet_simulator.py`** — `BetSimulator` class: single bet and series simulation, metric calculation (drawdown, growth, win rate), Monte Carlo multiple runs
+- **`bet_strategies.py`** — Bet sizing functions with input data validation
+- **`distribution_generator.py`** — Odds generation (beta distribution, mean≈2.8) and ROI (mixture: 85% normal / 10% medium / 5% rare)
+- **`strategy_optimizer.py`** — Parameter grid search across 4 risk profiles (Conservative, Cautious, Moderate, Aggressive)
+- **`visualization.py`** — Matplotlib charts: bankroll history, distributions, strategy comparison
+
+## 📖 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [`tz.md`](tz.md) | Project technical specification |
+| [`CHANGELOG.md`](CHANGELOG.md) | Changelog |
+| [`REFACTORING_REPORT.md`](REFACTORING_REPORT.md) | Detailed refactoring report |
+| [`SUMMARY.md`](SUMMARY.md) | Summary of changes |
+| [`optimization_report.txt`](optimization_report.txt) | Parameter optimization results |
+
+## 🔧 Requirements
+
+- **Python** 3.6+
+- **NumPy** ≥ 1.20.0
+- **SciPy** ≥ 1.7.0
+- **Matplotlib** ≥ 3.5.0
+- **PyQt5** ≥ 5.15.0
+- **Pandas** ≥ 1.3.0
+- **Seaborn** ≥ 0.11.0
+
+## 🤝 Contributing
+
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/amazing-strategy`)
+3. Commit your changes (`git commit -m 'Add amazing strategy'`)
+4. Push to the branch (`git push origin feature/amazing-strategy`)
+5. Open a Pull Request
+
+Before submitting a PR, make sure all tests pass:
+```bash
+python test_strategies.py
+```
+
+## 📄 License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+
+## ⚠️ Disclaimer
+
+> This project was created **solely for educational and research purposes** to study mathematical risk management models. The authors are not responsible for the use of this software in real financial operations.
+
+---
+
+# 🇷🇺 Русский
+
 <div align="center">
 
 # 🎰 Bankroll Management Simulator
