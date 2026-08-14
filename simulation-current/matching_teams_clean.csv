@@ -1,0 +1,1014 @@
+id,created_at,sport,league,home_team,away_team,outcome,coefficient,bookmaker,stake,ev_profit,real_profit,is_live,strategy
+3174,2025-12-08 17:12:37.90583+00,Basketball,portugal liga feminina de basquetebol,quinta dos lombos,cab madeira,T< 160.5,2.35,Volcano,100,5.66,135.00,true,frontend
+3173,2025-12-08 17:10:52.752201+00,Basketball,slovenia 1. skl,kk rogaska,tajfun sentjur,T< 175.5,2.6,Volcano,100,13.26,160.00,true,frontend
+3172,2025-12-08 16:13:08.732364+00,Soccer,saudi arabia reserve league,alriyadh,damac,T< 3.5,2.25,Lobbet,100,3.71,125.00,true,frontend
+3171,2025-12-08 16:11:43.59099+00,Basketball,portugal liga feminina de basquetebol,coimbroes,sporting cp,P1 H2 8.5,1.8,Lobbet,100,3.63,80.00,true,frontend
+3169,2025-12-08 15:50:32.127966+00,Basketball,lebanon lebanese basketball league,sagesse,nadim souaid academy,T< 183.5,2.4,Lobbet,100,3.50,-100.00,true,frontend
+3168,2025-12-08 15:43:23.138874+00,Basketball,qatar basketball league,al sadd,al khor,T< 155.5,2.35,Volcano,100,4.69,-100.00,true,frontend
+3167,2025-12-08 15:40:56.94588+00,Basketball,portugal liga feminina de basquetebol,gdessa barreiro,uniao sportiva,T< 141.5,2.3,Volcano,100,3.57,-100.00,true,frontend
+3165,2025-12-08 14:58:15.10643+00,Basketball,austria superliga women,ubscdbbc graz,basket flames,T< 142.5,2.1,Volcano,100,3.05,110.00,true,frontend
+3164,2025-12-08 14:52:31.553988+00,Soccer,italy serie b,avellino,venezia,IT1> 1.5,3.1,Lobbet,100,3.28,-100.00,true,frontend
+3158,2025-12-08 12:40:26.319011+00,Soccer,indonesia liga nusantara,perserang serang,persitara jakarta utara,IT1> 1.5,3.15,Lobbet,100,6.35,-100.00,true,frontend
+3157,2025-12-08 12:35:22.463955+00,Basketball,china cba club cup,zhejiang guangsha lions,beijing ducks,T< 185.5,2.2,Lobbet,100,9.20,120.00,true,frontend
+2270,2025-12-04 19:47:00.387938+00,Tennis,itf women melilla,victoria veleva,judith hernandez miranda,2,2.4,Volcano,100,3.33,-100.00,false,volcano_prematch_single
+2242,2025-12-04 18:30:17.290346+00,Soccer,bosnia and herzegovina premier liga,zeljeznicar sarajevo,siroki brijeg,1,7.4,Volcano,100,293.29,-100.00,false,volcano_prematch_single
+2260,2025-12-03 19:14:30.540082+00,Soccer,turkey cup,istanbulspor,sariyer,1,1.83,Volcano,100,3.57,83.00,false,volcano_prematch_single
+2244,2025-12-03 18:31:45.827086+00,Soccer,bosnia and herzegovina premier liga,radnik bijeljina,borac banja luka,T> 2.5,2.13,Volcano,100,5.26,-100.00,false,volcano_prematch_single
+2243,2025-12-03 18:31:17.128181+00,Basketball,poland blk women,arka gdynia,azs ajp gorzow wielkopolski,1,1.72,Volcano,100,3.82,-100.00,false,volcano_prematch_single
+2221,2025-12-03 17:40:47.914065+00,Soccer,romania cup,sanatatea cluj,gloria 2018 bistritanasaud,2,2.38,Volcano,100,3.14,138.00,false,volcano_prematch_single
+2216,2025-12-03 17:29:31.419924+00,Tennis,wta 125k angers,polina kudermetova,annalena friedsam,IT2> 12.5,2.4,Volcano,100,8.17,-100.00,false,volcano_prematch_single
+2172,2025-12-03 14:42:30.681333+00,Soccer,international friendlies women,costa rica,mexico,H2 -1.5,2.05,Volcano,100,3.58,105.00,false,volcano_prematch_single
+2122,2025-12-03 11:49:12.969038+00,Tennis,itf men madrid,john echeverria,sergi perez contri,2,1.92,Volcano,100,12.45,92.00,false,volcano_prematch_single
+2121,2025-12-03 11:49:06.335986+00,Tennis,itf men monastir,chen dong,liam delicata,1,1.4,Volcano,100,4.54,-100.00,false,volcano_prematch_single
+2376,2025-12-03 11:00:30.663141+00,Basketball,korea wkbl,busan bnk sum,yongin life blue minx,T< 131.5,2.5,Sansabet,100,10.10,-100.00,true,sansabet5
+2370,2025-12-03 08:29:55.89533+00,Tennis,itf men gwalior,arjun rathi,sidharth rawat,2,2.9,Sansabet,100,5.63,-100.00,true,sansabet5
+2368,2025-12-03 08:14:20.743917+00,Basketball,china cba club cup,shanghai sharks,sichuan blue whales,T< 192.5,2.35,Sansabet,100,7.36,135.00,true,sansabet5
+2365,2025-12-03 07:47:03.901067+00,Basketball,australia nbl,new zealand breakers,sydney kings,T< 184.5,2.45,Sansabet,100,12.74,-100.00,true,sansabet5
+2361,2025-12-03 07:02:26.420156+00,Basketball,china cba club cup,tianjin pioneers,shandong kirin,1,3.45,Sansabet,100,11.53,-100.00,true,sansabet5
+2360,2025-12-03 06:47:30.765271+00,Tennis,itf men phan thiet,karol filar,arjun mehrotra,P2 T> 7.5,1.88,Sansabet,100,5.10,88.00,true,sansabet5
+2358,2025-12-03 06:40:35.815542+00,Tennis,itf women dubai,arantxa rus,arianne hartono,P1 T> 8.5,1.58,Sansabet,100,5.84,58.00,true,sansabet5
+2356,2025-12-03 05:53:36.506685+00,Basketball,nba,golden state warriors,oklahoma city thunder,T< 229.5,2.1,Sansabet,100,5.42,-100.00,true,sansabet5
+2355,2025-12-03 05:43:29.32471+00,Basketball,philippines uaap,nu bulldogs,dlsu green archers,T> 152.5,2.6,Sansabet,100,8.77,160.00,true,sansabet5
+2351,2025-12-03 05:18:48.862532+00,Tennis,itf men phan thiet,elijah sanogo,daniil sarksian,T> 18.5,4.75,Sansabet,100,19.85,-100.00,true,sansabet5
+2344,2025-12-03 03:09:05.480984+00,Soccer,concacaf championship qualifiers women,el salvador,honduras,H1 -2.5,2.4,Sansabet,100,5.68,140.00,true,sansabet5
+2338,2025-12-03 02:32:37.421743+00,Basketball,nba,boston celtics,new york knicks,1,1.63,Sansabet,100,6.61,-100.00,true,sansabet5
+2337,2025-12-03 02:31:38.575545+00,Basketball,nba,new orleans pelicans,minnesota timberwolves,T> 247.5,2.95,Sansabet,100,10.71,195.00,true,sansabet5
+2329,2025-12-03 01:46:46.066166+00,Basketball,argentina la liga,villa san martin,amancay de la rioja,2,3.35,Sansabet,100,5.72,235.00,true,sansabet5
+2324,2025-12-03 01:35:39.459841+00,Basketball,argentina la liga,hindu club cordoba,club estudiantes tucuman,H1 -8.0,2.15,Sansabet,100,8.35,-100.00,true,sansabet5
+2320,2025-12-03 01:33:24.135905+00,Basketball,argentina la liga,tomas de rocamora,club atletico quilmes,T> 164.5,1.83,Sansabet,100,6.65,-100.00,true,sansabet5
+2314,2025-12-03 01:20:44.082992+00,Basketball,argentina la liga,sportivo suardi,santa paula de galvez,2,2.55,Sansabet,100,8.66,155.00,true,sansabet5
+2312,2025-12-03 01:14:49.200341+00,Basketball,nba,toronto raptors,portland trail blazers,1,1.65,Sansabet,100,5.03,-100.00,true,sansabet5
+2311,2025-12-03 01:13:22.219645+00,Basketball,nba,san antonio spurs,memphis grizzlies,2,2.7,Sansabet,100,6.78,170.00,true,sansabet5
+2306,2025-12-03 01:02:23.062449+00,Basketball,nba,philadelphia 76ers,washington wizards,T> 238.5,2.05,Sansabet,100,7.14,-100.00,true,sansabet5
+2301,2025-12-03 00:46:23.017987+00,Basketball,argentina la liga,deportivo rivadavia mendoza,ca san isidro,2,2.05,Sansabet,100,7.74,-100.00,true,sansabet5
+2298,2025-12-03 00:40:17.42749+00,Soccer,conmebol nations league women,venezuela,peru,H1 -5.5,3.1,Sansabet,100,6.60,210.00,true,sansabet5
+2297,2025-12-03 00:37:37.414296+00,Soccer,conmebol nations league women,chile,paraguay,H1 -1.5,3.4,Sansabet,100,5.73,-100.00,true,sansabet5
+2296,2025-12-03 00:35:38.916475+00,Basketball,argentina la liga,el talar,central entrerriano,2,2.65,Sansabet,100,6.06,-100.00,true,sansabet5
+2295,2025-12-03 00:34:31.758921+00,Basketball,argentina la liga,racing club de avellaneda,deportivo viedma,2,1.7,Sansabet,100,5.14,70.00,true,sansabet5
+2291,2025-12-02 23:11:03.452574+00,Basketball,brazil novo basquete brasil,basket osasco,botafogo,T> 151.5,2.4,Sansabet,100,6.36,-100.00,true,sansabet5
+2288,2025-12-02 22:33:30.005159+00,Soccer,colombia primera b,cucuta deportivo,real cundinamarca,H1 -1.5,3.6,Sansabet,100,5.81,-100.00,true,sansabet5
+2285,2025-12-02 21:38:49.853492+00,Soccer,chile primera division,universidad de chile,coquimbo unido,P1 T> 0.5,3.25,Sansabet,100,5.76,225.00,true,sansabet5
+2284,2025-12-02 21:25:59.289826+00,Soccer,conmebol nations league women,uruguay,ecuador,T> 2.5,3.65,Sansabet,100,5.11,-100.00,true,sansabet5
+2283,2025-12-02 21:11:41.457209+00,Tennis,wta 125k angers,dominika salkova,jeline vandromme,T< 22.5,1.85,Sansabet,100,5.43,85.00,true,sansabet5
+2280,2025-12-02 20:39:38.124973+00,Tennis,wta 125k quito,varvara lepchenko,carolina alves,H1 -2.5,1.75,Volcano,100,5.00,-100.00,true,volcano_fast
+2277,2025-12-02 20:26:57.23056+00,Basketball,iceland premier league women,kr reykjavik,armann,H2 26.5,2.05,Volcano,100,3.94,105.00,true,volcano_fast
+2267,2025-12-02 19:27:46.88891+00,Basketball,iceland premier league women,umf tindastoll,haukar,H2 -12.5,2.05,Volcano,100,4.71,-100.00,true,volcano_fast
+2265,2025-12-02 19:22:19.376021+00,Basketball,iceland premier league women,valur reykjavik,keflavik,2,1.97,Volcano,100,3.13,97.00,true,volcano_fast
+2262,2025-12-02 19:15:51.210131+00,Basketball,mexico liga abe women,upaep,universidad interamericana,H1 2.5,1.85,Volcano,100,3.30,85.00,true,volcano_fast
+2253,2025-12-02 19:01:48.233901+00,Basketball,france cup,as monaco,paris,T< 196.5,2.26,Volcano,100,9.29,-100.00,true,volcano_fast
+1950,2025-12-02 19:00:00+00,Tennis,itf women melilla,neus torner sensano,maria garcia cid,1,1.85,Volcano,100,5.93,85.00,false,volcano_prematch_single
+2252,2025-12-02 18:55:03.266511+00,Soccer,england isthmian premier league,canvey island,whitehawk,T< 2.5,2.05,Volcano,100,4.64,-100.00,false,volcano_prematch_single
+2251,2025-12-02 18:47:30.682681+00,Basketball,iceland premier league women,umf tindastoll,haukar,H2 -9.5,1.8,Volcano,100,6.19,-100.00,false,volcano_prematch_single
+2250,2025-12-02 18:47:00.730478+00,Basketball,iceland premier league women,valur reykjavik,keflavik,2,1.92,Volcano,100,22.27,92.00,false,volcano_prematch_single
+2247,2025-12-02 18:39:15.543611+00,Basketball,lebanon lebanese basketball league,club antonin sportif,hoops,2,3.9,Sansabet,100,6.28,-100.00,true,sansabet5
+2246,2025-12-02 18:35:02.393668+00,Tennis,wta 125k quito,veronika erjavec,anastasia tikhonova,T> 19.5,2.3,Volcano,100,7.12,-100.00,true,volcano_slow
+2245,2025-12-02 18:32:31.99397+00,Soccer,international premier league cup u21,manchester united,anderlecht,2,4.5,Volcano,100,15.81,350.00,false,volcano_prematch_single
+2241,2025-12-02 18:28:48.398308+00,Basketball,israel national league,elitzur yavne,maccabi maale adumim,T> 175.5,2.25,Sansabet,100,8.93,-100.00,true,sansabet5
+2239,2025-12-02 18:23:47.93588+00,Basketball,italy serie a2 women,virtus cagliari,polisportiva a galli san giovanni valdarno,T> 133.5,2.3,Volcano,100,3.44,-100.00,true,volcano_fast
+2238,2025-12-02 18:22:52.118449+00,Soccer,waff championship women,palestine,jordan,H2 -3.5,2.55,Sansabet,100,6.32,-100.00,true,sansabet5
+2236,2025-12-02 18:19:34.964434+00,Soccer,south africa psl,golden arrows,amazulu,T< 0.5,3.75,Volcano,100,4.12,-100.00,true,volcano_fast
+2233,2025-12-02 18:10:54.785321+00,Soccer,romania cup,arges pitesti,rapid bucuresti,2,4.5,Volcano,100,5.04,-100.00,true,volcano_fast
+2232,2025-12-02 18:10:29.910238+00,Basketball,nba,new orleans pelicans,minnesota timberwolves,H2 -9.5,1.77,Volcano,100,4.12,-100.00,false,volcano_prematch_single
+2231,2025-12-02 18:07:15.345006+00,Basketball,ncaa,maryland,wagner,H1 -22.5,2.1,Volcano,100,4.94,-100.00,false,volcano_prematch_single
+2230,2025-12-02 18:05:15.559628+00,Basketball,ncaa,duke,florida,T< 157.5,1.8,Volcano,100,3.83,80.00,false,volcano_prematch_single
+2228,2025-12-02 17:55:05.446644+00,Soccer,england efl trophy,bolton wanderers,bradford city,2,4,Volcano,100,5.53,-100.00,false,volcano_prematch_single
+2227,2025-12-02 17:52:48.720906+00,Soccer,england efl trophy,port vale,barnsley,2,2.38,Volcano,100,9.89,-100.00,false,volcano_prematch_single
+2226,2025-12-02 17:51:14.497725+00,Soccer,england efl trophy,stevenage,walsall,1,2.22,Volcano,100,3.29,-100.00,false,volcano_prematch_single
+2225,2025-12-02 17:50:49.716694+00,Soccer,england efl trophy,cardiff city,afc wimbledon,2,2.9,Volcano,100,3.41,190.00,false,volcano_prematch_single
+2217,2025-12-02 17:32:42.694584+00,Basketball,israel national league,ms safed,ironi nahariya,T> 170.5,2.1,Volcano,100,5.36,-100.00,true,volcano_fast
+2215,2025-12-02 17:27:58.425148+00,Tennis,itf women selva gardena,samira de stefano,arianna zucchini,2,2.05,Sansabet,100,5.19,-100.00,true,sansabet5
+2213,2025-12-02 17:26:39.070119+00,Basketball,slovakia extraliga,prievidza,mbk rieker komarno,T> 163.5,2.4,Sansabet,100,6.90,-100.00,true,sansabet5
+2212,2025-12-02 17:25:37.871416+00,Basketball,israel national league,maccabi ashdod,hapoel haifa,2,3.85,Sansabet,100,7.04,-100.00,true,sansabet5
+2206,2025-12-02 16:53:47.168251+00,Basketball,slovakia extraliga,prievidza,mbk rieker komarno,H1 -11.5,1.84,Volcano,100,3.82,-100.00,false,volcano_prematch_single
+2201,2025-12-02 16:49:46.442607+00,Basketball,israel national league,elitzur ashkelon,maccabi kiryat gat,H1 -8.0,2.15,Sansabet,100,5.38,-100.00,true,sansabet5
+2191,2025-12-02 16:12:48.827905+00,Basketball,ncaa,army,george washington,T> 158.5,2.25,Volcano,100,3.51,-100.00,true,volcano_fast
+2189,2025-12-02 16:01:32.217574+00,Soccer,international friendlies women,portugal,brazil,1,4.5,Volcano,100,13.71,-100.00,false,volcano_prematch_single
+2188,2025-12-02 16:01:15.390056+00,Soccer,international friendlies women,scotland,china,H1 -0.5,1.76,Volcano,100,3.93,76.00,false,volcano_prematch_single
+2176,2025-12-02 15:12:46.056466+00,Basketball,ncaa,notre dame,missouri,H1 -1.5,2,Volcano,100,6.06,-100.00,false,volcano_prematch_single
+2175,2025-12-02 14:57:36.816195+00,Soccer,honduras liga nacional,victoria,choloma,IT2> 1.5,3.1,Volcano,100,4.78,-100.00,false,volcano_prematch_single
+2174,2025-12-02 14:43:17.852175+00,Soccer,ivory coast ligue 1,sol,olympique sport d'abobo,2,2.44,Volcano,100,3.09,144.00,false,volcano_prematch_single
+2173,2025-12-02 14:42:48.615433+00,Soccer,germany regionalliga north,st. pauli ii,vfb oldenburg,H2 -0.5,1.71,Volcano,100,5.76,-100.00,false,volcano_prematch_single
+2171,2025-12-02 14:41:00.690249+00,Soccer,romania cup,cs dinamo bucharest,concordia chiajna,H2 -0.5,1.72,Volcano,100,6.85,72.00,false,volcano_prematch_single
+2170,2025-12-02 14:27:32.849653+00,Basketball,israel national league,ms safed,ironi nahariya,H2 -8.5,1.79,Volcano,100,3.97,79.00,false,volcano_prematch_single
+2169,2025-12-02 14:24:00.883221+00,Basketball,ncaa,kansas,connecticut,T> 142.5,2.15,Volcano,100,4.50,-100.00,false,volcano_prematch_single
+2168,2025-12-02 14:17:00.288763+00,Basketball,ncaa,loyola chicago,central michigan,T< 139.5,2.2,Volcano,100,3.75,-100.00,false,volcano_prematch_single
+2167,2025-12-02 14:13:59.155704+00,Basketball,ncaa,bryant,stonehill,T< 132.5,1.92,Volcano,100,3.13,-100.00,false,volcano_prematch_single
+2165,2025-12-02 14:10:44.153147+00,Basketball,turkey tbl first league,ilab basketbol,mke ankaragucu,H1 -11.5,1.98,Volcano,100,3.40,-100.00,true,volcano_fast
+2164,2025-12-02 14:07:53.043712+00,Basketball,hong kong bl,wellman fukien,winling,T< 159.5,2.15,Volcano,100,10.85,115.00,true,volcano_fast
+2162,2025-12-02 14:02:03.187382+00,Soccer,turkey cup,caykur rizespor,pendikspor,IT1> 1.5,1.8,Volcano,100,8.13,80.00,false,volcano_prematch_single
+2160,2025-12-02 13:59:16.492054+00,Tennis,wta 125k angers,tina nadine smith,fiona ferro,2,2.75,Sansabet,100,6.48,175.00,true,sansabet5
+2159,2025-12-02 13:58:47.0494+00,Basketball,ncaa,michigan state,iowa,T< 132.5,2.25,Volcano,100,3.21,125.00,false,volcano_prematch_single
+2152,2025-12-02 13:11:30.65407+00,Soccer,england efl trophy,bristol rovers,cambridge united,T< 2.5,2.03,Volcano,100,3.06,-100.00,false,volcano_prematch_single
+2136,2025-12-02 12:28:43.929933+00,Soccer,uefa u19 euro championship women qualifiers,germany,spain,IT1< 0.5,2.47,Volcano,100,4.63,147.00,false,volcano_prematch_single
+2134,2025-12-02 12:19:31.229839+00,Soccer,ecuador cup,cuenca juniors,universidad catolica del ecuador,X,4.1,Volcano,100,20.32,310.00,false,volcano_prematch_single
+2123,2025-12-02 11:50:33.510118+00,Tennis,wta 125k angers,jessika ponchet,mona barthel,H1 6.5,1.6,Volcano,100,3.61,60.00,true,volcano_fast
+2117,2025-12-02 11:08:56.784207+00,Soccer,bulgaria second league,etar veliko tarnovo,sportist svoge,2,4,Volcano,100,4.41,300.00,false,volcano_prematch_single
+2108,2025-12-02 10:41:27.34959+00,Tennis,wta 125k angers,zeynep sonmez,victoria jimenez kasintseva,T< 29.5,2,Volcano,100,4.06,100.00,true,volcano_fast
+2107,2025-12-02 10:23:58.963822+00,Soccer,azerbaijan cup,zira,neftchi,1,2.16,Volcano,100,4.87,-100.00,false,volcano_prematch_single
+2105,2025-12-02 10:06:00.332788+00,Tennis,itf women daytona beach,ana grubor,alexis nguyen,1,3.05,Volcano,100,13.18,205.00,false,volcano_prematch_single
+2102,2025-12-02 09:35:11.626556+00,Tennis,itf men lima,nicolas bruna,pierre delage,1,3.35,Volcano,100,17.46,-100.00,false,volcano_prematch_single
+2101,2025-12-02 09:32:26.394647+00,Tennis,wta 125k quito,panna udvardy,diletta cherubini,H2 5.5,2.95,Volcano,100,19.89,195.00,false,volcano_prematch_single
+2099,2025-12-02 09:12:42.190806+00,Soccer,uefa u19 euro championship women qualifiers,norway,netherlands,1,4.4,Volcano,100,16.02,340.00,false,volcano_prematch_single
+2098,2025-12-02 09:05:38.604182+00,Soccer,uefa u19 euro championship women qualifiers,denmark,portugal,2,1.87,Volcano,100,5.26,-100.00,false,volcano_prematch_single
+2097,2025-12-02 09:04:59.388482+00,Tennis,itf women dubai,dalma galfi,tereza martincova,1,1.48,Volcano,100,3.19,-100.00,false,volcano_prematch_single
+2095,2025-12-02 09:03:45.754165+00,Soccer,uefa u19 euro championship women qualifiers,kosovo,iceland,2,1.7,Volcano,100,22.88,70.00,false,volcano_prematch_single
+2094,2025-12-02 09:02:41.581695+00,Soccer,uefa u19 euro championship women qualifiers,croatia,scotland,H2 -1.5,1.71,Volcano,100,6.27,-100.00,false,volcano_prematch_single
+2091,2025-12-02 08:01:56.934846+00,Soccer,uefa u19 euro championship women qualifiers,turkiye,finland,H2 -1.5,2.1,Volcano,100,8.84,110.00,false,volcano_prematch_single
+2088,2025-12-02 07:52:44.22713+00,Soccer,uganda premier league,vipers,updf,1,1.32,Volcano,100,6.37,32.00,false,volcano_prematch_single
+2086,2025-12-02 07:35:11.172216+00,Tennis,itf women dubai,viktoria hruncakova,petra marcinko,1,4.45,Volcano,100,6.61,-100.00,false,volcano_prematch_single
+2084,2025-12-02 07:08:11.519889+00,Basketball,israel national league,elitzur yavne,maccabi maale adumim,1,1.43,Volcano,100,5.17,43.00,false,volcano_prematch_single
+2081,2025-12-02 07:06:58.55258+00,Soccer,international friendlies women,poland,latvia,H1 -3.5,1.82,Volcano,100,5.72,-100.00,false,volcano_prematch_single
+2077,2025-12-02 06:23:13.5582+00,Soccer,uefa u19 euro championship women qualifiers,ukraine,romania,X,3.05,Volcano,100,7.18,205.00,false,volcano_prematch_single
+2076,2025-12-02 05:38:14.597491+00,Soccer,turkey cup,sakaryaspor,genclerbirligi,IT1< 1.5,1.74,Volcano,100,5.72,74.00,false,volcano_prematch_single
+2075,2025-12-02 05:03:05.405913+00,Soccer,uefa u19 euro championship women qualifiers,montenegro,serbia,IT1< 0.5,1.67,Volcano,100,8.62,67.00,false,volcano_prematch_single
+2073,2025-12-02 05:02:37.482203+00,Soccer,uefa u19 euro championship women qualifiers,sweden,poland,2,2.03,Volcano,100,6.98,103.00,false,volcano_prematch_single
+2070,2025-12-02 05:01:32.601211+00,Soccer,uefa u19 euro championship women qualifiers,bulgaria,ireland,H2 -1.5,1.7,Volcano,100,9.36,70.00,false,volcano_prematch_single
+2069,2025-12-02 04:44:46.445386+00,Tennis,itf men gwalior,abhinav sanjeev shanmugam,ishaque eqbal,P1 T> 8.5,1.93,Sansabet,100,13.56,-100.00,true,sansabet5
+2068,2025-12-02 04:37:56.216247+00,Tennis,itf women dubai,alevtina ibragimova,kristina mladenovic,2,3.85,Volcano,100,15.61,-100.00,false,volcano_prematch_single
+2057,2025-12-02 03:39:14.431135+00,Basketball,nba,los angeles lakers,phoenix suns,T< 233.5,2.1,Volcano,100,5.65,110.00,true,volcano_fast
+2055,2025-12-02 03:33:03.289724+00,Basketball,nba,utah jazz,houston rockets,T< 241.5,2.15,Volcano,100,5.51,-100.00,true,volcano_fast
+2052,2025-12-02 02:53:43.380947+00,Soccer,romania cup,dumbravita,slatina,T> 2.5,2.17,Volcano,100,5.09,-100.00,false,volcano_prematch_single
+2047,2025-12-02 02:33:23.520478+00,Basketball,nba,denver nuggets,dallas mavericks,T< 240.5,2.1,Volcano,100,5.36,-100.00,true,volcano_fast
+2032,2025-12-02 02:10:13.868062+00,Soccer,england isthmian premier league,st albans city,potters bar town,T< 2.5,2.15,Volcano,100,3.64,115.00,false,volcano_prematch_single
+2026,2025-12-02 01:49:23.636994+00,Basketball,ncaa,kansas state,bowling green,T< 165.5,2.4,Volcano,100,3.11,140.00,true,volcano_fast
+2023,2025-12-02 01:47:04.807623+00,Soccer,honduras liga nacional,motagua,platense,H1 -0.5,1.56,Volcano,100,4.37,-100.00,false,volcano_prematch_single
+2016,2025-12-02 01:38:57.062533+00,Soccer,international friendlies women,england,ghana,T< 4.5,2.03,Volcano,100,6.92,103.00,false,volcano_prematch_single
+2010,2025-12-02 01:30:52.278395+00,Soccer,concacaf championship qualifiers women,guyana,nicaragua,IT1> 1.5,4.4,Volcano,100,6.13,-100.00,true,volcano_fast
+2006,2025-12-02 01:17:43.669327+00,Basketball,nba,brooklyn nets,charlotte hornets,IT1< 110.5,2.1,Volcano,100,3.01,110.00,true,volcano_fast
+2005,2025-12-02 01:17:33.858316+00,Soccer,concacaf championship qualifiers women,guatemala,bermuda,IT2< 0.5,1.5,Volcano,100,5.80,-100.00,true,volcano_fast
+2002,2025-12-02 01:14:01.764607+00,Basketball,ncaa,middle tennessee state,uab,H2 -1.5,1.8,Volcano,100,3.05,80.00,true,volcano_fast
+1991,2025-12-02 00:55:49.79647+00,Basketball,nba,miami heat,los angeles clippers,T< 237.5,2.05,Volcano,100,3.59,-100.00,true,volcano_fast
+1990,2025-12-02 00:55:32.499233+00,Basketball,nba,detroit pistons,atlanta hawks,IT2< 104.5,2.2,Volcano,100,3.52,120.00,true,volcano_fast
+1988,2025-12-02 00:46:29.100842+00,Basketball,nba,orlando magic,chicago bulls,IT1> 127.5,2.1,Volcano,100,3.15,-100.00,true,volcano_fast
+1986,2025-12-02 00:44:57.667929+00,Basketball,brazil amapaense,amauto,santos macapa,H1 10.5,1.91,Volcano,100,6.33,91.00,true,volcano_fast
+1984,2025-12-02 00:43:05.116908+00,Soccer,international friendlies women,usa,italy,P1 T> 1.5,3.1,Sansabet,100,5.70,210.00,true,sansabet5
+1980,2025-12-02 00:35:22.974459+00,Basketball,ncaa,incarnate word,mcneese state,T< 140.5,2.2,Volcano,100,4.39,120.00,true,volcano_fast
+1978,2025-12-02 00:32:14.646096+00,Basketball,nba,indiana pacers,cleveland cavaliers,IT1< 112.5,2.1,Volcano,100,3.86,-100.00,true,volcano_fast
+1976,2025-12-02 00:30:18.788663+00,Basketball,nba,washington wizards,milwaukee bucks,T< 239.5,2.05,Volcano,100,3.99,-100.00,true,volcano_fast
+1974,2025-12-02 00:28:50.261497+00,Basketball,ncaa,jacksonville state,north alabama,T> 126.5,2.55,Volcano,100,11.68,155.00,true,volcano_fast
+1972,2025-12-02 00:26:11.760093+00,Tennis,itf women dubai,caroline werner,xinyu gao,1,2.25,Volcano,100,3.73,-100.00,false,volcano_prematch_single
+1971,2025-12-02 00:24:46.015654+00,Basketball,fiba world cup americas qualification,canada,bahamas,T< 157.5,2.2,Volcano,100,4.39,-100.00,true,volcano_fast
+1969,2025-12-02 00:20:09.803466+00,Basketball,fiba world cup americas qualification,puerto rico,jamaica,H2 7.5,2.03,Volcano,100,3.05,103.00,true,volcano_fast
+1968,2025-12-02 00:18:31.540555+00,Basketball,fiba world cup americas qualification,dominican republic,mexico,T> 176.5,2.16,Volcano,100,6.09,116.00,true,volcano_fast
+1962,2025-12-02 00:01:16.726344+00,Basketball,ncaa,villanova,temple,H2 13.5,2.15,Volcano,100,3.30,115.00,true,volcano_fast
+1959,2025-12-01 23:41:05.981907+00,Basketball,brazil novo basquete brasil,caxias do sul,cruzeiro,T> 159.5,2.26,Volcano,100,3.66,-100.00,true,volcano_fast
+1957,2025-12-01 23:34:27.756994+00,Basketball,nba,los angeles lakers,phoenix suns,H1 -2.5,1.7,Volcano,100,3.06,-100.00,false,volcano_prematch_single
+1954,2025-12-01 23:13:27.073445+00,Basketball,ncaa,cincinnati,tarleton st,H1 -22.5,2.15,Volcano,100,13.81,-100.00,false,volcano_prematch_single
+1953,2025-12-01 23:09:29.912348+00,Basketball,brazil amapaense,sao jose,macapa,T< 138.5,2.2,Volcano,100,8.96,120.00,true,volcano_fast
+1952,2025-12-01 23:08:40.795423+00,Tennis,itf men phan thiet,lorenzo lorusso,duckhee lee,1,2.4,Volcano,100,6.47,-100.00,false,volcano_prematch_single
+1948,2025-12-01 22:07:32.383255+00,Basketball,fiba world cup americas qualification,argentina,cuba,T> 154.5,2.16,Volcano,100,4.36,-100.00,true,volcano_slow
+1946,2025-12-01 21:38:18.314915+00,Basketball,fiba world cup americas qualification,argentina,cuba,H2 29.5,2.14,Volcano,100,8.30,-100.00,false,volcano_prematch_single
+1940,2025-12-01 20:52:18.729268+00,Soccer,england premier league cup u21,ipswich town,leicester city,T> 1.5,5.1,Sansabet,100,6.64,-100.00,true,sansabet5
+1938,2025-12-01 20:50:33.859654+00,Soccer,ireland munster senior league,midleton,cobh wanderers,IT2> 0.5,3.4,Volcano,100,4.14,240.00,true,volcano_fast
+1937,2025-12-01 20:50:25.085075+00,Tennis,wta 125k quito,eva vedder,leolia jeanjean,T< 16.5,2.25,Volcano,100,3.86,125.00,true,volcano_fast
+1933,2025-12-01 20:42:39.71161+00,Soccer,england premier league cup u21,sunderland,bromley,T< 3.5,1.8,Volcano,100,3.36,-100.00,true,volcano_fast
+1930,2025-12-01 20:20:13.633228+00,Basketball,israel premier league women,elitzur ramla,hapoel lev jerusalem,2,2.5,Volcano,100,4.15,-100.00,true,volcano_fast
+1922,2025-12-01 19:43:20.690206+00,Basketball,fiba world cup europe qualification,belgium,hungary,T< 137.5,2.16,Volcano,100,6.79,-100.00,true,volcano_fast
+1920,2025-12-01 19:34:06.998032+00,Soccer,italy serie c group a,cittadella,brescia,T> 2.5,3.2,Sansabet,100,5.23,-100.00,true,sansabet5
+1913,2025-12-01 19:23:41.558674+00,Basketball,fiba world cup europe qualification,austria,latvia,2,1.44,Volcano,100,4.70,44.00,true,volcano_fast
+1909,2025-12-01 19:12:28.095552+00,Tennis,wta 125k angers,linda klimovicova,tiantsoa rakotomanga rajaonah,T> 26.5,2.2,Volcano,100,4.36,-100.00,true,volcano_fast
+1907,2025-12-01 19:10:46.604722+00,Soccer,portugal liga 3,braga ii,trofense,T> 2.5,3.2,Sansabet,100,5.23,-100.00,true,sansabet5
+1904,2025-12-01 19:01:30.221894+00,Basketball,fiba world cup europe qualification,israel,croatia,T> 162.5,2.16,Volcano,100,5.10,-100.00,true,volcano_fast
+1902,2025-12-01 18:52:08.633335+00,Soccer,egypt cup,talaea el gaish,el sekka el hadid,T> 2.5,4.1,Volcano,100,3.03,-100.00,true,volcano_fast
+1899,2025-12-01 18:49:34.164248+00,Tennis,wta 125k quito,sara sorribes tormo,polona hercog,H1 2.5,1.75,Volcano,100,14.53,75.00,true,volcano_fast
+1894,2025-12-01 18:38:47.259921+00,Soccer,portugal liga 2,vizela,feirense,P1 T> 1.5,4.25,Sansabet,100,6.00,-100.00,true,sansabet5
+1892,2025-12-01 18:37:50.535467+00,Basketball,fiba world cup europe qualification,netherlands,poland,H2 2.5,1.85,Volcano,100,3.39,85.00,true,volcano_fast
+1887,2025-12-01 18:29:21.743184+00,Soccer,turkey 1st league,adana demirspor,hatayspor,T< 4.5,3.35,Volcano,100,4.89,-100.00,true,volcano_fast
+1885,2025-12-01 18:22:54.586146+00,Soccer,international friendlies u23 women,netherlands,sweden,IT2< 0.5,2.59,Volcano,100,3.17,159.00,true,volcano_fast
+1875,2025-12-01 18:11:06.844231+00,Basketball,fiba world cup europe qualification,estonia,czech republic,2,1.7,Sansabet,100,5.53,70.00,true,sansabet5
+1871,2025-12-01 18:09:06.026391+00,Basketball,serbia 1 zls women,student nis,duga,H2 16.5,2.1,Volcano,100,3.19,-100.00,true,volcano_fast
+1863,2025-12-01 18:08:00.512237+00,Basketball,poland 1. liga,resovia rzeszow,politechnika opolska,T> 166.5,2.4,Volcano,100,7.20,-100.00,true,volcano_fast
+1860,2025-12-01 18:04:22.778222+00,Basketball,fiba world cup europe qualification,sweden,slovenia,1,1.83,Sansabet,100,6.34,-100.00,true,sansabet5
+1859,2025-12-01 18:02:44.761233+00,Basketball,serbia nasa liga,okk beograd,kk joker sombor,T> 185.5,2.35,Volcano,100,3.80,135.00,true,volcano_fast
+1858,2025-12-01 18:02:20.743989+00,Basketball,poland 1. liga,sks starogard gdanski,kotwica kolobrzeg,T> 156.5,2.3,Volcano,100,3.31,130.00,true,volcano_fast
+1852,2025-12-01 17:38:19.947466+00,Soccer,international friendlies women,malta,croatia,H2 -3.5,3.9,Sansabet,100,6.28,-100.00,true,sansabet5
+1851,2025-12-01 17:37:59.15941+00,Basketball,israel premier league women,maccabi ashdod,elitzur holon,T< 141.5,2.35,Volcano,100,3.93,-100.00,true,volcano_fast
+1850,2025-12-01 17:37:43.091634+00,Soccer,israel ligat leumit,maccabi kabilio jaffa,maccabi herzliya,P1 T> 0.5,3.7,Sansabet,100,5.93,-100.00,true,sansabet5
+1847,2025-12-01 17:29:56.768947+00,Soccer,international friendlies u23 women,germany,france,P1 H1 -1.5,2.95,Sansabet,100,12.33,-100.00,true,sansabet5
+1846,2025-12-01 17:23:10.996961+00,Basketball,fiba world cup europe qualification,cyprus,germany,H2 -25.0,2.15,Sansabet,100,6.39,-100.00,true,sansabet5
+1843,2025-12-01 17:17:09.045205+00,Basketball,israel premier league women,maccabi karmiel,hapoel rishon lezion,H1 1.5,1.83,Volcano,100,3.05,-100.00,true,volcano_fast
+1839,2025-12-01 17:02:56.076665+00,Soccer,russia premier league,sochi,dynamo makhachkala,T< 0.5,4,Volcano,100,3.33,300.00,true,volcano_fast
+1837,2025-12-01 17:01:02.912267+00,Basketball,serbia nasa liga,kk sloboda uzice,kk dynamic,T> 168.5,2.1,Volcano,100,5.24,110.00,true,volcano_fast
+1834,2025-12-01 16:53:13.471301+00,Basketball,fiba world cup europe qualification,finland,france,1,3.65,Sansabet,100,6.89,265.00,true,sansabet5
+1829,2025-12-01 16:44:34.248178+00,Basketball,greece elite league,psychikou,gs lavrio,2,3.05,Sansabet,100,5.67,-100.00,true,sansabet5
+1828,2025-12-01 16:44:18.114148+00,Soccer,portugal u19 championship,chaves,porto,H2 -2.5,3.1,Sansabet,100,5.66,210.00,true,sansabet5
+1827,2025-12-01 16:42:57.123003+00,Soccer,ukraine premier league,shakhtar donetsk,kryvbas kriviy rih,IT2> 1.5,2.73,Volcano,100,3.63,173.00,true,volcano_fast
+1826,2025-12-01 16:39:42.525835+00,Soccer,saudi arabia reserve league,alittihad jeddah,alqadisiyah,IT1< 1.5,2.26,Volcano,100,3.02,126.00,true,volcano_fast
+1825,2025-12-01 16:39:08.483913+00,Soccer,ghana division 1,berekum arsenal,dormaa unity,IT2> 3.5,3.5,Volcano,100,4.89,-100.00,true,volcano_fast
+1821,2025-12-01 16:34:46.630413+00,Soccer,russia first league,rodina moscow,kamaz,T< 0.5,4.5,Volcano,100,6.14,350.00,true,volcano_fast
+1818,2025-12-01 16:18:42.131393+00,Basketball,portugal taca da liga,imortal,clube galitos,T< 164.5,2.35,Sansabet,100,4.28,135.00,true,sansabet5
+1817,2025-12-01 16:18:39.209427+00,Tennis,wta 125k angers,yuriko lily miyazaki,amandine monnot,T> 17.5,1.65,Volcano,100,-2.04,-100.00,true,volcano_slow
+1811,2025-12-01 14:50:09.264599+00,Tennis,wta 125k angers,polina kudermetova,camilla rosatello,H2 7.5,1.45,Volcano,100,-3.22,45.00,true,volcano_fast
+1806,2025-12-01 13:37:32.338026+00,Tennis,wta 125k angers,alina korneeva,kamilla rakhimova,H1 7.5,2,Volcano,100,4.68,100.00,true,volcano_fast
+1805,2025-12-01 13:08:13.13273+00,Soccer,kenya premier league,bidco united,posta rangers,T> 2.5,3.65,Sansabet,100,5.86,-100.00,true,sansabet5
+1804,2025-12-01 13:06:32.061986+00,Soccer,tunisia league 2,megrine,sporting ben arous,T> 2.5,3.3,Sansabet,100,5.86,-100.00,true,sansabet5
+1803,2025-12-01 13:04:40.508003+00,Soccer,ethiopia premier league,sidama bunna,ethiopia nigd bank,T> 2.5,3.2,Sansabet,100,5.07,-100.00,true,sansabet5
+1797,2025-12-01 12:30:02.89956+00,Soccer,north macedonia 1st league,shkendija,rabotnicki skopje,IT2< 0.5,1.67,Volcano,100,3.13,67.00,true,volcano_fast
+1794,2025-12-01 12:07:12.413722+00,Soccer,uruguay reserve league,albion,boston river,T> 4.5,3.1,Volcano,100,3.30,-100.00,true,volcano_fast
+1790,2025-12-01 11:39:19.47097+00,Basketball,portugal cup,fc barreirense,sampaense basket,T< 153.5,2.15,Volcano,100,4.90,115.00,true,volcano_fast
+1783,2025-12-01 11:31:37.7701+00,Basketball,fiba world cup asia qualification,philippines,guam,T> 160.5,2.15,Sansabet,100,6.31,115.00,true,sansabet5
+1780,2025-12-01 11:25:47.536992+00,Basketball,fiba world cup asia qualification,chinese taipei,japan,T< 158.5,2.55,Sansabet,100,10.24,155.00,true,sansabet5
+1777,2025-12-01 11:15:36.631483+00,Basketball,korea wkbl,bucheon keb hana bank,busan bnk sum,T< 116.5,2.5,Volcano,100,5.63,150.00,true,volcano_fast
+1774,2025-12-01 11:02:55.975338+00,Tennis,wta 125k angers,teodora kostovic,annalena friedsam,P1 T< 8.5,2.6,Sansabet,100,10.55,-100.00,true,sansabet5
+1773,2025-12-01 10:31:59.112743+00,Tennis,itf women dubai,mananchaya sawangkaew,daria snigur,P2 T> 10.5,4,Sansabet,100,43.34,-100.00,true,sansabet5
+1770,2025-12-01 10:22:30.942279+00,Tennis,wta 125k angers,veronika podrez,alina charaeva,H2 9.5,1.75,Volcano,100,16.64,75.00,true,volcano_fast
+1769,2025-12-01 10:17:50.547804+00,Basketball,fiba world cup asia qualification,republic of korea,china,T< 162.5,2.03,Volcano,100,3.05,-100.00,true,volcano_fast
+1766,2025-12-01 09:49:55.323656+00,Soccer,indonesia liga nusantara,gresik united,persekabpas pasuruan,T> 2.5,3.45,Volcano,100,7.62,245.00,true,volcano_slow
+1762,2025-12-01 06:32:39.806335+00,Basketball,fiba world cup asia qualification,new zealand,australia,H1 6.5,2.03,Volcano,100,4.54,103.00,true,volcano_slow
+1756,2025-12-01 03:55:38.325191+00,Basketball,nba,los angeles lakers,new orleans pelicans,T> 251.5,2.1,Volcano,100,4.07,110.00,true,volcano_fast
+1755,2025-12-01 03:47:03.088411+00,Basketball,nba,sacramento kings,memphis grizzlies,1,3.1,Sansabet,100,-0.11,210.00,true,sansabet5
+1729,2025-12-01 00:59:36.48851+00,Basketball,argentina la liga,csd comunicaciones,amancay de la rioja,H2 9.5,2.15,Volcano,100,3.30,115.00,true,volcano_fast
+1722,2025-12-01 00:53:18.814405+00,Basketball,argentina la liga,barrio parque,club estudiantes tucuman,T> 137.5,2.4,Sansabet,100,7.42,140.00,true,sansabet5
+1718,2025-12-01 00:46:56.18205+00,Basketball,fiba world cup americas qualification,uruguay,panama,T> 152.5,2.09,Volcano,100,3.52,109.00,true,volcano_fast
+1715,2025-12-01 00:44:34.24363+00,Basketball,ncaa,loyola maryland,coppin state,IT2< 78.5,2,Volcano,100,3.24,-100.00,true,volcano_fast
+1707,2025-12-01 00:35:37.563259+00,Basketball,argentina la liga,union de mar del plata,pico football club,1,2.35,Sansabet,100,5.33,-100.00,true,sansabet5
+1704,2025-12-01 00:31:44.895914+00,Basketball,argentina la liga,deportivo norte de amrmstrong,provincial de rosario,2,2.65,Sansabet,100,5.04,165.00,true,sansabet5
+1703,2025-12-01 00:27:08.279254+00,Basketball,nba,minnesota timberwolves,san antonio spurs,IT1< 119.5,2.1,Volcano,100,3.44,110.00,true,volcano_fast
+1699,2025-12-01 00:16:30.387156+00,Soccer,bolivia primera division,aurora,jorge wilstermann,P1 T> 0.5,3.5,Sansabet,100,8.86,-100.00,true,sansabet5
+1697,2025-12-01 00:16:19.758347+00,Soccer,aruba divison di honor,britannia,deportivo nacional,IT2< 0.5,1.87,Volcano,100,4.01,87.00,true,volcano_fast
+1696,2025-12-01 00:10:10.014844+00,Basketball,argentina la liga,gimnasia y esgrima la plata,la union colon entre rios,T> 162.5,1.78,Sansabet,100,9.21,-100.00,true,sansabet5
+1692,2025-11-30 23:40:24.885184+00,Basketball,nba,philadelphia 76ers,atlanta hawks,T< 228.5,2.1,Volcano,100,4.65,-100.00,true,volcano_slow
+1690,2025-11-30 23:34:07.619906+00,Basketball,nba,new york knicks,toronto raptors,T< 232.5,2.05,Volcano,100,3.87,105.00,true,volcano_fast
+1685,2025-11-30 23:19:53.878166+00,Basketball,nba,portland trail blazers,oklahoma city thunder,H2 -10.5,2.2,Volcano,100,3.17,-100.00,true,volcano_fast
+1681,2025-11-30 23:12:40.828494+00,Basketball,nba,cleveland cavaliers,boston celtics,2,3.1,Sansabet,100,5.55,-100.00,true,sansabet5
+1675,2025-11-30 22:44:32.559821+00,Soccer,chile primera division,union espanola,o'higgins,IT2> 2.5,4.3,Volcano,100,9.85,330.00,true,volcano_fast
+1672,2025-11-30 22:38:40.952749+00,Soccer,paraguay division profesional,atletico tembetary,cerro porteno,H2 -2.5,3.2,Sansabet,100,5.08,-100.00,true,sansabet5
+1671,2025-11-30 22:26:28.439093+00,Basketball,fiba world cup americas qualification,brazil,chile,T> 153.5,2.26,Volcano,100,3.98,-100.00,true,volcano_fast
+1670,2025-11-30 22:17:50.587269+00,Soccer,ecuador serie a,macara,el nacional,H1 -2.5,3.2,Sansabet,100,9.81,-100.00,true,sansabet5
+1668,2025-11-30 22:08:44.283254+00,Soccer,mexico liga tdp,club calor lerdo,real apodaca ii,T< 5.5,3.1,Volcano,100,3.97,210.00,true,volcano_fast
+1667,2025-11-30 22:06:49.854259+00,Soccer,brazil copa fgf,brasil de pelotas,aimore,X,2.65,Volcano,100,4.71,-100.00,true,volcano_fast
+1651,2025-11-30 21:48:42.974072+00,Basketball,ncaa,florida atlantic,st. bonaventure,H1 5.5,1.8,Volcano,100,3.16,80.00,true,volcano_fast
+1650,2025-11-30 21:47:08.918338+00,Basketball,nba,utah jazz,houston rockets,IT1< 101.5,2.15,Volcano,100,4.45,-100.00,true,volcano_fast
+1649,2025-11-30 21:46:30.08844+00,Soccer,el salvador primera division women,fas,cacahuatique,IT2< 0.5,1.7,Volcano,100,7.71,70.00,true,volcano_fast
+1646,2025-11-30 21:39:49.815417+00,Soccer,bolivia primera division,the strongest,club bolivar,P1 H1 -0.5,5.2,Sansabet,100,131.15,-100.00,true,sansabet5
+1645,2025-11-30 21:35:35.696407+00,Basketball,portugal proliga,ginasio figueirense,sc lusitania,T> 155.5,2.15,Volcano,100,3.01,-100.00,true,volcano_fast
+1643,2025-11-30 21:32:51.5248+00,Soccer,argentina torneo federal a,atletico rafaela,douglas haig,H2 0.5,2.5,Volcano,100,4.18,-100.00,true,volcano_fast
+1641,2025-11-30 21:24:37.003562+00,Basketball,ncaa,college of charleston,belmont,T< 158.5,2.35,Volcano,100,3.73,-100.00,true,volcano_fast
+1640,2025-11-30 21:21:53.941776+00,Soccer,guatemala liga nacional,coban imperial,mictlan,T< 1.5,3.05,Sansabet,100,5.90,205.00,true,sansabet5
+1638,2025-11-30 21:11:07.733731+00,Soccer,guatemala liga nacional,marquense,municipal,T< 1.5,3,Sansabet,100,5.07,-100.00,true,sansabet5
+1635,2025-11-30 20:52:50.465651+00,Soccer,poland 1st liga,wisla krakow,stal mielec,H1 -3.5,3.1,Sansabet,100,6.28,-100.00,true,sansabet5
+1633,2025-11-30 20:47:10.788655+00,Basketball,ncaa,texas tech,wyoming,H2 12.5,1.85,Volcano,100,4.55,85.00,true,volcano_fast
+1628,2025-11-30 20:39:32.67674+00,Soccer,argentina torneo federal a,san martin formosa,9 de julio rafaela,H1 -2.5,2.65,Volcano,100,3.06,165.00,true,volcano_fast
+1625,2025-11-30 20:35:00.806902+00,Soccer,greece super league,panathinaikos,aek athens,T> 3.5,1.75,Volcano,100,3.27,75.00,true,volcano_fast
+1620,2025-11-30 20:24:48.578129+00,Soccer,israel liga bet,maccabi beer sheva,hapoel segev shalom,H2 -4.5,3.25,Sansabet,100,6.58,225.00,true,sansabet5
+1618,2025-11-30 20:22:28.297434+00,Soccer,poland 2nd liga,podbeskidzie bielskobiala,stal stalowa wola,T< 4.5,2.55,Volcano,100,49.95,155.00,true,volcano_fast
+1609,2025-11-30 20:10:43.987669+00,Basketball,ncaa,vermont,yale,T< 135.5,2.15,Volcano,100,6.36,-100.00,true,volcano_slow
+1608,2025-11-30 20:06:22.129029+00,Basketball,italy serie b,power basket nocera,andrea costa imola,IT1> 69.5,2.15,Volcano,100,4.77,-100.00,true,volcano_fast
+1605,2025-11-30 19:51:11.595472+00,Soccer,ecuador serie a,aucas,deportivo cuenca,T> 3.5,4.1,Volcano,100,3.44,-100.00,true,volcano_fast
+1602,2025-11-30 19:36:29.614248+00,Tennis,atp challenger bogota,juan sebastian gomez,nicolas mejia,H1 5.5,1.8,Volcano,100,4.12,80.00,true,volcano_fast
+1591,2025-11-30 19:23:44.993434+00,Basketball,ncaa,texas san antonio,south alabama,T> 145.5,2.35,Volcano,100,5.02,-100.00,true,volcano_fast
+1580,2025-11-30 19:09:45.541413+00,Basketball,fiba world cup africa qualification,nigeria,rwanda,T> 150.5,2.2,Volcano,100,3.05,-100.00,true,volcano_fast
+1578,2025-11-30 19:05:10.440572+00,Basketball,fiba world cup europe qualification,spain,georgia,2,2.35,Sansabet,100,6.01,-100.00,true,sansabet5
+1577,2025-11-30 19:03:56.978061+00,Basketball,fiba world cup asia qualification,lebanon,qatar,T> 163.5,2.15,Sansabet,100,5.74,115.00,true,sansabet5
+1575,2025-11-30 19:02:21.841661+00,Basketball,fiba world cup europe qualification,bosnia & herzegovina,serbia,2,1.6,Sansabet,100,8.25,60.00,true,sansabet5
+1574,2025-11-30 18:55:11.228272+00,Basketball,portugal proliga,s.l. benfica ii,abc santo andre,2,4.4,Sansabet,100,8.82,340.00,true,sansabet5
+1568,2025-11-30 18:39:39.551537+00,Soccer,portugal primeira liga,sporting cp,estrela da amadora,P1 T> 3.5,3.15,Sansabet,100,5.77,-100.00,true,sansabet5
+1565,2025-11-30 18:35:23.441455+00,Soccer,andorra premier division,atletic club d'escaldes,ordino,P1 T> 1.5,3.25,Sansabet,100,5.67,-100.00,true,sansabet5
+1563,2025-11-30 18:32:37.448984+00,Tennis,atp challenger temuco,federico agustin gomez,lautaro midon,T> 18.5,3.35,Volcano,100,19.59,-100.00,true,volcano_fast
+1532,2025-11-30 18:08:03.256172+00,Soccer,brazil carioca b1,serrano,bonsucesso,X,2.65,Sansabet,100,11.18,-100.00,true,sansabet5
+1526,2025-11-30 18:01:21.852223+00,Basketball,bahrain premier league,al ahli manama,al manama,T> 146.5,2.2,Volcano,100,6.33,-100.00,true,volcano_fast
+1522,2025-11-30 18:00:39.897901+00,Soccer,serbia super liga,ofk beograd,crvena zvezda,T< 7.5,2.65,Sansabet,100,5.32,165.00,true,sansabet5
+1519,2025-11-30 17:55:17.570673+00,Soccer,mexico liga tdp,mineros zacatecas cdmx,colegio once mexico,T> 2.5,3.9,Volcano,100,5.45,290.00,true,volcano_fast
+1516,2025-11-30 17:48:47.105133+00,Basketball,poland 1. liga,decka pelplin,zubry bialystok,T< 177.5,2,Volcano,100,3.64,-100.00,true,volcano_fast
+1513,2025-11-30 17:44:52.839783+00,Soccer,georgia erovnuli liga,samgurali tskaltubo,dinamo batumi,H1 -3.5,4.25,Sansabet,100,7.02,325.00,true,sansabet5
+1511,2025-11-30 17:43:37.528174+00,Soccer,hungary nb 2,budapest honved,bvsc zuglo,H1 -2.5,3.1,Sansabet,100,5.68,210.00,true,sansabet5
+1505,2025-11-30 17:39:44.06594+00,Soccer,turkey super league,karagumruk,besiktas,P1 T> 0.5,3.95,Sansabet,100,12.19,295.00,true,sansabet5
+1488,2025-11-30 17:30:52.589604+00,Basketball,fiba world cup europe qualification,portugal,greece,T< 152.5,2.26,Volcano,100,6.40,126.00,true,volcano_fast
+1483,2025-11-30 17:28:28.066175+00,Basketball,italy lega a1 women,broni,magnolia basket,T> 123.5,2.16,Volcano,100,3.06,116.00,true,volcano_fast
+1474,2025-11-30 17:22:41.628768+00,Basketball,ncaa,ball state,le moyne,2,2,Volcano,100,3.38,100.00,true,volcano_fast
+1466,2025-11-30 17:17:13.38726+00,Basketball,poland 1. liga,polonia 1912 leszno,wkk wroclaw,H1 2.5,1.93,Volcano,100,6.43,-100.00,true,volcano_fast
+1462,2025-11-30 17:15:08.781119+00,Basketball,poland blk women,wisla krakow,zaglebie sosnowiec,T> 137.5,2.16,Volcano,100,4.79,116.00,true,volcano_fast
+1460,2025-11-30 17:14:26.481395+00,Basketball,italy serie a2,pallacanestro roseto,pallacanestro 2.015 forli,2,2.65,Sansabet,100,6.06,-100.00,true,sansabet5
+1459,2025-11-30 17:14:02.258078+00,Basketball,italy serie a2,vl pesaro,basket torino,1,1.48,Sansabet,100,5.47,-100.00,true,sansabet5
+1456,2025-11-30 17:13:07.599032+00,Basketball,italy lega a1 women,reyer venezia mestre,brixia basket,T> 130.5,2.16,Volcano,100,6.95,-100.00,true,volcano_fast
+1455,2025-11-30 17:12:57.262711+00,Basketball,fiba eurobasket qualification,albania,kosovo,T> 159.5,2.09,Volcano,100,5.58,109.00,true,volcano_fast
+1452,2025-11-30 17:12:08.043711+00,Basketball,italy serie a2,libertas livorno,scaligera basket verona,1,2.05,Sansabet,100,5.41,105.00,true,sansabet5
+1450,2025-11-30 17:11:59.348672+00,Basketball,fiba eurobasket qualification,ireland,north macedonia,T> 163.5,2.2,Volcano,100,4.10,120.00,true,volcano_fast
+1446,2025-11-30 17:07:59.366874+00,Basketball,italy serie a2,tecnoswitch ruvo di puglia,scafati basket,1,3.95,Sansabet,100,6.51,-100.00,true,sansabet5
+1440,2025-11-30 17:03:29.991877+00,Basketball,italy serie a2,pistoia basket 2000,benedetto xiv cento,2,3.5,Sansabet,100,11.14,-100.00,true,sansabet5
+1438,2025-11-30 17:03:26.916908+00,Basketball,fiba world cup europe qualification,romania,montenegro,1,3.8,Volcano,100,4.11,-100.00,true,volcano_fast
+1436,2025-11-30 17:01:44.895797+00,Basketball,fiba world cup europe qualification,ukraine,denmark,2,3.5,Sansabet,100,5.29,-100.00,true,sansabet5
+1433,2025-11-30 16:58:15.879759+00,Basketball,fiba world cup europe qualification,lithuania,italy,H1 -7.5,1.99,Volcano,100,3.35,-100.00,true,volcano_fast
+1430,2025-11-30 16:53:40.148182+00,Tennis,wta 125k buenos aires,varvara lepchenko,panna udvardy,H1 6.5,1.6,Volcano,100,6.41,60.00,true,volcano_fast
+1429,2025-11-30 16:51:44.582062+00,Soccer,russia premier league,zenit,rubin kazan,T< 0.5,4.2,Sansabet,100,6.98,-100.00,true,sansabet5
+1427,2025-11-30 16:50:56.087906+00,Basketball,fiba world cup europe qualification,iceland,great britain,T> 156.5,2.2,Volcano,100,8.19,120.00,true,volcano_fast
+1424,2025-11-30 16:49:27.928498+00,Soccer,spain segunda rfef group 5,orihuela,rsd alcala sad,IT2> 1.5,3.65,Volcano,100,5.93,-100.00,true,volcano_fast
+1405,2025-11-30 16:22:19.624844+00,Soccer,norway eliteserien,brann,hamkam,H1 -2.5,3.1,Volcano,100,3.43,-100.00,true,volcano_slow
+1404,2025-11-30 16:19:24.383603+00,Soccer,caf confederation cup,san pedro,djoliba ac,P1 H1 -0.5,3.85,Sansabet,100,7.80,285.00,true,sansabet5
+1402,2025-11-30 16:17:22.469108+00,Soccer,czech republic first liga,viktoria plzen,mlada boleslav,H1 -2.5,3.55,Sansabet,100,7.42,-100.00,true,sansabet5
+1398,2025-11-30 16:14:19.205468+00,Basketball,serbia 1 zls women,radnicki beograd,ras beograd,2,3.1,Volcano,100,3.64,-100.00,true,volcano_fast
+1394,2025-11-30 16:11:29.906923+00,Soccer,bulgaria first league,levski sofia,septemvri,P1 T> 1.5,4.25,Sansabet,100,6.22,-100.00,true,sansabet5
+1392,2025-11-30 16:07:13.13372+00,Basketball,fiba world cup asia qualification,syria,jordan,T> 145.5,2.35,Volcano,100,5.48,135.00,true,volcano_fast
+1389,2025-11-30 16:01:39.748189+00,Basketball,fiba world cup europe qualification,switzerland,turkey,T> 157.5,2.2,Volcano,100,3.05,-100.00,true,volcano_fast
+1388,2025-11-30 16:01:10.101321+00,Basketball,fiba world cup africa qualification,guinea,tunisia,1,1.85,Sansabet,100,5.14,85.00,true,sansabet5
+1382,2025-11-30 15:58:32.482171+00,Basketball,poland blk women,azs poznan,sleza wroclaw,H2 1.5,1.85,Volcano,100,3.22,85.00,true,volcano_fast
+1380,2025-11-30 15:53:44.582054+00,Basketball,turkey tbl first league,harem spor kulubu,final spor genclik,T> 152.5,2.45,Sansabet,100,5.06,145.00,true,sansabet5
+1376,2025-11-30 15:52:00.248617+00,Soccer,serbia super liga,tsc,radnik surdulica,IT2> 1.5,3.8,Volcano,100,6.60,280.00,true,volcano_fast
+1374,2025-11-30 15:51:04.815082+00,Soccer,malta fa jubilee cup,valletta,hamrun spartans,2,4,Volcano,100,5.48,-100.00,true,volcano_fast
+1369,2025-11-30 15:44:39.865448+00,Soccer,nigeria npfl,ikorodu city,abia warriors,IT2> 0.5,3.55,Volcano,100,3.64,-100.00,true,volcano_fast
+1368,2025-11-30 15:44:23.340334+00,Soccer,switzerland super league,lausannesport,thun,H1 -0.5,2.35,Sansabet,100,30.59,135.00,true,sansabet5
+1366,2025-11-30 15:39:44.240401+00,Basketball,finland division 1,kipina basket,aanekosken huima,T< 194.5,2.4,Sansabet,100,5.80,140.00,true,sansabet5
+1365,2025-11-30 15:39:10.598446+00,Basketball,czech republic zbl women,valosun kp brno,slovanka mb,T> 150.5,2.25,Sansabet,100,8.00,125.00,true,sansabet5
+1359,2025-11-30 15:37:13.169711+00,Soccer,ghana premier league,heart of lions,karela united,P1 T> 0.5,3.3,Sansabet,100,6.24,-100.00,true,sansabet5
+1358,2025-11-30 15:36:33.941621+00,Soccer,russia first league,fakel voronezh,chelyabinsk,T< 0.5,4.1,Sansabet,100,5.78,-100.00,true,sansabet5
+1351,2025-11-30 15:30:06.322054+00,Basketball,serbia nasa liga,kk vojvodina,kk mladost zemun,2,2.55,Sansabet,100,5.30,-100.00,true,sansabet5
+1347,2025-11-30 15:24:24.292343+00,Soccer,portugal campeonato de portugal prio,tirsense,mirandela,IT2> 0.5,2.2,Volcano,100,3.12,120.00,true,volcano_fast
+1337,2025-11-30 15:18:13.181625+00,Basketball,poland blk women,jelenia gora,ks basket 25 bydgoszcz,T> 153.5,2.16,Volcano,100,3.06,-100.00,true,volcano_fast
+1334,2025-11-30 15:16:52.935336+00,Basketball,fiba eurobasket qualification,azerbaijan,luxembourg,T< 175.5,2.2,Volcano,100,4.69,-100.00,true,volcano_fast
+1331,2025-11-30 15:15:14.379689+00,Basketball,fiba eurobasket qualification,armenia,norway,2,2.59,Volcano,100,3.69,159.00,true,volcano_fast
+1328,2025-11-30 15:14:08.122128+00,Soccer,russia first league,spartak kostroma,torpedo moscow,T> 2.5,4.1,Sansabet,100,5.33,-100.00,true,sansabet5
+1323,2025-11-30 15:09:34.687023+00,Soccer,italy serie d group d,piacenza,sant'angelo,H1 -2.5,4.05,Sansabet,100,5.77,-100.00,true,sansabet5
+1321,2025-11-30 15:06:45.790713+00,Basketball,italy lega a1 women,dinamo sassari,battipaglia,T< 150.5,2.4,Sansabet,100,5.70,-100.00,true,sansabet5
+1320,2025-11-30 15:06:13.112884+00,Soccer,greece super league,panetolikos,olympiakos,T< 1.5,3.8,Sansabet,100,6.18,280.00,true,sansabet5
+1319,2025-11-30 14:54:41.18239+00,Soccer,italy serie c group b,arezzo,sambenedettese,H1 -1.5,2.25,Sansabet,100,5.36,-100.00,true,sansabet5
+1315,2025-11-30 14:49:04.190664+00,Basketball,fiba world cup asia qualification,iraq,iran,T< 153.5,2.25,Sansabet,100,5.49,-100.00,true,sansabet5
+1311,2025-11-30 14:46:02.514276+00,Soccer,wales premier womens league,briton ferry,barry town united,T< 2.5,3.35,Volcano,100,4.49,-100.00,true,volcano_fast
+1308,2025-11-30 14:44:00.576066+00,Basketball,france ligue féminine de basketball,basket lattes montpellier,bourges basket,2,3.85,Sansabet,100,5.31,-100.00,true,sansabet5
+1306,2025-11-30 14:42:31.569909+00,Soccer,bosnia and herzegovina premier liga,zrinjski mostar,posusje,IT2> 0.5,4.4,Volcano,100,5.01,340.00,true,volcano_fast
+1303,2025-11-30 14:40:18.250012+00,Soccer,italy serie d group i,nissa,citta di acireale,IT2> 1.5,2.59,Volcano,100,8.71,159.00,true,volcano_fast
+1302,2025-11-30 14:39:55.535912+00,Soccer,bulgaria first league,ludogorets razgrad,botev vratsa,H1 -2.5,3.35,Sansabet,100,5.72,-100.00,true,sansabet5
+1301,2025-11-30 14:38:14.411399+00,Basketball,british championship,worthing thunder,newcastle knights,H1 -5.5,2.03,Volcano,100,3.05,-100.00,true,volcano_fast
+1300,2025-11-30 14:37:10.330538+00,Basketball,france ligue féminine de basketball,basket landes,roche vendee,T> 136.5,2.35,Sansabet,100,6.55,-100.00,true,sansabet5
+1299,2025-11-30 14:36:15.363678+00,Soccer,tunisia league 2,ariana,es bouchemma,H1 -2.5,3.05,Sansabet,100,5.06,-100.00,true,sansabet5
+1298,2025-11-30 14:32:11.695732+00,Tennis,itf men santiago,juan estevez,joaquin aguilar cardozo,P1 T< 7.5,3.8,Sansabet,100,19.98,-100.00,true,sansabet5
+1294,2025-11-30 14:24:42.655086+00,Soccer,greece super league 2,panargiakos,panionios,T< 2.5,2.35,Sansabet,100,31.68,-100.00,true,sansabet5
+1292,2025-11-30 14:14:31.420443+00,Basketball,sweden superettan,eskilstuna basket,wetterbygden stars,2,1.8,Sansabet,100,6.85,80.00,true,sansabet5
+1291,2025-11-30 14:11:56.830093+00,Tennis,wta 125k angers,anna siskova,tina nadine smith,P2 T> 12.5,1.53,Sansabet,100,7.43,53.00,true,sansabet5
+1289,2025-11-30 14:07:53.208127+00,Soccer,morocco botola 2,racing de casablanca,usm oujda,T> 2.5,3.35,Sansabet,100,5.57,235.00,true,sansabet5
+1287,2025-11-30 14:04:27.268159+00,Soccer,croatia prva nl,cibalia vinkovci,croatia zmijavci,H1 -3.5,3.25,Sansabet,100,5.99,225.00,true,sansabet5
+1285,2025-11-30 13:59:59.959094+00,Basketball,turkey tbl first league,gaziantep basketbol,cayirova belediyesi,H1 -1.5,2.2,Volcano,100,5.87,120.00,true,volcano_fast
+1281,2025-11-30 13:54:24.02836+00,Soccer,italy serie d group d,tuttocuoio,lentigione,P1 H2 0.5,2.75,Sansabet,100,7.18,175.00,true,sansabet5
+1277,2025-11-30 13:36:39.712685+00,Soccer,egypt cup,pharco,telephonat beni suef,IT2> 0.5,3.8,Volcano,100,6.61,-100.00,true,volcano_fast
+1276,2025-11-30 13:34:12.787087+00,Basketball,poland blk women,skk polonia warszawa,azs umcs lublin,T< 158.5,2.26,Volcano,100,7.31,126.00,true,volcano_fast
+1272,2025-11-30 13:30:57.54839+00,Soccer,malaysia fa cup,selangor,sabah,2,4.5,Volcano,100,5.41,-100.00,true,volcano_fast
+1268,2025-11-30 13:08:18.654094+00,Soccer,uae division 1,aljazira alhamra,alittifaq,P1 T> 2.5,2.45,Sansabet,100,5.03,-100.00,true,sansabet5
+1266,2025-11-30 13:07:47.405607+00,Soccer,italy serie a,lecce,torino,T< 3.5,1.8,Sansabet,100,5.44,80.00,true,sansabet5
+1262,2025-11-30 13:06:12.821223+00,Soccer,bulgaria second league,cska sofia ii,spartak pleven,P1 H1 -1.5,3.8,Sansabet,100,10.52,-100.00,true,sansabet5
+1260,2025-11-30 13:05:53.688964+00,Soccer,jordan 1st division,al tora,amman,P1 T> 1.5,2.65,Sansabet,100,6.49,165.00,true,sansabet5
+1256,2025-11-30 13:01:10.276447+00,Basketball,fiba world cup africa qualification,libya,cape verde,1,4.75,Sansabet,100,11.48,-100.00,true,sansabet5
+1255,2025-11-30 13:00:26.067919+00,Basketball,fiba world cup asia qualification,india,saudi arabia,T> 137.5,2.26,Volcano,100,3.66,126.00,true,volcano_fast
+1239,2025-11-30 12:24:14.532664+00,Soccer,turkey 2nd league,altinordu,muglaspor,IT1< 0.5,1.65,Volcano,100,3.41,65.00,true,volcano_fast
+1236,2025-11-30 12:17:26.797751+00,Basketball,romania liga 1,cs agronomia bucuresti,cs municipal ploiesti 2,H1 -7.5,1.95,Volcano,100,6.64,95.00,true,volcano_fast
+1233,2025-11-30 12:12:44.088894+00,Soccer,spain u19 league,athletic bilbao,santutxu,IT2< 0.5,3.7,Sansabet,100,3.20,270.00,true,sansabet_fast
+1232,2025-11-30 12:12:42.199361+00,Soccer,philippines pfl,tuloy,kaya iloilo,IT1> 0.5,3.55,Volcano,100,6.75,255.00,true,volcano_fast
+1231,2025-11-30 12:12:31.745757+00,Soccer,singapore cup,geylang international,balestier khalsa,P1 T> 2.5,3.35,Sansabet,100,4.17,-100.00,true,sansabet_fast
+1226,2025-11-30 12:09:31.773138+00,Soccer,belarus premier league,minsk,bate borisov,T< 0.5,4,Sansabet,100,3.08,-100.00,true,sansabet_fast
+1222,2025-11-30 12:08:52.552127+00,Tennis,atp challenger manama,toby samuel,ilia simakin,H2 5.5,1.8,Volcano,100,4.17,80.00,true,volcano_fast
+1218,2025-11-30 12:07:15.923953+00,Tennis,atp challenger maia,elmer moller,andrej martin,T> 19.5,2.05,Volcano,100,3.43,-100.00,true,volcano_fast
+1215,2025-11-30 12:06:03.647442+00,Soccer,kenya premier league,muranga seal,kariobangi sharks,T> 2.5,3.3,Sansabet,100,4.17,-100.00,true,sansabet_fast
+1213,2025-11-30 12:05:43.984551+00,Basketball,spain liga women,gran canaria,ferrol,T> 148.5,2.2,Sansabet,100,4.69,120.00,true,sansabet_fast
+1212,2025-11-30 12:05:32.256115+00,Basketball,spain liga women,spar citylift girona,porta xi ensino,T> 149.5,2.5,Sansabet,100,4.02,150.00,true,sansabet_fast
+1209,2025-11-30 12:01:53.143676+00,Soccer,chinese taipei premier league,hang yuan,ming chuan university,H1 -4.5,2.15,Sansabet,100,3.76,115.00,true,sansabet_fast
+1207,2025-11-30 12:00:01.234167+00,Basketball,spain liga women,lointek gernika bizkaia,ae sedis,2,3.2,Sansabet,100,8.08,220.00,true,sansabet_fast
+1206,2025-11-30 11:55:19.547484+00,Soccer,chinese taipei premier league,taichung futuro,taichung rock,H1 -3.5,2.5,Sansabet,100,6.64,150.00,true,sansabet_fast
+1202,2025-11-30 11:54:05.075065+00,Tennis,itf men madrid,izan almazan valiente,cyril vandermeersch,P1 T< 8.5,2.15,Sansabet,100,20.84,-100.00,true,sansabet_fast
+1196,2025-11-30 11:49:52.671395+00,Basketball,turkey tbl first league,konya bbsk,goztepe,1,1.7,Volcano,100,3.31,-100.00,true,volcano_fast
+1186,2025-11-30 11:43:40.455345+00,Soccer,thailand league 3 cup,customs united,pluakdaeng united,H1 -2.5,4.15,Sansabet,100,3.32,-100.00,true,sansabet_fast
+1183,2025-11-30 11:40:05.881347+00,Soccer,italy serie c group b,juventus next gen,perugia,T> 2.5,3.15,Sansabet,100,3.20,-100.00,true,sansabet_fast
+1182,2025-11-30 11:39:43.552523+00,Basketball,turkey super league women,emlak konut sk,kayseri basketbol,H1 -15.0,2.15,Sansabet,100,3.76,-100.00,true,sansabet_fast
+1180,2025-11-30 11:39:05.059583+00,Soccer,russia premier league,krasnodar,krylia sovetov,P1 H1 -1.5,3.95,Sansabet,100,5.55,295.00,true,sansabet_fast
+1179,2025-11-30 11:37:53.288147+00,Soccer,portugal liga 2,torreense,chaves,P1 T> 0.5,3.75,Sansabet,100,3.13,275.00,true,sansabet_fast
+1174,2025-11-30 11:35:36.903048+00,Basketball,greece a1 women,paok thessaloniki,panathinaikos,H1 23.5,2.1,Volcano,100,6.80,-100.00,true,volcano_fast
+1171,2025-11-30 11:30:23.132209+00,Soccer,uzbekistan super league,agmk,mash'al mubarek,H1 -1.5,2.3,Sansabet,100,3.42,130.00,true,sansabet_fast
+1168,2025-11-30 11:29:26.669921+00,Soccer,croatia 3. nl,hask zagreb,maksimir,H1 -2.5,3.2,Sansabet,100,3.45,-100.00,true,sansabet_fast
+1167,2025-11-30 11:29:16.807917+00,Tennis,wta 125k angers,veronika podrez,amandine monnot,T< 23.5,1.8,Sansabet,100,3.06,80.00,true,sansabet_fast
+1166,2025-11-30 11:28:49.422766+00,Basketball,spain liga women,valencia basket club,cab estepona,H1 -21.5,2.15,Volcano,100,3.59,-100.00,true,volcano_fast
+1164,2025-11-30 11:28:17.900206+00,Soccer,moldova divizia nationala,dacia buiucani,sheriff tiraspol,T< 1.5,3.05,Sansabet,100,3.16,-100.00,true,sansabet_fast
+1162,2025-11-30 11:24:04.202057+00,Soccer,moldova divizia nationala,spartanii selemet,petrocub,T< 6.5,2.4,Volcano,100,3.24,-100.00,true,volcano_slow
+1161,2025-11-30 11:23:40.544201+00,Tennis,atp challenger athens,arthur fery,michael geerts,H1 -3.5,1.85,Volcano,100,8.16,-100.00,true,volcano_fast
+1159,2025-11-30 11:19:35.55696+00,Soccer,turkey 1st league,sivasspor,boluspor,H1 -1.5,2.03,Volcano,100,3.93,-100.00,true,volcano_fast
+1156,2025-11-30 11:15:11.421031+00,Soccer,turkey 2nd league,adana 1954,kepez spor futbol as,T< 1.5,3.4,Sansabet,100,3.83,-100.00,true,sansabet_fast
+1154,2025-11-30 11:12:50.824351+00,Soccer,spain tercera division,toledo,illescas,T> 2.5,3.15,Sansabet,100,3.04,215.00,true,sansabet_fast
+1152,2025-11-30 11:11:27.67869+00,Basketball,turkey super league women,nesibe aydin,cbk mersin yenisehir bld,1,3.75,Sansabet,100,3.38,-100.00,true,sansabet_fast
+1151,2025-11-30 11:11:20.284542+00,Soccer,spain segunda rfef group 5,intercity,rayo vallecano ii,T< 1.5,3.4,Sansabet,100,4.21,-100.00,true,sansabet_fast
+1148,2025-11-30 11:10:02.726509+00,Soccer,spain segunda rfef group 4,minera,yeclano deportivo,T> 2.5,3.25,Sansabet,100,6.22,-100.00,true,sansabet_fast
+1147,2025-11-30 11:09:24.88342+00,Basketball,italy serie b,fortitudo agrigento,aurora desio,2,1.8,Sansabet,100,4.81,-100.00,true,sansabet_fast
+1142,2025-11-30 11:06:52.829844+00,Soccer,moldova divizia nationala,balti,milsami,T< 1.5,2.65,Sansabet,100,3.17,-100.00,true,sansabet_fast
+1141,2025-11-30 11:06:31.144122+00,Soccer,turkey 2nd league,beyoglu yeni carsi,ankaraspor,T< 1.5,3.2,Sansabet,100,3.66,-100.00,true,sansabet_fast
+1139,2025-11-30 11:04:18.86159+00,Soccer,hong kong hkfa 2. division,kwai tsing dfa,kowloon cricket club,H1 -1.5,2.85,Sansabet,100,3.42,-100.00,true,sansabet_fast
+1136,2025-11-30 10:57:56.158542+00,Soccer,georgia erovnuli liga,kolkheti 1913 poti,dila gori,T< 5.5,3.45,Sansabet,100,3.34,245.00,true,sansabet_fast
+1134,2025-11-30 10:55:57.382186+00,Soccer,georgia erovnuli liga,gareji,iberia 1999,T> 4.5,4,Sansabet,100,4.66,-100.00,true,sansabet_fast
+1132,2025-11-30 10:46:29.001006+00,Tennis,itf men luanda,max houkes,robert strombachs,P2 T> 9.5,1.83,Sansabet,100,4.40,83.00,true,sansabet_fast
+1131,2025-11-30 10:46:07.082132+00,Soccer,spain segunda rfef group 4,union malacitano,extremadura,T> 2.5,3.15,Sansabet,100,3.06,215.00,true,sansabet_fast
+1129,2025-11-30 10:42:47.412946+00,Soccer,uzbekistan super league,bunyodkor,andijan,P1 T> 0.5,2.55,Sansabet,100,3.86,155.00,true,sansabet_fast
+1126,2025-11-30 10:34:09.816224+00,Soccer,turkey 2nd league,karacabey belediyespor,sanliurfaspor,P1 T> 0.5,3.1,Sansabet,100,3.73,-100.00,true,sansabet_fast
+1125,2025-11-30 10:33:59.866802+00,Soccer,uzbekistan super league,buxoro,surkhon termez,P1 T> 1.5,3.1,Sansabet,100,3.09,-100.00,true,sansabet_fast
+1121,2025-11-30 10:31:25.144733+00,Soccer,uzbekistan super league,xorazm,neftchi fergona,P1 H2 0.5,3.65,Sansabet,100,4.55,-100.00,true,sansabet_fast
+1115,2025-11-30 10:29:28.081113+00,Basketball,spain liga women,cb jairis,cb avenida,2,2.1,Sansabet,100,4.14,110.00,true,sansabet_fast
+1113,2025-11-30 10:27:16.873984+00,Tennis,itf women torello,alessandra mazzola,nahia berecoechea,P1 T> 8.5,1.73,Sansabet,100,4.10,-98.11,true,sansabet_fast
+1112,2025-11-30 10:27:01.276822+00,Tennis,itf men hradec kralove,buvaysar gadamauri,daniel siniakov,P1 T> 7.5,1.6,Sansabet,100,4.11,-100.00,true,sansabet_fast
+1101,2025-11-30 10:07:33.842209+00,Tennis,itf women trnava,lucie havlickova,elenagabriela ruse,P1 T> 8.5,1.58,Sansabet,100,3.03,58.87,true,sansabet_fast
+1100,2025-11-30 10:07:26.235979+00,Tennis,itf women lousada,adrienn nagy,stefaniya pushkar,P1 T> 9.5,2.9,Sansabet,100,8.59,-100.00,true,sansabet_fast
+1097,2025-11-30 10:04:52.79281+00,Soccer,azerbaijan premier league,shamakhi,sumgayit,T> 2.5,3.2,Sansabet,100,3.39,220.00,true,sansabet_fast
+1094,2025-11-30 10:02:54.201938+00,Basketball,fiba world cup africa qualification,cameroon,south sudan,T> 159.5,1.58,Sansabet,100,5.72,-100.00,true,sansabet_fast
+1093,2025-11-30 10:01:09.544285+00,Basketball,czech republic zbl women,zvvz usk prague,zabiny brno,H2 21.0,2.25,Sansabet,100,4.45,-100.00,true,sansabet_fast
+1091,2025-11-30 09:46:22.055285+00,Basketball,czech republic zbl women,brandys nad labem,levharti chomutov,H2 3.0,2.15,Sansabet,100,9.73,0.00,true,sansabet_fast
+1088,2025-11-30 09:40:43.88671+00,Tennis,itf women monastir,carolyn ansari,kailey evans,P1 T< 8.5,3.5,Sansabet,100,4.55,-100.00,true,sansabet_fast
+1087,2025-11-30 09:11:28.268403+00,Soccer,hong kong hkfa 1. division,kwun tong,resources capital,H2 -2.5,3.05,Sansabet,100,4.47,-100.00,true,sansabet_slow
+1086,2025-11-30 09:05:27.481439+00,Soccer,hong kong hkfa 1. division,citizen aa,lucky mile,T> 2.5,3.9,Sansabet,100,4.04,290.00,true,sansabet_slow
+1084,2025-11-30 08:48:00.276864+00,Tennis,itf men heraklion,florian broska,fausto tabacco,P1 T> 9.5,2.2,Sansabet,100,12.22,120.00,true,sansabet_fast
+1083,2025-11-30 08:45:52.482795+00,Soccer,korea republic k league 1,jeonbuk motors,seoul,T> 1.5,3.45,Sansabet,100,3.50,245.00,true,sansabet_fast
+1082,2025-11-30 08:35:13.473785+00,Soccer,south africa diski challenge u23,siwelele,chippa united,P1 H1 -2.5,2.2,Sansabet,100,5.42,-100.00,true,sansabet_fast
+1075,2025-11-30 07:56:44.039008+00,Soccer,hong kong hkfa 1. division,sham shui po,south china,T< 1.5,2.6,Sansabet,100,3.33,160.00,true,sansabet_fast
+1074,2025-11-30 07:52:54.88955+00,Soccer,hong kong hkfa 2. division,tuen mun sa,sui tung,T< 2.5,2.1,Sansabet,100,4.44,110.00,true,sansabet_slow
+1073,2025-11-30 07:45:22.177028+00,Tennis,itf men antalya,andrej nedic,tim handel,P1 T> 9.5,1.58,Sansabet,100,8.19,58.00,true,sansabet_fast
+1067,2025-11-30 07:14:30.968643+00,Tennis,itf women antalya,julie struplova,sofia shapatava,P1 T> 8.5,1.73,Sansabet,100,4.26,-98.11,true,sansabet_fast
+1066,2025-11-30 07:14:13.88953+00,Basketball,korea wkbl,cheongju kb stars,woori bank woori won,T> 130.5,3.1,Sansabet,100,4.20,210.00,true,sansabet_fast
+1062,2025-11-30 06:50:27.111543+00,Soccer,korea republic k league 1,daegu,anyang,T< 3.5,2,Sansabet,100,15.10,-100.00,true,sansabet_fast
+1058,2025-11-30 06:29:55.254544+00,Soccer,hong kong hkfa 1. division,tung sing,wse,H2 -2.5,2.75,Sansabet,100,5.43,-100.00,true,sansabet_fast
+1053,2025-11-30 06:15:56.703956+00,Soccer,japan j league,avispa fukuoka,gamba osaka,T> 1.5,3.25,Sansabet,100,2.85,-100.00,true,sansabet_fast
+1052,2025-11-30 06:13:23.542468+00,Soccer,korea republic k league 1,ulsan hd,jeju united,T> 1.5,3.4,Sansabet,100,4.17,-100.00,true,sansabet_fast
+1050,2025-11-30 05:53:54.895748+00,Soccer,australia aleague women,melbourne victory,perth glory,P1 T> 2.5,3.65,Sansabet,100,4.72,265.00,true,sansabet_fast
+1047,2025-11-30 05:49:53.556909+00,Basketball,japan wjb league women,chanson vmagic,haneda vickies,H2 10.0,2.1,Sansabet,100,3.20,-100.00,true,sansabet_fast
+1045,2025-11-30 05:41:08.141986+00,Soccer,japan j league,kawasaki frontale,sanfrecce hiroshima,P1 T> 1.5,3.45,Sansabet,100,3.53,245.00,true,sansabet_fast
+1043,2025-11-30 05:38:07.403412+00,Basketball,japan b2 league,shinshu brave warriors,veltex shizuoka,T> 134.5,2.45,Sansabet,100,3.29,-100.00,true,sansabet_fast
+1042,2025-11-30 05:37:13.173178+00,Basketball,japan wjb league women,fujitsu red wave,eneos sunflowers,T> 150.5,2.2,Sansabet,100,3.05,120.00,true,sansabet_slow
+1038,2025-11-30 05:20:47.732443+00,Basketball,japan b2 league,yamagata wyverns,aomori wats,T> 151.5,1.7,Sansabet,100,3.37,70.00,true,sansabet_fast
+1034,2025-11-30 05:16:28.494548+00,Basketball,japan b2 league,kumamoto volters,ehime orange vikings,T> 153.5,1.98,Sansabet,100,4.31,98.00,true,sansabet_fast
+1032,2025-11-30 05:14:16.855897+00,Basketball,japan b2 league,fukui blowwinds,bambitious nara,T> 155.5,2.1,Sansabet,100,3.59,110.00,true,sansabet_fast
+1031,2025-11-30 05:14:07.450825+00,Basketball,japan b2 league,iwate big bulls,kagoshima rebnise,1,2.65,Sansabet,100,9.22,-100.00,true,sansabet_fast
+1025,2025-11-30 04:43:10.492883+00,Basketball,japan b2 league,fukushima fire bonds,rizing fukuoka,T> 143.5,2.5,Sansabet,100,4.02,150.00,true,sansabet_fast
+1016,2025-11-30 03:42:30.66821+00,Basketball,nba,los angeles clippers,dallas mavericks,2,4.6,Sansabet,100,7.33,-100.00,true,sansabet_fast
+1013,2025-11-30 03:28:17.199498+00,Tennis,itf women yokohama,shuai zhang,yeon woo ku,T< 18.5,2.25,Sansabet,100,4.68,125.00,true,sansabet_fast
+1012,2025-11-30 03:19:59.053192+00,Soccer,usa major league soccer,san diego,vancouver whitecaps,H2 -3.5,4.35,Sansabet,100,4.63,-100.00,true,sansabet_fast
+1009,2025-11-30 03:08:33.740303+00,Tennis,atp challenger playford,dane sweeny,rinky hijikata,P1 T> 8.5,1.73,Sansabet,100,3.61,-100.00,true,sansabet_fast
+1004,2025-11-30 02:48:21.674535+00,Basketball,new zealand nbl women,northern kahu,tokomanawa queens,T< 163.5,2.35,Sansabet,100,3.07,135.00,true,sansabet_fast
+1003,2025-11-30 02:48:13.620713+00,Tennis,itf men gimcheon,braden shick,theodore dean,T> 15.5,2.6,Sansabet,100,4.65,-100.00,true,sansabet_fast
+997,2025-11-30 02:35:15.00869+00,Soccer,costa rica ascenso,inter san carlos,ad carmelita,H1 -2.5,2.95,Sansabet,100,5.02,-100.00,true,sansabet_fast
+990,2025-11-30 02:20:47.6807+00,Soccer,el salvador primera division,alianza,municipal limeno,H1 -2.5,2.15,Sansabet,100,6.13,115.00,true,sansabet_fast
+985,2025-11-30 02:16:56.254675+00,Soccer,costa rica ascenso,consultants desamparados,quepos cambute,T> 1.5,3.35,Sansabet,100,4.30,-100.00,true,sansabet_fast
+983,2025-11-30 02:15:47.199394+00,Basketball,nba,phoenix suns,denver nuggets,1,2.1,Sansabet,100,3.13,110.00,true,sansabet_fast
+969,2025-11-30 02:05:27.663948+00,Basketball,nba,golden state warriors,new orleans pelicans,T< 205.5,2.1,Volcano,100,3.36,110.00,true,volcano_fast
+967,2025-11-30 02:04:20.079156+00,Basketball,australia wnbl,bendigo spirit,adelaide lightning,H2 10.5,2.03,Volcano,100,3.05,103.00,true,volcano_fast
+965,2025-11-30 02:01:17.11939+00,Basketball,argentina la liga,central entrerriano,ca lanus,1,1.38,Sansabet,100,4.28,38.00,true,sansabet_fast
+963,2025-11-30 01:58:10.863649+00,Basketball,nba,milwaukee bucks,brooklyn nets,T< 228.5,2.1,Volcano,100,4.07,110.00,true,volcano_fast
+959,2025-11-30 01:54:52.336554+00,Basketball,nba,indiana pacers,chicago bulls,T> 232.5,2.35,Sansabet,100,6.81,-100.00,true,sansabet_fast
+956,2025-11-30 01:21:42.335391+00,Soccer,mexico liga tdp,halcones negros,club hidalguense,P1 H1 -1.5,2.4,Sansabet,100,5.81,140.00,true,sansabet_fast
+954,2025-11-30 01:19:23.784634+00,Basketball,nba,miami heat,detroit pistons,2,2.5,Sansabet,100,4.15,-100.00,true,sansabet_fast
+951,2025-11-30 01:07:49.169716+00,Basketball,argentina la liga,santa paula de galvez,bochas,H2 13.5,2.1,Volcano,100,4.16,-100.00,true,volcano_fast
+950,2025-11-29 23:48:42.598991+00,Basketball,nba,charlotte hornets,toronto raptors,T< 233.5,2.15,Volcano,100,4.07,115.00,true,volcano_fast
+949,2025-11-29 23:46:59.863047+00,Soccer,mexico liga tdp,atletico cuernavaca,club marina cr,T< 6.5,1.65,Volcano,100,8.67,65.00,true,volcano_fast
+946,2025-11-29 23:30:09.189214+00,Tennis,wta 125k buenos aires,alicia herrero linana / laura pigossi,nicole fossa huergo / laura samson,T< 18.5,2.2,Sansabet,100,3.72,120.00,true,sansabet_fast
+945,2025-11-29 23:23:38.195501+00,Basketball,ncaa,utah tech,cal riverside,T< 151.5,2.5,Volcano,100,7.02,150.00,true,volcano_fast
+943,2025-11-29 23:21:33.64802+00,Basketball,nba,minnesota timberwolves,boston celtics,H2 -4.5,2.35,Volcano,100,5.16,-100.00,true,volcano_fast
+940,2025-11-29 22:51:18.658921+00,Soccer,aruba divison di honor,river plate aruba,estrella,P1 H1 -1.5,2.1,Sansabet,100,3.89,-100.00,true,sansabet_fast
+938,2025-11-29 22:23:27.09128+00,Soccer,mexico liga tdp,liga de futbol de tehuacan,orgullo surtam,H1 0.5,2.65,Volcano,100,5.71,165.00,true,volcano_fast
+937,2025-11-29 21:16:38.79374+00,Basketball,italy serie a2,urania milano,juvi cremona ferraroni,T> 158.5,3.22,Volcano,100,10.43,222.00,true,volcano_fast
+936,2025-11-29 20:40:03.355323+00,Basketball,netherlands eredivisie women,limburg,den helder,T< 130.5,1.66,Volcano,100,3.82,66.00,true,volcano_fast
+935,2025-11-29 20:23:53.677405+00,Basketball,serbia 1 zls women,kk partizan belgrade,mega mis,T> 131.5,2.75,Volcano,100,11.07,-100.00,true,volcano_fast
+934,2025-11-29 20:19:35.256382+00,Basketball,british championship,city of birmingham rockets,yorkshire dragons,T< 182.5,2.26,Volcano,100,6.40,-100.00,true,volcano_fast
+933,2025-11-29 19:55:20.701975+00,Basketball,belgium division 1 women,phantoms boom,basket lummen,H2 41.5,2.15,Volcano,100,4.62,-100.00,true,volcano_fast
+932,2025-11-29 19:55:10.801658+00,Basketball,poland 1. liga,big star tychy,spojnia stargard,T< 174.5,2.2,Volcano,100,6.90,120.00,true,volcano_fast
+931,2025-11-29 19:42:02.120098+00,Basketball,france ligue féminine de basketball,toulouse,charnay basket bourgogne sud,T> 140.5,2.35,Volcano,100,4.24,135.00,true,volcano_fast
+930,2025-11-29 19:41:56.18863+00,Basketball,british championship,nottingham hoods,reading rockets,T< 170.5,2.16,Volcano,100,4.96,-100.00,true,volcano_fast
+929,2025-11-29 19:41:39.200372+00,Basketball,france ligue féminine de basketball,esb villeneuve d´ascq,lyon,T> 160.5,2.59,Volcano,100,9.42,-100.00,true,volcano_fast
+928,2025-11-29 19:29:49.407239+00,Basketball,ncaa,niagara,detroit,T> 134.5,2.15,Volcano,100,3.02,115.00,true,volcano_fast
+893,2025-11-29 17:19:23.413459+00,Soccer,russia premier league,baltika kaliningrad,spartak moscow,T< 0.5,4.25,Sansabet,100,3.62,-100.00,true,sansabet_fast
+886,2025-11-29 16:41:14.122015+00,Soccer,bahrain 2nd division,qalali,al hala,P1 T> 2.5,3.5,Sansabet,100,7.76,-100.00,true,sansabet_fast
+880,2025-11-29 16:17:16.419592+00,Basketball,spain liga women,cb leganes,rpk araski,2,2.6,Sansabet,100,7.43,160.00,true,sansabet_fast
+879,2025-11-29 16:16:49.435939+00,Basketball,hungary nemzeti bajnoksag i.a women,nka universitas pecs,dvtk miskolc,T> 130.5,2.3,Sansabet,100,4.51,-100.00,true,sansabet_fast
+878,2025-11-29 16:09:59.532151+00,Tennis,itf men santiago,felix corwin,joaquin aguilar cardozo,P1 1G 2.0,3.6,Sansabet,100,5.43,-100.00,true,sansabet_fast
+877,2025-11-29 16:09:32.726712+00,Basketball,hungary nemzeti bajnoksag i.a women,uni gyor,sopron basket,T> 147.5,2.15,Sansabet,100,6.72,115.00,true,sansabet_fast
+874,2025-11-29 15:57:07.508535+00,Basketball,italy serie a2 women,cus cagliari,asd alpo basket,2,3.1,Sansabet,100,4.79,210.00,true,sansabet_slow
+873,2025-11-29 15:49:37.40153+00,Soccer,england championship,norwich city,queens park rangers,T< 5.5,2.15,Sansabet,100,3.50,115.00,true,sansabet_fast
+871,2025-11-29 15:48:46.895187+00,Soccer,england championship,coventry city,charlton athletic,T< 4.5,2.55,Sansabet,100,4.62,155.00,true,sansabet_fast
+870,2025-11-29 15:41:11.859835+00,Basketball,finland korisliiga women,peka,tampereen pyrinto,T> 139.5,2.45,Sansabet,100,7.36,145.00,true,sansabet_fast
+868,2025-11-29 13:01:09.490347+00,Basketball,turkey tbl second league,tesvikiye sk,eskisehir birey koleji,T< 150.5,2.4,Sansabet,100,5.15,140.00,true,sansabet_fast
+867,2025-11-29 00:59:42.063278+00,Basketball,argentina la liga,deportivo norte de amrmstrong,centenario,1,4.55,Sansabet,100,12.45,-100.00,true,sansabet_fast
+863,2025-11-28 23:20:57.582317+00,Soccer,argentina primera b metropolitana,argentino de merlo,excursionistas,T> 2.5,3.2,Sansabet,100,3.38,220.00,true,sansabet_fast
+862,2025-11-28 23:19:42.702975+00,Soccer,conmebol nations league women,paraguay,uruguay,T> 2.5,3.2,Sansabet,100,8.11,-100.00,true,sansabet_fast
+861,2025-11-28 23:17:25.145729+00,Soccer,conmebol nations league women,ecuador,venezuela,T> 2.5,3.2,Sansabet,100,4.59,-100.00,true,sansabet_fast
+807,2025-11-28 17:31:38.490583+00,Soccer,cyprus 2nd division,nea salamis,paeek kyrenia,IT2> 0.5,3.3,Sansabet,100,5.64,230.00,true,fast
+806,2025-11-28 17:25:36.222862+00,Basketball,fiba world cup africa qualification,libya,cameroon,T> 141.5,1.85,Sansabet,100,3.33,85.00,true,slow
+805,2025-11-28 14:25:48.849477+00,Tennis,atp challenger athens,arthur fery,eliakim coulibaly,T< 17.5,1.9,Sansabet,100,5.85,90.00,true,fast
+804,2025-11-28 14:21:46.565497+00,Soccer,algeria ligue 2,wa mostaganem,gc mascara,T> 2.5,3.15,Sansabet,100,4.82,215.00,true,fast
+803,2025-11-28 14:02:31.981382+00,Soccer,algeria ligue 2,temouchent,na hussein dey,T> 2.5,3.3,Sansabet,100,5.61,-100.00,true,fast
+802,2025-11-28 13:54:01.593485+00,Soccer,caf confederation cup,zesco united,al masry,IT2> 2.5,2.85,Sansabet,100,3.47,185.00,true,fast
+801,2025-11-28 13:11:14.166206+00,Soccer,croatia 2. nl,uskok,solin,T> 1.5,3.05,Sansabet,100,5.96,-100.00,true,fast
+800,2025-11-28 13:03:57.594967+00,Soccer,uae u21 cup,shabab alahli,emirates club,T< 1.5,3.4,Sansabet,100,3.05,-100.00,true,fast
+799,2025-11-28 12:20:01.799462+00,Basketball,fiba world cup asia qualification,china,republic of korea,1,2.45,Sansabet,100,3.37,-100.00,true,fast
+798,2025-11-28 11:42:34.302765+00,Basketball,japan b3 league,earth friends tokyo z,tryhoop okayama,T> 119.5,2.3,Sansabet,100,4.64,-100.00,true,fast
+797,2025-11-28 11:21:11.583339+00,Tennis,itf women ortisei,mingge xu,kayla cross,P2 T> 10.5,2.5,Sansabet,100,3.48,-100.00,true,fast
+796,2025-11-28 11:10:39.081399+00,Basketball,korea wkbl,woori bank woori won,busan bnk sum,T> 101.5,2.5,Sansabet,100,3.04,-100.00,true,fast
+795,2025-11-28 10:40:34.250048+00,Soccer,club friendlies,opava,unie hlubina,T< 4.5,4.1,Sansabet,100,3.27,-100.00,true,fast
+794,2025-11-28 10:30:45.534719+00,Soccer,israel liga bet,maccabi be'er yaakov,shikhun hamizrah,IT1> 0.5,4.45,Sansabet,100,6.98,-100.00,true,slow
+793,2025-11-28 05:37:59.612632+00,Tennis,itf men gimcheon,theodore dean,woobin shin,P2 T< 12.5,2.15,Sansabet,100,5.14,-100.00,true,fast
+792,2025-11-28 05:37:27.463796+00,Tennis,itf men phan thiet,arthur weber,karol filar,1,2.7,Sansabet,100,5.77,170.00,true,fast
+791,2025-11-28 05:07:24.387794+00,Tennis,itf men bhopal,s d prajwal dev,manish sureshkumar,P2 1G 5.0,2.55,Sansabet,100,3.62,155.00,true,slow
+790,2025-11-28 01:36:01.299757+00,Soccer,colombia primera b,real cundinamarca,cucuta deportivo,T> 2.5,3.3,Sansabet,100,4.62,-100.00,true,fast
+789,2025-11-28 01:34:51.139044+00,Basketball,argentina la liga,tomas de rocamora,ca lanus,T< 160.5,2.3,Sansabet,100,3.44,130.00,true,slow
+788,2025-11-28 01:32:33.113446+00,Basketball,argentina la liga,villa mitre de bahia blanca,gimnasia y esgrima la plata,T> 164.5,2.5,Sansabet,100,7.67,150.00,true,fast
+787,2025-11-28 01:24:40.244646+00,Tennis,itf women playford,starodubtseva yuliia,taylah preston,P1 2G 2.0,2.9,Sansabet,100,5.62,190.00,true,fast
+783,2025-11-28 00:48:23.149543+00,Basketball,argentina la liga,pergamino basket,el talar,T< 151.5,2.25,Sansabet,100,6.06,-100.00,true,fast
+781,2025-11-28 00:34:13.066543+00,Basketball,argentina la liga,colon de santa fe,barrio parque,2,2.25,Sansabet,100,7.98,-100.00,true,fast
+772,2025-11-27 23:40:02.121917+00,Tennis,atp challenger playford,james duckworth,rio noguchi,P1 T> 9.5,2.6,Sansabet,100,4.31,160.00,true,fast
+767,2025-11-27 20:18:07.921246+00,Basketball,fiba world cup africa qualification,rwanda,guinea,T> 143.5,1.93,Sansabet,100,3.36,93.00,true,fast
+766,2025-11-27 19:42:40.644484+00,Tennis,atp challenger bogota,santiago fa rodriguez taverna,juan pablo varillas,P1 T> 9.5,1.85,Sansabet,100,4.49,85.00,true,fast
+765,2025-11-27 19:29:56.212576+00,Basketball,europe eurocup women,nyon basket,panathinaikos,T< 176.5,1.8,Sansabet,100,5.89,80.00,true,fast
+764,2025-11-27 18:56:32.929959+00,Basketball,finland division 1,pyrinto akatemia a,torpan pojat,T< 197.5,2.2,Sansabet,100,17.29,-100.00,true,fast_high
+763,2025-11-27 18:49:12.492395+00,Soccer,international friendlies women,finland,austria,T< 1.5,4.55,Sansabet,100,5.75,-100.00,true,fast
+762,2025-11-27 18:34:21.879862+00,Soccer,israel liga alef,tira,hapoel umm al fahm,H1 -4.5,3,Sansabet,100,4.14,200.00,true,fast
+761,2025-11-27 18:19:23.31184+00,Basketball,lithuania national basketball league,kretingos kretinga,olimpas palanga,T> 158.5,2.45,Sansabet,100,4.43,145.00,true,fast
+760,2025-11-27 18:06:40.715114+00,Basketball,europe eurocup women,crvena zvezda,emlak konut sk,T< 166.5,2.25,Sansabet,100,4.07,125.00,true,fast
+759,2025-11-27 17:42:21.759577+00,Basketball,finland division 1,lappeenrannan nmky,jyvaskyla basketball academy,T< 166.5,2.25,Sansabet,100,7.57,125.00,true,slow
+758,2025-11-27 17:34:13.481149+00,Basketball,europe eurocup women,lointek gernika bizkaia,elitzur ramla,2,5.1,Sansabet,100,13.74,410.00,true,fast_high
+757,2025-11-27 17:19:30.925194+00,Basketball,fiba world cup asia qualification,qatar,lebanon,2,1.63,Sansabet,100,3.90,63.00,true,fast
+756,2025-11-27 17:06:22.309373+00,Basketball,lithuania national basketball league,mazeikiai m basket,plunge olimpas,T> 158.5,2.35,Sansabet,100,3.59,135.00,true,slow
+755,2025-11-27 16:29:08.86623+00,Basketball,lithuania national basketball league,omegatauras,jurbarkaskarys,1,3.25,Sansabet,100,3.22,-100.00,true,fast
+754,2025-11-27 16:19:51.897274+00,Basketball,lithuania national basketball league,telsiai,silute,T< 166.5,2.35,Sansabet,100,4.44,-100.00,true,fast
+753,2025-11-27 14:57:42.582494+00,Basketball,fiba world cup asia qualification,iran,iraq,H2 31.0,2.05,Sansabet,100,4.22,105.00,true,slow
+752,2025-11-27 14:05:56.188812+00,Basketball,romania liga 1,cs universitatea craiova,cs valcea 1924 2,1,5.3,Sansabet,100,20.26,-100.00,true,fast_high
+751,2025-11-27 13:53:47.704315+00,Tennis,itf women antalya,lia karatancheva,irem kurt,2,3.8,Sansabet,100,11.44,280.00,true,fast_high
+750,2025-11-27 13:33:08.929048+00,Soccer,uganda premier league,police uganda,kitara,P1 T> 1.5,3.15,Sansabet,100,3.65,-100.00,true,slow
+749,2025-11-27 13:21:42.157495+00,Tennis,itf women ortisei,mingge xu,susan bandecchi,P1 T> 8.5,1.58,Sansabet,100,4.36,-100.00,true,fast
+748,2025-11-27 11:33:01.101636+00,Soccer,thailand league cup,customs united,chattrakan city,T< 3.5,2.65,Sansabet,100,3.80,-100.00,true,fast
+747,2025-11-27 11:29:28.975504+00,Tennis,itf women torello,ann akaasha ceuca,nahia berecoechea,P1 1G 4.0,2.55,Sansabet,100,4.32,-100.00,true,fast
+746,2025-11-27 10:56:39.106426+00,Soccer,paraguay reserve league,libertad asuncion,general caballero jlm,T< 1.5,2.65,Sansabet,100,4.07,-100.00,true,fast
+745,2025-11-27 10:55:59.123496+00,Tennis,atp challenger athens,aleksandr braynin,nikolay vylegzhanin,P1 1G 10.0,4.3,Sansabet,100,19.53,-100.00,true,slow_high
+744,2025-11-27 10:33:38.125334+00,Tennis,itf women monastir,aurora zantedeschi,masha lazarenko,P1 T> 9.5,2.45,Sansabet,100,3.44,145.00,true,fast
+743,2025-11-27 08:39:48.698034+00,Tennis,itf women monastir,justina mikulskyte,laia petretic,P1 T> 9.5,2.55,Sansabet,100,5.35,-100.00,true,fast
+742,2025-11-27 02:59:48.310629+00,Tennis,itf women playford,lea ma,sijia wei,P1 T> 9.5,2.55,Sansabet,100,3.65,155.00,true,fast
+741,2025-11-27 02:50:25.895336+00,Soccer,colombia primera a,atletico nacional,junior de barranquilla,IT2> 1.5,3.35,Sansabet,100,3.91,-100.00,true,fast
+740,2025-11-27 02:29:59.261025+00,Basketball,nba,oklahoma city thunder,minnesota timberwolves,H1 -9.0,1.88,Sansabet,100,3.28,-100.00,true,fast
+739,2025-11-27 01:25:46.621644+00,Basketball,argentina la liga,villa san martin,sportivo suardi,T> 138.5,2.35,Sansabet,100,5.09,-100.00,true,fast
+738,2025-11-27 01:15:02.146842+00,Basketball,argentina la liga,csd comunicaciones,hindu club cordoba,T> 135.5,2.2,Sansabet,100,3.37,-100.00,true,fast
+737,2025-11-27 00:41:46.875242+00,Soccer,bolivia cup,club bolivar,san antonio bulo bulo,P1 IT1> 2.5,2.65,Sansabet,100,4.45,165.00,true,fast
+736,2025-11-27 00:41:00.924259+00,Tennis,itf women playford,maddison inglis,tahlia kokkinis,P1 T> 9.5,2.7,Sansabet,100,8.93,170.00,true,slow
+735,2025-11-27 00:25:12.170485+00,Basketball,argentina la liga,santa paula de galvez,barrio parque,T> 160.5,2.25,Sansabet,100,5.46,125.00,true,fast
+734,2025-11-26 21:01:45.757282+00,Basketball,italy serie a2,scaligera basket verona,tecnoswitch ruvo di puglia,T> 178.5,2.2,Sansabet,100,6.78,-100.00,true,fast
+733,2025-11-26 20:51:37.607295+00,Basketball,italy serie a2,pallacanestro 2.015 forli,vl pesaro,T> 175.5,2.8,Sansabet,100,7.40,180.00,true,fast
+732,2025-11-26 20:23:12.593196+00,Soccer,england southern premier league,gosport borough,weymouth,P1 T> 2.5,3.1,Sansabet,100,3.66,210.00,true,fast
+731,2025-11-26 20:10:08.621242+00,Basketball,italy serie a2,pistoia basket 2000,del.fes avellino,T> 146.5,2.35,Sansabet,100,5.02,-100.00,true,fast
+730,2025-11-26 20:02:55.85638+00,Basketball,italy serie a2,scafati basket,real sebastiani rieti,T> 166.5,2.55,Sansabet,100,7.82,155.00,true,fast
+729,2025-11-26 19:51:35.454692+00,Basketball,iceland premier league women,kr reykjavik,hamar thor,T< 174.5,2.45,Sansabet,100,5.50,145.00,true,fast
+728,2025-11-26 19:50:47.442082+00,Basketball,iceland premier league women,umf njardvik,haukar,T< 178.5,2.25,Sansabet,100,5.16,-100.00,true,fast
+727,2025-11-26 19:50:11.716932+00,Basketball,italy serie a2,libertas livorno,juvi cremona ferraroni,T> 156.5,2.15,Sansabet,100,3.30,115.00,true,fast
+726,2025-11-26 19:32:06.77506+00,Basketball,europe euroleague,crvena zvezda,olympiakos,2,1.83,Sansabet,100,4.85,-100.00,true,fast
+725,2025-11-26 19:24:54.596728+00,Tennis,atp challenger bogota,murkel dellien,peter bertran,P1 T> 9.5,1.9,Sansabet,100,3.55,90.00,true,fast
+724,2025-11-26 19:18:30.198766+00,Basketball,europe eurocup women,sbs ostrava,sl benfica,T> 128.5,2.4,Sansabet,100,6.14,140.00,true,fast
+723,2025-11-26 19:10:07.970754+00,Basketball,europe euroleague,as monaco,anadolu efes sk,T< 174.5,2.75,Sansabet,100,14.62,175.00,true,fast_high
+722,2025-11-26 18:44:07.436183+00,Basketball,europe euroleague,maccabi telaviv,olimpia milano,T< 193.5,2.2,Sansabet,100,4.20,120.00,true,fast
+719,2025-11-26 18:28:11.023717+00,Tennis,wta 125k buenos aires,mayar sherif,eva vedder,P1 T< 7.5,2.25,Sansabet,100,10.25,125.00,true,fast_high
+718,2025-11-26 18:25:30.787038+00,Basketball,italy serie a2 women,solmec rhodigium,faenza basket project,T> 147.5,2.6,Sansabet,100,7.62,-100.00,true,fast
+717,2025-11-26 18:08:56.970565+00,Soccer,south africa psl,orbit college,stellenbosch,T> 1.5,3,Sansabet,100,3.60,200.00,true,slow
+716,2025-11-26 18:05:41.006835+00,Basketball,finland korisliiga women,espoo basket team,kouvottaret,T> 138.5,2.1,Sansabet,100,9.26,110.00,true,slow
+715,2025-11-26 18:03:54.839289+00,Basketball,finland korisliiga women,torpan pojat,tapiolan honka,T< 151.5,2.1,Sansabet,100,9.61,-100.00,true,fast
+714,2025-11-26 17:12:11.827881+00,Soccer,italy serie d group c,mestre,union clodiense chioggia,T> 2.5,3.75,Sansabet,100,6.28,-100.00,true,fast
+713,2025-11-26 17:02:41.699501+00,Basketball,europe eurocup women,besiktas jk,charnay basket bourgogne sud,2,4,Sansabet,100,4.84,-100.00,true,fast
+712,2025-11-26 17:01:58.781638+00,Basketball,europe eurocup women,saarlouis royals,ttt riga,2,3.15,Sansabet,100,8.43,215.00,true,fast
+710,2025-11-26 16:57:07.641792+00,Soccer,poland 3rd liga group 2,pogon szczecin ii,wybrzeze rewalskie rewal,P1 H1 -2.5,2.55,Sansabet,100,7.78,155.00,true,fast
+708,2025-11-26 16:44:00.878361+00,Tennis,itf women ortisei,raluca georgiana serban,eva guerrero alvarez,P1 T< 12.5,1.88,Sansabet,100,7.16,88.00,true,fast
+707,2025-11-26 16:12:33.449866+00,Soccer,russia cup,cska moscow,dynamo makhachkala,T< 1.5,4.15,Sansabet,100,8.45,-100.00,true,fast
+706,2025-11-26 16:10:35.425995+00,Soccer,fifa arab cup qualifiers,sudan,lebanon,T> 2.5,3.7,Sansabet,100,3.54,270.00,true,fast
+705,2025-11-26 15:58:46.978493+00,Tennis,itf men heraklion,giovanni ciocca,thomas kostka,P2 T< 8.5,2.2,Sansabet,100,4.83,120.00,true,fast
+704,2025-11-26 15:56:14.596047+00,Tennis,itf women trnava,lucie havlickova,katherine sebov,P1 T> 7.5,3.15,Sansabet,100,46.34,-100.00,true,fast_high
+703,2025-11-26 15:45:54.611367+00,Tennis,itf women monastir,elena milovanovic,carolyn ansari,P3 T> 9.5,3,Sansabet,100,6.27,200.00,true,fast
+702,2025-11-26 15:34:57.695323+00,Soccer,spain tercera division,santanyi,inter ibiza,H1 -0.5,2.35,Sansabet,100,5.16,-100.00,true,fast
+701,2025-11-26 15:31:43.564568+00,Tennis,itf men heraklion,aljaz jeran,jordan hasson,P1 T< 10.5,2.15,Sansabet,100,14.23,-100.00,true,fast_high
+700,2025-11-26 15:31:11.543095+00,Soccer,uefa youth league u19,eintracht frankfurt,atalanta,P1 H1 -1.5,3.8,Sansabet,100,3.41,-100.00,true,fast
+699,2025-11-26 15:26:25.315076+00,Soccer,uefa youth league u19,liverpool,psv,T> 1.5,3.15,Sansabet,100,3.68,-100.00,true,fast
+698,2025-11-26 15:18:31.073902+00,Soccer,uefa youth league u19,atletico madrid,internazionale,IT2> 0.5,2.4,Sansabet,100,3.90,140.00,true,fast
+697,2025-11-26 15:13:36.855295+00,Tennis,itf men santiago,javier guzman,joel fausto garagarza,P3 1G 10.0,1.88,Sansabet,100,4.82,88.00,true,fast
+696,2025-11-26 15:06:20.500602+00,Soccer,russia cup,krasnodar,orenburg,P1 IT1< 1.5,2.45,Sansabet,100,4.26,145.00,true,fast
+695,2025-11-26 15:01:50.271783+00,Tennis,itf women monastir,tamila gadamauri,marina bassols ribera,P1 T< 8.5,2.25,Sansabet,100,18.72,-100.00,true,fast_high
+694,2025-11-26 14:44:31.496262+00,Tennis,itf women ortisei,sofia costoulas,mingge xu,P2 T> 8.5,1.63,Sansabet,100,3.19,63.00,true,fast
+693,2025-11-26 14:40:33.339088+00,Soccer,uefa u19 euro championship women qualifiers,italy,northern ireland,P1 T> 2.5,3.3,Sansabet,100,4.04,230.00,true,fast
+692,2025-11-26 14:39:21.317727+00,Soccer,south africa 1st division,cape town city,lerumo lions,T> 2.5,4.2,Sansabet,100,5.56,320.00,true,fast
+691,2025-11-26 14:35:05.152001+00,Tennis,itf women trnava,oksana selekhmeteva,elena malygina,P1 T> 9.5,4.35,Sansabet,100,51.26,335.00,true,fast_high
+690,2025-11-26 14:29:42.949235+00,Tennis,itf men heraklion,filip jeff planinsek,francois musitelli,P1 T> 9.5,3.25,Sansabet,100,49.43,225.00,true,fast_high
+689,2025-11-26 14:29:23.113677+00,Soccer,uefa u19 euro championship women qualifiers,iceland,denmark,T< 3.5,3.7,Sansabet,100,4.48,270.00,true,fast
+688,2025-11-26 14:24:30.708803+00,Soccer,fifa arab cup qualifiers,bahrain,djibouti,H1 -1.5,2.05,Sansabet,100,3.83,-100.00,true,fast
+687,2025-11-26 14:19:44.541882+00,Tennis,itf women lousada,indianna spink,ella haavisto,P1 T> 10.5,1.75,Sansabet,100,6.15,-100.00,true,fast
+686,2025-11-26 14:12:48.56074+00,Tennis,itf men madrid,alejandro juan mano,cyril vandermeersch,P2 T< 10.5,2.05,Sansabet,100,9.69,105.00,true,fast
+685,2025-11-26 14:12:12.195967+00,Soccer,afc champions league 2,istiklol,alnassr,P1 IT2> 1.5,2.15,Sansabet,100,3.15,115.00,true,fast
+684,2025-11-26 14:09:12.0345+00,Soccer,italy serie c group b,gubbio,juventus next gen,T> 2.5,3.15,Sansabet,100,3.44,-100.00,true,fast
+683,2025-11-26 14:08:50.176043+00,Tennis,itf men heraklion,nikolaos koutroubis,fausto tabacco,P2 T> 8.5,2.6,Sansabet,100,5.48,-100.00,true,fast
+682,2025-11-26 13:51:47.351156+00,Soccer,afc champions league 2,andijan,arkadag,T> 2.5,3.35,Sansabet,100,5.93,-100.00,true,slow
+681,2025-11-26 13:51:17.371134+00,Soccer,italy serie d group a,vado,gozzano,T> 2.5,3.2,Sansabet,100,3.13,220.00,true,fast
+680,2025-11-26 13:48:51.60112+00,Tennis,itf women ortisei,maria martinez vaquero,vittoria paganetti,P2 T< 7.5,2.9,Sansabet,100,7.55,-100.00,true,fast
+679,2025-11-26 13:45:31.104225+00,Tennis,itf women trnava,elena ruxandra bertea,elizara yaneva,P1 T> 9.5,2.6,Sansabet,100,5.48,-100.00,true,fast
+678,2025-11-26 13:45:05.277979+00,Soccer,italy serie d group a,celle varazze,asti,T> 2.5,3.1,Sansabet,100,3.05,-100.00,true,fast
+677,2025-11-26 13:41:25.023508+00,Soccer,international friendlies women,bangladesh,malaysia,T< 2.5,3.25,Sansabet,100,3.38,225.00,true,fast
+676,2025-11-26 13:36:54.82446+00,Soccer,italy serie d group b,ac milan futuro,real calepina,T> 2.5,3.2,Sansabet,100,5.38,-100.00,true,fast
+675,2025-11-26 13:34:24.830873+00,Tennis,itf men hradec kralove,liam broady,karlis ozolins,P1 T< 12.5,2.45,Sansabet,100,4.48,-100.00,true,fast
+674,2025-11-26 13:33:32.673979+00,Soccer,uefa u19 euro championship women qualifiers,serbia,armenia,T< 3.5,3.5,Sansabet,100,13.98,250.00,true,fast_high
+673,2025-11-26 13:32:58.697738+00,Soccer,afc champions league 2,bangkok united,selangor,IT2> 0.5,3.65,Sansabet,100,3.46,265.00,true,fast
+672,2025-11-26 13:31:30.648554+00,Soccer,turkey 2nd league,karaman,karacabey belediyespor,IT1> 1.5,4.35,Sansabet,100,4.41,-100.00,true,fast
+671,2025-11-26 13:30:23.008509+00,Soccer,bosnia and herzegovina 1st league,bsk banja luka,leotar trebinje,H1 -3.5,3.1,Sansabet,100,3.92,210.00,true,fast
+670,2025-11-26 13:29:28.541124+00,Tennis,itf women monastir,angelica raggi,alicia dudeney,P1 T> 8.5,2.7,Sansabet,100,17.78,-100.00,true,fast_high
+669,2025-11-26 13:27:32.516502+00,Soccer,uefa youth league u19,dynamo kyiv,hibernian,H1 -1.5,2.6,Sansabet,100,3.65,-100.00,true,fast
+668,2025-11-26 13:21:58.171046+00,Soccer,uefa youth league u19,copenhagen,kairat almaty,T< 4.5,3.8,Sansabet,100,7.02,280.00,true,fast
+667,2025-11-26 13:16:19.962596+00,Soccer,international friendlies women,indonesia,nepal,T< 1.5,4.55,Sansabet,100,6.74,-100.00,true,fast
+666,2025-11-26 12:59:31.591411+00,Soccer,bosnia and herzegovina 1st league,slavija sarajevo,velez nevesinje,H1 -3.5,2.1,Sansabet,100,8.95,-100.00,true,fast
+665,2025-11-26 12:44:30.9296+00,Tennis,itf women torello,adriana monlleo ramos,sofie jannika hrdinova,P1 T< 9.5,1.75,Sansabet,100,11.07,-100.00,true,fast_high
+664,2025-11-26 12:43:09.085734+00,Tennis,itf men heraklion,carl holder,matteo fondriest,P2 2G 1.0,2.85,Sansabet,100,5.26,-100.00,true,fast
+663,2025-11-26 12:32:30.391594+00,Soccer,ethiopia premier league,ethio electric,saint george,T> 1.5,3.1,Sansabet,100,3.07,-100.00,true,fast
+662,2025-11-26 12:31:38.371724+00,Soccer,kenya premier league,bidco united,kenya police,H2 -1.5,2.6,Sansabet,100,3.32,-100.00,true,fast
+661,2025-11-26 12:24:18.850649+00,Soccer,uefa u19 euro championship women qualifiers,netherlands,croatia,H1 -1.5,1.8,Sansabet,100,5.19,80.00,true,slow
+660,2025-11-26 12:16:21.762472+00,Soccer,uefa youth league u19,pafos,monaco,P1 IT2> 1.5,3.15,Sansabet,100,3.12,-100.00,true,fast
+659,2025-11-26 12:10:59.531395+00,Soccer,uefa u19 euro championship women qualifiers,belarus,switzerland,H2 -1.5,2.65,Sansabet,100,3.73,-100.00,true,fast
+658,2025-11-26 11:51:04.695531+00,Tennis,itf women ortisei,matilde jorge,francisca jorge,P1 T< 9.5,1.85,Sansabet,100,6.85,85.00,true,fast
+657,2025-11-26 11:47:28.546906+00,Soccer,turkey 2nd league,bucaspor 1928,adana 1954,T< 4.5,2.2,Sansabet,100,3.62,120.00,true,fast
+656,2025-11-26 11:45:20.534133+00,Tennis,itf men antalya,alessio basile,pietro romeo scomparin,P2 T> 8.5,1.93,Sansabet,100,4.24,-100.00,true,fast
+655,2025-11-26 11:38:22.164483+00,Tennis,itf women trnava,radka zelnickova,brenda fruhvirtova,P2 T> 9.5,2.45,Sansabet,100,10.61,-100.00,true,fast_high
+654,2025-11-26 11:37:18.097561+00,Tennis,itf men madrid,harold huens,julio cesar porras,P1 T< 9.5,2.8,Sansabet,100,22.88,180.00,true,fast_high
+653,2025-11-26 11:26:39.715248+00,Soccer,turkey 2nd league,inegolspor,iskenderunspor,IT2> 0.5,4.2,Sansabet,100,3.53,-100.00,true,fast
+652,2025-11-26 11:19:41.396238+00,Tennis,itf women monastir,yelyzaveta kotliar,mathilde lollia,2,1.63,Sansabet,100,6.23,-100.00,true,fast
+651,2025-11-26 11:12:41.112593+00,Tennis,itf men hradec kralove,daniel paty,matthew william donald,P2 T> 9.5,1.75,Sansabet,100,3.46,-100.00,true,fast
+650,2025-11-26 11:11:51.075352+00,Soccer,turkey 2nd league,beykoz anadolu,elazigspor,T< 4.5,4.05,Sansabet,100,3.09,-100.00,true,fast
+649,2025-11-26 11:10:25.031828+00,Tennis,itf women lousada,gabriela agra amorim,ana filipa santos,P1 T> 12.5,3.15,Sansabet,100,26.84,-100.00,true,fast_high
+648,2025-11-26 11:10:09.10623+00,Soccer,india regional cup,rajasthan united,sikkim dragons,1,3.35,Sansabet,100,39.05,235.00,true,fast_high
+647,2025-11-26 11:01:39.984202+00,Tennis,itf men madrid,daniel lara salmeron,leonid sheyngezikht,1,4.3,Sansabet,100,5.28,-100.00,true,fast
+646,2025-11-26 10:49:50.24158+00,Tennis,itf women ortisei,kathinka von deichmann,urszula radwanska,P2 T> 9.5,2.45,Sansabet,100,36.64,145.00,true,fast_high
+645,2025-11-26 10:47:48.166613+00,Soccer,uefa u19 euro championship women qualifiers,poland,bulgaria,H1 -3.5,2.35,Sansabet,100,3.52,-100.00,true,fast
+644,2025-11-26 10:45:16.025059+00,Soccer,club friendlies,artis brno,vysocina jihlava,T< 5.5,3.55,Sansabet,100,3.09,255.00,true,fast
+643,2025-11-26 10:41:07.842925+00,Tennis,itf men heraklion,pavlos christoforakis,nav dayal,P1 T> 9.5,2.75,Sansabet,100,23.11,-100.00,true,fast_high
+642,2025-11-26 10:39:53.795536+00,Tennis,itf women antalya,darja suvirdjonkova,giorgia pedone,P1 1G 5.0,2.9,Sansabet,100,11.84,190.00,true,slow_high
+641,2025-11-26 10:35:25.623042+00,Tennis,itf men antalya,gianmarco ferrari,hugo ouzilou,2,2.6,Sansabet,100,4.31,160.00,true,fast
+640,2025-11-26 10:33:01.525617+00,Tennis,itf women ortisei,tina nadine smith,susan bandecchi,P1 T> 9.5,2.45,Sansabet,100,9.93,-100.00,true,fast
+639,2025-11-26 10:30:23.502042+00,Soccer,turkey 2nd league,kastamonuspor,altinordu,T< 5.5,3.2,Sansabet,100,3.38,-100.00,true,slow
+638,2025-11-26 09:24:40.619158+00,Tennis,itf women monastir,nellie taraba wallberg,luna vujovic,P2 2G 1.0,2.4,Sansabet,100,3.48,140.00,true,fast
+637,2025-11-26 09:19:50.857454+00,Tennis,atp challenger manama,vladislav melnic,ivan marrero curbelo,P1 T> 9.5,1.53,Sansabet,100,3.34,-100.00,true,fast
+629,2025-11-26 08:33:44.79088+00,Tennis,itf men bhopal,parth aggarwal,jim hendrikx,P2 T< 7.5,2.05,Sansabet,100,18.31,-100.00,true,
+628,2025-11-26 08:16:44.057968+00,Tennis,itf men bhopal,madhwin kamath,dheeraj kodancha srinivasan,P2 T> 10.5,4,Sansabet,100,35.66,-100.00,true,
+625,2025-11-26 08:10:19.775139+00,Tennis,itf men phan thiet,noah thurner,karol filar,P2 T> 9.5,1.98,Sansabet,100,5.66,-100.00,true,
+624,2025-11-26 07:57:21.232654+00,Tennis,itf men heraklion,giulio perego,maksym kalabishka,P1 T< 8.5,2.7,Sansabet,100,5.92,-100.00,true,
+623,2025-11-26 07:48:26.832773+00,Tennis,atp challenger manama,hazem naw,ioannis xilas,T< 21.5,2,Sansabet,100,5.45,100.00,true,
+621,2025-11-26 07:36:22.316381+00,Tennis,atp challenger islamabad,zach stephens,nikita bilozertsev,T< 21.5,1.85,Sansabet,100,3.49,85.00,true,
+619,2025-11-26 07:13:09.342581+00,Tennis,itf women yokohama,hina inoue,berfu cengiz,P2 T> 9.5,2.4,Sansabet,100,5.09,140.00,true,
+618,2025-11-26 07:07:57.113033+00,Tennis,atp challenger manama,eero vasa,ilia simakin,P1 T> 10.5,3.85,Sansabet,100,3.11,-100.00,true,
+617,2025-11-26 06:58:15.040869+00,Tennis,itf men gimcheon,chunchien hou,matas vasiliauskas,T> 14.5,1.88,Sansabet,100,3.40,-100.00,true,
+616,2025-11-26 06:28:35.696923+00,Tennis,itf men bhopal,rohan mehra,ishaque eqbal,P2 T> 9.5,2.6,Sansabet,100,14.76,-100.00,true,
+614,2025-11-26 05:32:57.271126+00,Tennis,itf men phan thiet,chase ferguson,daniel khazime,P1 T> 9.5,1.88,Sansabet,100,3.16,-100.00,true,
+613,2025-11-26 05:05:04.006816+00,Tennis,itf men gimcheon,keisuke saitoh,dong ju kim,P2 T< 10.5,1.85,Sansabet,100,13.37,85.00,true,
+611,2025-11-26 04:39:54.9693+00,Tennis,itf men gimcheon,ko suzuki,geun jun kim,P2 T> 9.5,2.35,Sansabet,100,3.11,135.00,true,
+609,2025-11-26 04:21:10.260339+00,Tennis,atp challenger playford,hikaru shiraishi,dane sweeny,T> 17.5,1.85,Sansabet,100,5.30,-98.11,true,
+607,2025-11-26 04:10:47.778508+00,Tennis,itf men gimcheon,min ho ko,ilya maltsev,P1 T> 7.5,1.55,Sansabet,100,5.65,-98.11,true,
+603,2025-11-26 03:14:45.427439+00,Tennis,itf men phan thiet,fons van sambeek,muhamad rifqi fitriadi,P1 T< 8.5,3.95,Sansabet,100,6.50,295.00,true,
+601,2025-11-26 03:11:43.166119+00,Tennis,atp challenger playford,bernard tomic,philip sekulic,T> 18.5,2.1,Sansabet,100,21.54,-100.00,true,
+600,2025-11-26 03:10:01.164507+00,Tennis,itf women yokohama,sakura hosogi,yexin ma,P1 T> 8.5,2.1,Sansabet,100,5.96,110.00,true,
+599,2025-11-26 02:57:12.550866+00,Tennis,itf women yokohama,anri nagata,naho sato,P1 T< 7.5,2.75,Sansabet,100,13.12,175.00,true,
+597,2025-11-26 02:47:58.110682+00,Tennis,itf women yokohama,shiho akita,xiaodi you,P3 T> 9.5,2.4,Sansabet,100,4.06,137.36,true,
+595,2025-11-26 02:46:36.234799+00,Tennis,itf men gimcheon,yong joon park,suk ann,P2 T> 8.5,1.48,Sansabet,100,5.82,48.00,true,
+592,2025-11-26 01:54:55.901613+00,Tennis,itf men gimcheon,hugo hashimoto,woobin shin,P1 T< 9.5,2.25,Sansabet,100,16.13,-100.00,true,
+591,2025-11-26 01:41:17.335972+00,Soccer,brazil serie a,atletico mineiro,flamengo,IT1> 1.5,4.05,Sansabet,100,5.14,-100.00,true,
+590,2025-11-26 01:29:55.227723+00,Tennis,atp challenger playford,james duckworth,karan singh,P2 T> 9.5,2.7,Sansabet,100,9.12,-100.00,true,
+588,2025-11-26 01:25:36.736559+00,Tennis,itf women playford,maddison inglis,monique barry,P1 2G 5.0,2.15,Sansabet,100,5.75,-100.00,true,
+586,2025-11-26 00:17:41.767075+00,Tennis,itf women playford,lea ma,chengyiyi yuan,P2 2G 2.0,3.6,Sansabet,100,4.78,-100.00,true,
+585,2025-11-25 23:50:04.740247+00,Tennis,itf women playford,miho kuramochi,talia gibson,P1 T> 7.5,2.35,Sansabet,100,3.85,-100.00,true,
+584,2025-11-25 23:29:03.783662+00,Tennis,atp challenger bogota,samuel heredia,juan sebastian gomez,P1 2G 4.0,3.4,Sansabet,100,5.44,-100.00,true,
+583,2025-11-25 21:39:31.378414+00,Soccer,uefa champions league,manchester city,bayer leverkusen,T< 2.5,1.8,Sansabet,100,8.85,80.00,true,
+581,2025-11-25 20:27:52.353154+00,Soccer,england national league south,enfield town,maidstone united,P1 T> 0.5,4.35,Sansabet,100,5.74,335.00,true,
+580,2025-11-25 20:26:08.214479+00,Tennis,atp challenger bogota,juan bautista torres,stefan kozlov,P1 1G 2.0,3.15,Sansabet,100,16.04,-100.00,true,
+579,2025-11-25 20:25:02.284935+00,Soccer,scotland premiership,motherwell,hibernian,P1 T> 2.5,4.05,Sansabet,100,17.20,-100.00,true,
+577,2025-11-25 20:22:08.098356+00,Soccer,england national league south,hemel hempstead town,chelmsford city,P1 T> 0.5,3.35,Sansabet,100,3.33,-100.00,true,
+576,2025-11-25 20:19:08.16959+00,Soccer,netherlands eerste divisie,roda jc,dordrecht,IT2> 1.5,3.15,Sansabet,100,3.54,215.00,true,
+574,2025-11-25 20:15:05.808913+00,Soccer,england championship,stoke city,charlton athletic,P1 T> 2.5,2.5,Sansabet,100,3.91,150.00,true,
+573,2025-11-25 19:46:48.611945+00,Tennis,atp challenger temuco,juan manuel cerundolo,antoine ghibaudo,T> 15.5,1.53,Sansabet,100,4.69,53.00,true,
+572,2025-11-25 19:40:58.393921+00,Tennis,atp challenger maia,elmer moller,pedro araujo,P1 2G 2.0,4.15,Sansabet,100,6.89,315.00,true,
+571,2025-11-25 19:28:11.85626+00,Tennis,itf women ortisei,anastasiia firman,laura mair,P2 T< 10.5,1.65,Sansabet,100,3.02,65.00,true,
+567,2025-11-25 18:58:30.599433+00,Tennis,wta 125k buenos aires,maria lourdes carle,katarina jokic,P1 T> 9.5,2.25,Sansabet,100,7.67,-100.00,true,
+566,2025-11-25 18:15:52.879199+00,Tennis,wta 125k buenos aires,sara sorribes tormo,alicia herrero linana,T< 21.5,1.85,Sansabet,100,3.42,85.00,true,
+564,2025-11-25 18:14:04.760729+00,Tennis,atp challenger maia,nikolas sanchez izquierdo,carlos sanchez jover,P1 2G 7.0,1.58,Sansabet,100,3.01,56.91,true,
+563,2025-11-25 17:46:31.675176+00,Soccer,italy serie c cup,sorrento,crotone,IT1> 1.5,3.4,Sansabet,100,5.08,-100.00,true,
+561,2025-11-25 17:32:43.022178+00,Tennis,atp challenger athens,peter fajta,rudolf molleker,T> 30.5,2.75,Sansabet,100,11.69,-100.00,true,
+559,2025-11-25 16:49:59.301168+00,Soccer,afc champions league elite,al wahda,al sadd,T< 2.5,2.15,Sansabet,100,3.65,-100.00,true,
+557,2025-11-25 16:42:11.006794+00,Tennis,atp challenger bogota,paulo andre saraiva dos santos,nicolas barrientos,1,3.65,Sansabet,100,3.08,-100.00,true,
+556,2025-11-25 16:37:42.781424+00,Tennis,atp challenger bogota,maxwell mckennon,ryan dickerson,T< 23.5,1.85,Sansabet,100,3.88,85.00,true,
+555,2025-11-25 16:22:38.274507+00,Soccer,rwanda premier league,apr,marines,T> 2.5,3.15,Sansabet,100,3.02,215.00,true,
+554,2025-11-25 16:20:12.034721+00,Tennis,itf women lousada,klara veldman,lorena solar donoso,P2 T< 9.5,3.35,Sansabet,100,6.10,-100.00,true,
+552,2025-11-25 16:14:07.860933+00,Tennis,wta 125k buenos aires,mayar sherif,julia riera,P1 T< 8.5,2.6,Sansabet,100,7.29,-100.00,true,
+549,2025-11-25 16:10:13.621591+00,Soccer,romania liga 2,politehnica iasi,chindia targoviste,T> 1.5,3.15,Sansabet,100,4.48,-100.00,true,
+548,2025-11-25 16:07:05.516533+00,Soccer,afc champions league 2,sepahan,al hussein,T> 2.5,3.2,Sansabet,100,3.31,-100.00,true,
+547,2025-11-25 16:06:47.569563+00,Tennis,itf women ortisei,martyna kubka,susan bandecchi,P1 T< 12.5,2.4,Sansabet,100,4.45,140.00,true,
+546,2025-11-25 15:59:17.296754+00,Tennis,itf men madrid,diego fernandez flores,pierre yves bailly,P1 T> 10.5,3.15,Sansabet,100,6.81,-100.00,true,
+545,2025-11-25 15:59:07.131881+00,Tennis,itf men madrid,diego augusto barreto sanchez,pavel lagutin,P2 T< 7.5,2.45,Sansabet,100,3.15,-100.00,true,
+544,2025-11-25 15:55:32.984778+00,Tennis,atp challenger temuco,juan manuel la serna,adhithya ganesan,2,2.45,Sansabet,100,12.62,-100.00,true,
+542,2025-11-25 15:40:52.554524+00,Tennis,itf women lousada,khrystyna vozniak,alba rey garcia,P2 T> 9.5,2.75,Sansabet,100,16.77,-100.00,true,
+541,2025-11-25 15:36:12.358373+00,Soccer,ethiopia premier league,ethiopian medhin,negele arsi ketema,T> 1.5,3,Sansabet,100,3.01,-100.00,true,
+540,2025-11-25 15:19:17.575976+00,Soccer,georgia erovnuli liga,telavi,dinamo batumi,T< 1.5,3.2,Sansabet,100,3.44,-100.00,true,
+538,2025-11-25 15:11:35.259916+00,Soccer,uefa youth league u19,marseille,newcastle united,H1 -1.5,3.35,Sansabet,100,4.63,235.00,true,
+537,2025-11-25 15:10:03.160568+00,Tennis,itf women trnava,celine naef,lucia bronzetti,P1 T> 10.5,2.05,Sansabet,100,7.46,-100.00,true,
+535,2025-11-25 15:05:36.93787+00,Tennis,atp challenger temuco,joao eduardo schiessl,matt kuhar,P1 1G 2.0,3.15,Sansabet,100,4.20,-100.00,true,
+534,2025-11-25 15:04:12.877712+00,Tennis,wta 125k buenos aires,carole monnet,laura samson,P1 1G 4.0,2.35,Sansabet,100,8.19,135.00,true,
+531,2025-11-25 14:58:18.771469+00,Tennis,atp challenger athens,arthur fery,aristotelis thanos,P3 1G 2.0,3.15,Sansabet,100,5.02,-98.11,true,
+530,2025-11-25 14:48:20.324984+00,Tennis,itf women lousada,johanna silva,coco bosman,2,2.55,Sansabet,100,10.09,155.00,true,
+529,2025-11-25 14:47:00.275102+00,Tennis,itf women ortisei,camilla zanolini,noemi maines,P2 T> 9.5,2.1,Sansabet,100,3.05,110.00,true,
+526,2025-11-25 14:37:39.937612+00,Tennis,itf men santiago,ignacio antonio becerra otarola,alberto odiseo alvarado berrospi,P2 T< 9.5,1.93,Sansabet,100,19.47,93.00,true,
+524,2025-11-25 14:35:45.808189+00,Soccer,england central league reserves,bolton wanderers,notts county,H1 -1.5,2.65,Sansabet,100,3.41,165.00,true,
+523,2025-11-25 14:25:19.468124+00,Tennis,wta 125k buenos aires,varvara lepchenko,laura pigossi,T> 15.5,2,Sansabet,100,4.31,-100.00,true,
+522,2025-11-25 14:22:19.634938+00,Soccer,england professional development league u21,charlton athletic,cardiff city,H2 -3.5,3.05,Sansabet,100,4.47,-100.00,true,
+517,2025-11-25 14:08:50.851055+00,Tennis,itf men madrid,carles hernandez,izan almazan valiente,P2 1G 12.0,3.75,Sansabet,100,4.05,-100.00,true,
+516,2025-11-25 14:07:52.801232+00,Tennis,itf women torello,carmen lopez martinez,carmen gallardo guevara,P2 T> 9.5,2.7,Sansabet,100,8.23,-100.00,true,
+515,2025-11-25 14:05:58.875534+00,Tennis,itf men santiago,benjamin ignacio torres,lautaro correa beguerie,P2 T> 9.5,2.5,Sansabet,100,13.33,-100.00,true,
+513,2025-11-25 14:01:20.602361+00,Tennis,itf men madrid,christian sigsgaard,luka talan lopatic,P1 T> 9.5,1.98,Sansabet,100,3.91,98.00,true,
+512,2025-11-25 13:52:50.156729+00,Soccer,uefa u19 euro championship women qualifiers,israel,kazakhstan,IT2< 0.5,1.78,Sansabet,100,3.80,78.00,true,
+510,2025-11-25 13:48:56.086572+00,Tennis,itf women torello,marta soriano santiago,ruth roura llaverias,P1 T< 9.5,1.78,Sansabet,100,13.98,-100.00,true,
+509,2025-11-25 13:44:59.930155+00,Soccer,uefa youth league u19,ajax,benfica,H2 -4.5,3.9,Sansabet,100,4.15,-100.00,true,
+508,2025-11-25 13:41:55.795579+00,Tennis,itf women trnava,yuriko lily miyazaki,lina gjorcheska,P1 T< 8.5,2.15,Sansabet,100,3.88,-100.00,true,
+507,2025-11-25 13:41:39.781461+00,Soccer,england professional development league u21,colchester united,bristol city,P1 T> 1.5,3.95,Sansabet,100,7.68,-100.00,true,
+505,2025-11-25 13:40:29.808718+00,Tennis,atp challenger maia,lorenzo giustino,cezar cretu,P1 2G 4.0,1.58,Sansabet,100,5.71,58.00,true,
+504,2025-11-25 13:27:49.280663+00,Tennis,atp challenger manama,petr brunclik,matthew summers,T< 24.5,2,Sansabet,100,4.31,100.00,true,
+503,2025-11-25 13:19:48.988086+00,Soccer,afc champions league elite,chengdu rongcheng,sanfrecce hiroshima,T> 1.5,3,Sansabet,100,3.60,200.00,true,
+501,2025-11-25 13:18:58.945427+00,Soccer,egypt 2nd division b,tamea,team cairo,IT1> 0.5,3.15,Sansabet,100,8.71,-100.00,true,
+499,2025-11-25 13:13:38.861552+00,Soccer,uefa youth league u19,napoli,qarabag,P1 IT1> 2.5,2.95,Sansabet,100,4.12,-100.00,true,
+498,2025-11-25 13:12:48.776589+00,Tennis,itf men madrid,pablo masjuan ginel,anas mazdrashki,P1 2G 2.0,3.35,Sansabet,100,4.11,235.00,true,
+495,2025-11-25 12:30:17.09445+00,Tennis,itf men madrid,alejandro turriziani alvarez,michiel de krom,T> 16.5,1.78,Sansabet,100,4.06,-100.00,true,
+493,2025-11-25 12:28:12.879962+00,Tennis,itf women ortisei,kathinka von deichmann,weronika falkowska,P2 T> 9.5,2.4,Sansabet,100,9.44,140.00,true,
+491,2025-11-25 12:07:12.039867+00,Tennis,atp challenger maia,daniel michalski,tomas curras abasolo,P2 2G 11.0,2.1,Sansabet,100,3.47,0.00,true,
+490,2025-11-25 11:41:56.995415+00,Tennis,itf men hradec kralove,roman postolka,stepan baum,P2 T> 9.5,2.25,Sansabet,100,5.16,-100.00,true,
+488,2025-11-25 11:34:08.767462+00,Soccer,georgia erovnuli liga 2,iberia 1999 ii,lokomotivi tbilisi,IT1> 2.5,4.35,Sansabet,100,3.36,-100.00,true,
+486,2025-11-25 11:32:10.707458+00,Tennis,atp challenger athens,dimitris sakellaridis,enrico dalla valle,P2 T< 9.5,3.85,Sansabet,100,3.24,285.00,true,
+485,2025-11-25 11:29:36.545924+00,Soccer,algeria championship elite women,cs constantine,als batna,P1 T> 2.5,2.2,Sansabet,100,3.68,120.00,true,
+484,2025-11-25 11:28:54.552827+00,Tennis,atp challenger manama,nino ehrenschneider,mathys erhard,P1 T< 8.5,3.15,Sansabet,100,24.37,-100.00,true,
+483,2025-11-25 11:28:26.545235+00,Tennis,atp challenger manama,maximilian homberg,aziz ouakaa,P1 2G 3.0,3.95,Sansabet,100,3.00,-100.00,true,
+482,2025-11-25 11:21:20.227996+00,Soccer,uefa youth league u19,galatasaray,union saintgilloise,T> 2.5,3.35,Sansabet,100,3.93,-100.00,true,
+479,2025-11-25 11:12:31.86083+00,Tennis,atp challenger manama,sema pankin,olaf pieczkowski,P1 T< 8.5,3.3,Sansabet,100,11.92,-100.00,true,
+478,2025-11-25 11:12:19.843179+00,Soccer,uefa youth league u19,bodo/glimt,juventus,IT1> 1.5,3.8,Sansabet,100,3.74,280.00,true,
+475,2025-11-25 10:59:09.284558+00,Soccer,uefa u19 euro championship women qualifiers,malta,latvia,IT1> 1.5,2.55,Sansabet,100,4.73,-100.00,true,
+473,2025-11-25 10:56:55.19239+00,Tennis,atp challenger athens,jan kumstat,maks kasnikowski,P2 T> 10.5,3.95,Sansabet,100,3.00,-100.00,true,
+471,2025-11-25 10:55:27.200247+00,Soccer,algeria championship elite women,us briskra,bejaia,T> 2.5,3.6,Sansabet,100,5.17,-100.00,true,
+470,2025-11-25 10:51:41.019823+00,Tennis,atp challenger manama,aleksandre bakshi,ilia simakin,P2 T< 7.5,2.7,Sansabet,100,11.03,-100.00,true,
+468,2025-11-25 10:49:00.867535+00,Tennis,itf women ortisei,maria martinez vaquero,arianna zucchini,P2 T> 9.5,2.45,Sansabet,100,5.11,-100.00,true,
+467,2025-11-25 10:34:46.468373+00,Tennis,atp challenger maia,tiago pereira,carlos lopez montagud,P1 T< 9.5,2.5,Sansabet,100,10.06,150.00,true,
+466,2025-11-25 10:13:45.269955+00,Tennis,itf men bhopal,arnav vijay paparkar,atharva sharma,2,4.05,Sansabet,100,10.46,-100.00,true,
+464,2025-11-25 09:40:39.870601+00,Tennis,atp challenger athens,michael geerts,giles hussey,P2 1G 7.0,3.1,Sansabet,100,3.37,210.00,true,
+460,2025-11-25 09:19:20.981144+00,Tennis,atp challenger manama,patrik niklassalminen,eero vasa,P1 T> 9.5,1.85,Sansabet,100,3.42,-100.00,true,
+459,2025-11-25 09:17:42.986803+00,Tennis,atp challenger athens,carlo alberto caniato,james story,T< 20.5,2.1,Sansabet,100,5.14,110.00,true,
+457,2025-11-25 08:56:42.028765+00,Tennis,itf women fujairah,lina glushko,petra marcinko,P1 1G 3.0,2.15,Sansabet,100,4.21,115.00,true,
+456,2025-11-25 07:58:45.550438+00,Tennis,itf women fujairah,kajsa rinaldo persson,ksenia zaytseva,P1 2G 9.0,2.1,Sansabet,100,3.55,-100.00,true,
+455,2025-11-25 07:57:47.487127+00,Tennis,atp challenger playford,matthew dellavedova,carl emil overbeck,T< 18.5,2,Sansabet,100,4.59,-100.00,true,
+454,2025-11-25 07:47:15.04489+00,Tennis,atp challenger manama,tomasz berkieta,dominik kellovsky,P1 T< 10.5,2.35,Sansabet,100,3.03,-100.00,true,
+452,2025-11-25 07:21:07.906285+00,Tennis,itf women fujairah,georgina garcia perez,alevtina ibragimova,P1 1G 4.0,1.88,Sansabet,100,12.75,88.00,true,
+451,2025-11-25 07:15:45.775024+00,Tennis,itf women fujairah,briana szabo,stefania bojica,P1 2G 3.0,1.98,Sansabet,100,3.59,98.00,true,
+449,2025-11-25 06:54:25.2285+00,Tennis,itf men bhopal,aditya vishal balsekar,manish sureshkumar,P1 T> 9.5,2.45,Sansabet,100,4.48,-100.00,true,
+447,2025-11-25 06:53:11.095224+00,Tennis,itf men bhopal,vishnu vardhan,udit kamboj,T< 22.5,1.58,Sansabet,100,6.15,58.00,true,
+446,2025-11-25 06:21:27.730592+00,Tennis,atp challenger playford,hayato matsuoka,marc polmans,P2 T> 10.5,1.63,Sansabet,100,5.79,-100.00,true,
+445,2025-11-25 06:00:04.688312+00,Tennis,itf men phan thiet,sam ryan ziegann,naufal siddiq kamaruzzaman,P2 T> 12.5,2.85,Sansabet,100,10.20,-100.00,true,
+443,2025-11-25 05:45:38.148033+00,Tennis,atp challenger islamabad,preston brown,dragos nicolae cazacu,P1 T< 10.5,4.1,Sansabet,100,13.90,-100.00,true,
+442,2025-11-25 04:34:54.946527+00,Tennis,atp challenger playford,takuya kumasaka,rinky hijikata,T< 16.5,2.1,Sansabet,100,3.61,110.00,true,
+440,2025-11-25 04:05:27.897894+00,Tennis,itf men phan thiet,lorenzo lorusso,azuma visaya,P2 T> 8.5,1.58,Sansabet,100,5.64,-100.00,true,
+439,2025-11-25 03:50:31.087484+00,Soccer,usa major league soccer,san diego,minnesota united,P1 T> 0.5,3.7,Sansabet,100,5.65,-100.00,true,
+438,2025-11-25 02:50:22.610669+00,Tennis,itf men gimcheon,makoto ochi,toshiki karigyo,P2 T> 9.5,2.15,Sansabet,100,5.77,-100.00,true,
+436,2025-11-25 01:09:20.070395+00,Tennis,itf women playford,katarina zavatska,alexandra osborne,1,3.65,Sansabet,100,16.20,265.00,true,
+434,2025-11-25 00:13:11.832681+00,Tennis,atp challenger playford,karan singh,kokoro isomura,P1 1G 9.0,3.95,Sansabet,100,3.00,-100.00,true,
+431,2025-11-24 22:03:18.559138+00,Tennis,atp challenger bogota,murkel dellien,dan martin,P1 1G 2.0,3.15,Sansabet,100,8.24,-100.00,true,
+430,2025-11-24 21:03:21.871632+00,Soccer,uruguay reserve league,club oriental de la paz,montevideo city torque,H2 -3.5,4.65,Sansabet,100,7.80,-100.00,true,
+429,2025-11-24 20:56:17.569145+00,Tennis,wta 125k buenos aires,carolina alves,panna udvardy,P1 T> 9.5,2.35,Sansabet,100,4.79,-100.00,true,
+427,2025-11-24 20:39:41.036612+00,Soccer,england premier league cup u21,brentford,exeter city,H1 -2.5,3.35,Sansabet,100,7.67,235.00,true,
+426,2025-11-24 20:33:30.602282+00,Soccer,uruguay reserve league,nacional de football,racing club de montevideo,IT1> 0.5,3.1,Sansabet,100,3.09,210.00,true,
+424,2025-11-24 20:28:20.476258+00,Soccer,england southern premier league,st ives town,leiston,T> 2.5,3.15,Sansabet,100,3.99,215.00,true,
+422,2025-11-24 20:06:59.559937+00,Soccer,italy serie b,sampdoria,juve stabia,T> 1.5,2.45,Sansabet,100,3.85,-100.00,true,
+421,2025-11-24 19:30:22.04259+00,Soccer,uruguay reserve league,defensor sporting,river plate montevideo,T< 4.5,3.6,Sansabet,100,5.26,-100.00,true,
+420,2025-11-24 19:27:22.369876+00,Tennis,wta 125k buenos aires,polona hercog,jazmin ortenzi,T< 20.5,1.8,Sansabet,100,4.89,80.00,true,
+418,2025-11-24 19:26:23.942791+00,Soccer,hungary nb 2,vasas,budapest honved,T> 2.5,3.2,Sansabet,100,3.38,220.00,true,
+417,2025-11-24 19:06:04.973063+00,Soccer,afc champions league elite,alahli,sharjah,T< 0.5,4.3,Sansabet,100,3.23,-100.00,true,
+414,2025-11-24 18:34:47.816531+00,Tennis,itf women ortisei,raluca georgiana serban,samira de stefano,P1 T> 10.5,4.35,Sansabet,100,54.49,-100.00,true,
+413,2025-11-24 17:34:23.312995+00,Tennis,atp challenger bogota,karl poling,juan sebastian osorio,T> 21.5,1.93,Sansabet,100,9.41,-100.00,true,
+410,2025-11-24 17:12:26.661798+00,Soccer,italy serie d group a,biellese,club milano,T> 2.5,3.2,Sansabet,100,3.66,-100.00,true,
+406,2025-11-24 17:06:34.286232+00,Tennis,atp challenger maia,jan choinski,kilian feldbausch,P1 1G 4.0,3.15,Sansabet,100,12.58,215.00,true,
+404,2025-11-24 16:36:02.972099+00,Tennis,wta 125k buenos aires,martina trevisan,eva vedder,T< 20.5,1.85,Sansabet,100,3.20,85.00,true,
+402,2025-11-24 16:28:56.73598+00,Soccer,russia first league,rotor volgograd,chelyabinsk,T< 0.5,4.35,Sansabet,100,6.22,-100.00,true,
+400,2025-11-24 15:36:12.58387+00,Soccer,bulgaria first league,botev vratsa,slavia sofia,T> 2.5,3.2,Sansabet,100,3.45,-100.00,true,
+397,2025-11-24 15:19:19.95149+00,Soccer,slovenia u19 league,jadran dekani,olimpija ljubljana,IT1> 0.5,3.2,Sansabet,100,5.42,-100.00,true,
+395,2025-11-24 15:11:13.85778+00,Tennis,atp challenger athens,harry wendelken,menelaos efstathiou,T< 19.5,2,Sansabet,100,4.59,100.00,true,
+393,2025-11-24 15:09:23.479868+00,Tennis,wta 125k buenos aires,lucciana perez alarcon,elizabeth mandlik,P1 2G 2.0,1.9,Sansabet,100,5.95,-100.00,true,
+387,2025-11-24 14:42:52.393208+00,Tennis,atp challenger maia,carlos sanchez jover,cezar cretu,P2 T< 8.5,2,Sansabet,100,6.52,100.00,true,
+385,2025-11-24 14:15:15.295171+00,Tennis,atp challenger manama,dali blanch,sergey fomin,P1 T< 10.5,2.25,Sansabet,100,12.15,-100.00,true,
+383,2025-11-24 13:55:00.590767+00,Soccer,slovenia u19 league,mura,koper,H1 -2.5,2.65,Sansabet,100,4.06,-100.00,true,
+382,2025-11-24 13:53:42.536243+00,Soccer,egypt 2nd division b,misr elmaqasah,tel bani swaif,IT2> 0.5,4.35,Sansabet,100,3.56,335.00,true,
+380,2025-11-24 13:40:54.103914+00,Soccer,indonesia championship,persiraja banda aceh,sriwijaya,IT2< 0.5,1.98,Sansabet,100,4.24,98.00,true,
+379,2025-11-24 13:28:13.549412+00,Tennis,itf women fujairah,daria snigur,erika andreeva,P1 T> 7.5,2.35,Sansabet,100,17.65,-100.00,true,
+378,2025-11-24 13:25:37.392999+00,Soccer,mozambique mocambola,costa do sol,ferroviario de maputo,P1 T> 1.5,2.65,Sansabet,100,3.42,165.00,true,
+376,2025-11-24 13:24:05.39837+00,Soccer,uruguay reserve league,progreso,juventud,H2 -3.5,2.6,Sansabet,100,3.97,-100.00,true,
+373,2025-11-24 12:59:14.405895+00,Soccer,indonesia championship,bekasi city,persekat,T> 2.5,2.95,Sansabet,100,5.40,195.00,true,
+371,2025-11-24 12:37:11.461124+00,Tennis,atp challenger athens,michele ribecai,diego dedurapalomero,P1 T< 10.5,2.2,Sansabet,100,12.22,120.00,true,
+369,2025-11-24 12:32:25.314625+00,Soccer,turkey super lig u19,istanbul basaksehir,trabzonspor,T> 2.5,3.15,Sansabet,100,7.16,215.00,true,
+368,2025-11-24 12:30:05.210628+00,Tennis,itf women fujairah,viktoria hruncakova,sinja kraus,P1 T> 8.5,1.88,Sansabet,100,4.97,-100.00,true,
+366,2025-11-24 12:16:06.718786+00,Tennis,itf women fujairah,arantxa rus,vendula valdmannova,P2 T> 9.5,2.6,Sansabet,100,4.11,-100.00,true,
+364,2025-11-24 12:05:46.21054+00,Tennis,itf women fujairah,elena pridankina,alexandra shubladze,P1 T> 12.5,2.9,Sansabet,100,36.30,-100.00,true,
+362,2025-11-24 11:30:20.614682+00,Tennis,atp challenger manama,egor agafonov,mirza basic,P2 T< 8.5,2.7,Sansabet,100,10.22,170.00,true,
+360,2025-11-24 11:24:32.436729+00,Tennis,atp challenger manama,alexandr binda,vladislav melnic,P1 T< 10.5,3.6,Sansabet,100,3.32,260.00,true,
+358,2025-11-24 11:16:24.009598+00,Soccer,turkey super lig u19,konyaspor,antalyaspor,IT2> 0.5,3.45,Sansabet,100,5.08,-100.00,true,
+355,2025-11-24 11:11:15.953083+00,Tennis,atp challenger athens,pierluigi basile,nicolas parizzia,P1 T< 10.5,2.45,Sansabet,100,11.71,145.00,true,
+353,2025-11-24 10:54:51.127569+00,Tennis,itf women fujairah,dalila jakupovic,arianne hartono,P2 1G 1.0,3.45,Sansabet,100,4.71,245.00,true,
+351,2025-11-24 10:43:07.906639+00,Soccer,paraguay reserve league,sportivo luqueno,olimpia asuncion,P1 H2 0.5,2.7,Sansabet,100,4.78,-100.00,true,
+350,2025-11-24 02:25:45.701611+00,Tennis,atp challenger playford,masamichi imamura,carl emil overbeck,1,2.25,Sansabet,100,3.16,-100.00,true,
+349,2025-11-24 01:56:38.561078+00,Soccer,japan regional league,tokyo united,jlease,T> 2.5,3.15,Sansabet,100,4.15,-100.00,true,
+348,2025-11-24 01:25:39.15623+00,Tennis,atp challenger playford,tunglin wu,taiyo yamanaka,P1 T> 9.5,1.83,Sansabet,100,3.52,-100.00,true,
+347,2025-11-24 01:16:21.140525+00,Soccer,colombia primera a,america de cali,junior de barranquilla,T> 2.5,3.2,Sansabet,100,4.98,-100.00,true,
+346,2025-11-24 00:20:14.360266+00,Soccer,mexico liga de expansión mx,jaiba brava,tepatitlan,T> 1.5,3.35,Sansabet,100,3.99,-100.00,true,
+345,2025-11-24 00:11:50.139219+00,Tennis,atp challenger playford,takuya kumasaka,leo vithoontien,P1 T> 10.5,2.35,Sansabet,100,5.42,-100.00,true,
+343,2025-11-23 23:42:16.804118+00,Soccer,ecuador serie a,independiente del valle,orense,IT2> 0.5,3.7,Sansabet,100,6.67,-100.00,true,
+341,2025-11-23 23:36:10.494615+00,Soccer,honduras liga nacional,olimpia,marathon,P1 H1 -1.5,3.6,Sansabet,100,3.78,-100.00,true,
+340,2025-11-23 23:19:09.684645+00,Soccer,colombia primera a,independiente medellin,atletico nacional,P1 T> 0.5,3,Sansabet,100,4.23,-100.00,true,
+339,2025-11-23 22:46:42.33118+00,Soccer,usa major league soccer,cincinnati,inter miami,P1 T> 1.5,2.4,Sansabet,100,4.00,-100.00,true,
+337,2025-11-23 22:28:01.469787+00,Soccer,bolivia primera division,universitario de vinto,nacional potosi,P1 T> 3.5,4,Sansabet,100,6.47,-100.00,true,
+335,2025-11-23 21:44:29.598474+00,Tennis,wta 125k colina,oleksandra oliynykova,leolia jeanjean,P1 T< 8.5,2,Sansabet,100,4.26,-100.00,true,
+334,2025-11-23 21:31:33.262962+00,Soccer,peru liga 1,sport huancayo,cusco,2,2.35,Sansabet,100,14.59,135.00,true,
+333,2025-11-23 21:14:34.44601+00,Soccer,france ligue 1,lille,paris,T< 2.5,2.4,Sansabet,100,5.05,-100.00,true,
+331,2025-11-23 20:56:21.608688+00,Soccer,peru liga 1,cienciano,ayacucho,T> 2.5,3.8,Sansabet,100,7.10,280.00,true,
+330,2025-11-23 20:45:43.146933+00,Soccer,brazil serie b,botafogo sp,avai,T> 1.5,3.05,Sansabet,100,4.29,-100.00,true,
+328,2025-11-23 20:37:58.944496+00,Soccer,spain segunda division,malaga,mirandes,P1 T> 2.5,3.55,Sansabet,100,4.64,-100.00,true,
+241,2025-11-23 20:26:23.586029+00,Soccer,peru liga 1,alianza lima,utc de cajamarca,P1 H1 -1.5,2.2,Sansabet,100,3.70,120.00,true,
+246,2025-11-23 20:25:40.683263+00,Soccer,caf confederation cup,zamalek,zesco united,T> 2.5,3.75,Sansabet,100,4.41,-100.00,true,
+189,2025-11-23 20:14:44.127274+00,Soccer,caf confederation cup,usm alger,san pedro,IT1< 1.5,2.7,Sansabet,100,4.26,-100.00,true,
+176,2025-11-23 20:13:38.00117+00,Soccer,italy serie c group b,sambenedettese,pineto,IT2> 0.5,2.55,Sansabet,100,3.43,155.00,true,
+188,2025-11-23 20:12:45.871515+00,Soccer,brazil serie b,athletic club,paysandu,P1 T> 1.5,3.75,Sansabet,100,3.74,-100.00,true,
+215,2025-11-23 20:11:57.88628+00,Soccer,brazil serie b,athletico paranaense,america mineiro,IT2> 0.5,4.5,Sansabet,100,6.85,-100.00,true,
+164,2025-11-23 20:08:41.873771+00,Tennis,atp challenger bogota,ryan dickerson,nicolas buitrago,T> 21.5,2.3,Sansabet,100,23.20,-100.00,true,
+183,2025-11-23 20:08:16.080628+00,Soccer,bolivia primera division,always ready,club bolivar,P1 T> 0.5,2.4,Sansabet,100,3.33,-100.00,true,
+162,2025-11-23 20:07:31.608396+00,Soccer,brazil serie b,cuiaba,criciuma,P1 T> 0.5,3.35,Sansabet,100,3.10,-100.00,true,
+120,2025-11-23 19:43:20.794866+00,Soccer,andorra premier division,santa coloma,ordino,H1 -1.5,3.2,Sansabet,100,3.72,220.00,true,
+77,2025-11-23 19:38:00.620757+00,Soccer,italy serie c group a,lecco,cittadella,T> 2.5,3.15,Sansabet,100,3.20,-100.00,true,
+67,2025-11-23 19:36:50.537389+00,Soccer,caf confederation cup,wydad ac,nairobi united,P1 T> 1.5,2.35,Sansabet,100,3.15,135.00,true,
+55,2025-11-23 19:19:23.787377+00,Tennis,atp challenger guayaquil,juan pablo varillas,adolfo daniel vallejo,P1 1G 4.0,1.63,Sansabet,100,6.52,63.00,true,
+45,2025-11-23 19:12:21.705765+00,Soccer,brazil copa santa catarina,figueirense,joinville,T> 2.5,3.2,Sansabet,100,4.48,220.00,true,
+26,2025-11-23 19:04:03.124653+00,Soccer,norway eliteserien,fredrikstad,viking,T< 1.5,2.2,Sansabet,100,3.53,120.00,true,
+15,2025-11-23 18:56:10.792267+00,Soccer,belgium pro league,oudheverlee leuven,sint truidense,P1 T> 1.5,4,Sansabet,100,4.15,300.00,true,
+327,2025-11-23 18:47:04.458201+00,Soccer,spain segunda division,burgos,racing santander,IT1> 0.5,2.15,Sansabet,100,3.48,-100.00,true,
+113,2025-11-23 18:36:17.993484+00,Soccer,egypt premier league,petrojet,haras el hodood,P1 T> 1.5,3.85,Sansabet,100,3.24,-100.00,true,
+126,2025-11-23 18:35:12.044243+00,Soccer,greece super league,paok,ae kifisia,H1 -1.5,2.55,Sansabet,100,6.36,155.00,true,
+101,2025-11-23 18:34:06.037775+00,Soccer,egypt premier league,kahraba ismailia,zed,P1 T> 0.5,3.3,Sansabet,100,4.88,230.00,true,
+41,2025-11-23 18:30:25.686417+00,Soccer,ecuador serie a,macara,delfin,P1 T> 0.5,2.6,Sansabet,100,3.85,160.00,true,
+19,2025-11-23 18:21:57.474471+00,Soccer,denmark superliga,sonderjyske,midtjylland,T> 3.5,3.4,Sansabet,100,4.04,-100.00,true,
+309,2025-11-23 18:15:07.099618+00,Tennis,atp challenger bogota,peter bertran,valentin basel,P2 T> 9.5,2.2,Sansabet,100,3.13,120.00,true,
+321,2025-11-23 18:13:43.068834+00,Soccer,portugal cup,tondela,caldas,T> 1.5,3.1,Sansabet,100,3.72,-100.00,true,
+318,2025-11-23 18:12:59.120475+00,Soccer,russia premier league,lokomotiv moscow,krasnodar,T> 3.5,3.9,Sansabet,100,3.73,-100.00,true,
+314,2025-11-23 18:12:10.985582+00,Soccer,saudi arabia pro league,alnassr,alkhaleej,P1 T> 1.5,4.85,Sansabet,100,21.14,385.00,true,
+316,2025-11-23 18:11:23.11425+00,Soccer,spain primera rfef group 2,ud ibiza,ce europa,T< 0.5,4.55,Sansabet,100,6.13,-100.00,true,
+308,2025-11-23 18:08:47.015555+00,Tennis,wta 125k buenos aires,katarina jokic,valeriya strakhova,P1 T> 8.5,1.85,Sansabet,100,6.57,85.00,true,
+302,2025-11-23 18:08:14.890111+00,Soccer,italy serie a,lazio,lecce,T> 2.5,3.6,Sansabet,100,4.12,-100.00,true,
+295,2025-11-23 18:02:12.723964+00,Soccer,czech republic first liga,slovacko,zlin,T> 1.5,2.45,Sansabet,100,3.07,145.00,true,
+282,2025-11-23 17:38:19.776251+00,Soccer,belgium super league women,genk,anderlecht,P1 IT2< 0.5,3.2,Sansabet,100,3.12,-100.00,true,
+275,2025-11-23 17:37:21.572872+00,Soccer,guatemala primera division de ascenso,nueva santa rosa,quiche,P1 T> 0.5,3.3,Sansabet,100,3.76,-100.00,true,
+121,2025-11-23 17:35:09.61741+00,Soccer,bosnia and herzegovina premier liga,siroki brijeg,borac banja luka,IT1> 1.5,4.1,Sansabet,100,3.89,-100.00,true,
+272,2025-11-23 17:32:17.391315+00,Soccer,spain segunda rfef group 4,aguilas,estepona,H1 -2.5,4.35,Sansabet,100,3.18,-100.00,true,
+277,2025-11-23 17:28:53.311823+00,Tennis,atp challenger maia,tiago cacao,cezar cretu,T< 17.5,2.25,Sansabet,100,10.79,125.00,true,
+221,2025-11-23 17:18:48.827292+00,Soccer,slovakia super liga,dac 1904,tatran presov,T< 1.5,3.65,Sansabet,100,4.11,265.00,true,
+214,2025-11-23 17:17:12.809932+00,Soccer,turkey 1st league,esenler erokspor,sivasspor,T> 1.5,3.45,Sansabet,100,3.66,245.00,true,
+192,2025-11-23 17:14:20.712775+00,Soccer,spain tercera division,lleida,cornella,T> 2.5,3.1,Sansabet,100,4.27,-100.00,true,
+180,2025-11-23 17:09:44.943449+00,Soccer,qatar stars league,qatar,al arabi doha,P1 T> 2.5,3.7,Sansabet,100,3.87,270.00,true,
+175,2025-11-23 17:07:46.437418+00,Soccer,morocco botola 2,kac kenitra,massira,X,2.8,Sansabet,100,3.68,-100.00,true,
+172,2025-11-23 17:05:56.358178+00,Soccer,poland ekstraklasa,widzew lodz,korona kielce,P1 T> 2.5,3.15,Sansabet,100,3.37,-100.00,true,
+171,2025-11-23 17:04:36.387108+00,Soccer,portugal cup,santa clara,comercio industria,T< 2.5,3.05,Sansabet,100,3.01,-100.00,true,
+156,2025-11-23 16:52:05.870139+00,Tennis,atp challenger bogota,karl poling,davide pontoglio,T> 30.5,2.15,Sansabet,100,8.26,-100.00,true,
+85,2025-11-23 16:50:51.751265+00,Soccer,senegal ligue 1,ouakam,asc camberene,X,2.65,Sansabet,100,3.09,165.00,true,
+148,2025-11-23 16:47:29.627805+00,Soccer,serbia super liga,javor ivanjica,crvena zvezda,T< 1.5,1.98,Sansabet,100,5.31,98.00,true,
+135,2025-11-23 16:44:43.491618+00,Soccer,spain segunda rfef group 3,reus reddis,barbastro,IT2> 0.5,3.6,Sansabet,100,3.97,-100.00,true,
+134,2025-11-23 16:44:01.524526+00,Soccer,germany bundesliga 3,erzgebirge aue,stuttgart ii,T> 1.5,3.4,Sansabet,100,3.87,-100.00,true,
+270,2025-11-23 16:43:17.464998+00,Soccer,spain primera division women,real madrid,eibar,H1 -2.5,3.4,Sansabet,100,4.21,240.00,true,
+267,2025-11-23 16:41:59.429283+00,Tennis,davis cup world,flavio cobolli,jaume munar,P2 T> 10.5,3.45,Sansabet,100,3.10,245.00,true,
+130,2025-11-23 16:40:51.393427+00,Soccer,portugal cup,farense,silves,H1 -3.5,2.95,Sansabet,100,3.22,195.00,true,
+261,2025-11-23 16:38:55.502957+00,Tennis,itf men austin,lui maxted,andreja petrovic,P1 T> 8.5,3.1,Sansabet,100,35.28,-100.00,true,
+255,2025-11-23 16:36:37.440121+00,Soccer,serbia prva liga,jedinstvo ub,tekstilac odzaci,H1 -2.5,4.25,Sansabet,100,3.15,-100.00,true,
+81,2025-11-23 16:33:53.138051+00,Soccer,ghana premier league,hohoe united,techiman eleven wonders,H1 -1.5,2.55,Sansabet,100,9.69,-100.00,true,
+190,2025-11-23 16:30:02.951386+00,Tennis,itf women boca raton,akasha urhobo,francesca pace,P1 T> 8.5,1.53,Sansabet,100,5.44,53.00,true,
+245,2025-11-23 16:28:38.910521+00,Soccer,france ligue 1,toulouse,angers,IT2> 0.5,2.2,Sansabet,100,3.36,120.00,true,
+57,2025-11-23 16:26:56.926361+00,Tennis,wta 125k buenos aires,ayana akli,maria florencia urrutia,T< 18.5,2.2,Sansabet,100,3.42,120.00,true,
+52,2025-11-23 16:13:14.306622+00,Soccer,germany bundesliga women,hoffenheim,bayern munich,H2 -4.5,3.4,Sansabet,100,4.47,-100.00,true,
+191,2025-11-23 16:08:08.155074+00,Soccer,caf confederation cup,djoliba ac,olympic safi,P1 H1 -0.5,3,Sansabet,100,4.44,-100.00,true,
+177,2025-11-23 16:01:29.794569+00,Tennis,itf men tallahassee,keegan smith,ryan fishback,P2 T< 8.5,4.45,Sansabet,100,25.22,-100.00,true,
+187,2025-11-23 16:00:53.818233+00,Soccer,spain la liga,real betis,girona,IT2> 1.5,2.35,Sansabet,100,4.60,-100.00,true,
+159,2025-11-23 15:53:13.479119+00,Soccer,portugal liga 2,maritimo,penafiel,H1 -1.5,2.15,Sansabet,100,4.03,-100.00,true,
+124,2025-11-23 15:50:43.371352+00,Tennis,atp challenger maia,carlos sanchez jover,giuseppe la vela,P2 T< 8.5,2.25,Sansabet,100,3.05,-100.00,true,
+105,2025-11-23 15:46:19.20595+00,Soccer,saudi arabia division 1,alwehda,alzulfi,P1 T> 1.5,2.45,Sansabet,100,3.87,-100.00,true,
+5,2025-11-23 15:44:53.095287+00,Tennis,atp challenger bogota,gerard campana lee,sergio luis hernandez ramirez,T> 18.5,2.1,Sansabet,100,4.75,-100.00,true,
+4,2025-11-23 15:44:07.167081+00,Soccer,egypt premier league,al ittihad al sakandary,el gounah,H2 -0.5,2.6,Sansabet,100,14.13,160.00,true,
+75,2025-11-23 15:37:32.884789+00,Soccer,cyprus 1st division,enosis neon paralimni,anorthosis famagusta,IT1> 1.5,3.4,Sansabet,100,3.19,240.00,true,
+140,2025-11-23 15:36:26.919659+00,Soccer,chile primera b,antofagasta,deportes concepcion,P1 T> 0.5,2.75,Sansabet,100,3.57,-100.00,true,
+139,2025-11-23 15:33:12.856464+00,Soccer,england league cup women,newcastle united,everton,H2 -3.5,3.1,Sansabet,100,3.92,-100.00,true,
+2,2025-11-23 15:27:26.709663+00,Soccer,england league cup women,bristol city,tottenham hotspur,T< 1.5,3.45,Sansabet,100,3.07,245.00,true,
+18,2025-11-23 15:24:22.436604+00,Soccer,turkey super league,besiktas,samsunspor,T> 2.5,3.05,Sansabet,100,5.87,-100.00,true,
+33,2025-11-23 15:21:10.286423+00,Soccer,nigeria npfl,nasarawa united,el kanemi warriors,P1 T> 0.5,2.15,Sansabet,100,3.60,115.00,true,
+220,2025-11-23 15:18:18.19723+00,Soccer,russia premier league,dynamo moscow,dynamo makhachkala,T< 1.5,4.25,Sansabet,100,3.96,-100.00,true,
+13,2025-11-23 15:15:30.058619+00,Soccer,poland 2nd liga,sandecja nowy sacz,podbeskidzie bielskobiala,T> 1.5,3.35,Sansabet,100,3.93,-100.00,true,
+8,2025-11-23 15:13:54.019596+00,Soccer,portugal cup,vila mea,leixoes,IT2> 1.5,2.7,Sansabet,100,5.84,-100.00,true,
+170,2025-11-23 15:13:32.119701+00,Tennis,atp challenger bergamo,marko topo,francesco maestrelli,P1 T> 10.5,3.15,Sansabet,100,5.09,-100.00,true,
+193,2025-11-23 15:11:07.921433+00,Tennis,itf women petange,jeline vandromme,eva bennemann,P1 T> 8.5,2.5,Sansabet,100,11.40,150.00,true,
+304,2025-11-23 15:09:19.79829+00,Soccer,slovakia super liga,zemplin michalovce,ruzomberok,P1 T> 2.5,3.55,Sansabet,100,3.30,-100.00,true,
+198,2025-11-23 15:07:07.773776+00,Soccer,nigeria npfl,remo stars,barau,IT2> 0.5,2.7,Sansabet,100,6.15,-100.00,true,
+303,2025-11-23 15:06:41.800723+00,Soccer,france u19 league,dijon,schiltigheim,H1 -3.5,3.05,Sansabet,100,4.18,-100.00,true,
+300,2025-11-23 15:02:59.492781+00,Soccer,italy serie d group g,sassari latte dolce,nocerina,H2 -2.5,3,Sansabet,100,3.77,200.00,true,
+161,2025-11-23 14:43:30.836254+00,Tennis,atp challenger maia,lilian marmousez,leo raquillet,P1 T> 7.5,2.9,Sansabet,100,6.75,-100.00,true,
+287,2025-11-23 14:42:30.830049+00,Soccer,italy serie d group i,athletic club palermo,gelbison,H1 -2.5,2.45,Sansabet,100,3.02,145.00,true,
+280,2025-11-23 14:39:52.642247+00,Soccer,italy serie d group g,scafatese,trastevere,IT2> 0.5,4.15,Sansabet,100,3.98,315.00,true,
+132,2025-11-23 14:37:46.5969+00,Soccer,tunisia league 1,stade tunisien,as gabes,H1 -3.5,3.3,Sansabet,100,3.18,230.00,true,
+278,2025-11-23 14:36:24.504313+00,Soccer,italy serie c group a,brescia,vicenza,T> 2.5,3.15,Sansabet,100,3.01,-100.00,true,
+276,2025-11-23 14:34:52.497175+00,Soccer,brazil paulista women,ferroviaria sp,palmeiras,P1 T> 0.5,2.75,Sansabet,100,7.51,-100.00,true,
+84,2025-11-23 14:32:22.378393+00,Soccer,greece super league 2,pas giannina,makedonikos,H1 -1.5,3,Sansabet,100,3.27,-100.00,true,
+262,2025-11-23 14:22:28.009519+00,Soccer,italy serie d group i,messina,savoia,T> 2.5,3.2,Sansabet,100,3.13,-100.00,true,
+21,2025-11-23 14:20:01.947745+00,Tennis,davis cup world,matteo berrettini,pablo carreno busta,P1 T> 10.5,2.5,Sansabet,100,6.57,-100.00,true,
+208,2025-11-23 14:17:59.896402+00,Soccer,austria bundesliga,sturm graz,lask linz,IT2< 2.5,2.2,Sansabet,100,4.36,-100.00,true,
+252,2025-11-23 14:17:49.907955+00,Soccer,austria bundesliga women,sturm graz,sudburgenland / hartberg,H1 -2.5,3,Sansabet,100,4.44,-100.00,true,
+211,2025-11-23 14:17:13.78673+00,Soccer,ukraine premier league,polissya zhytomyr,epitsentr kamianetspodilskyi,IT2> 0.5,4.2,Sansabet,100,5.54,-100.00,true,
+244,2025-11-23 14:17:03.822548+00,Soccer,italy serie d group i,vigor lamezia,milazzo,T> 2.5,3.2,Sansabet,100,3.41,-100.00,true,
+243,2025-11-23 14:16:47.855696+00,Soccer,italy serie d group f,sammaurese,termoli,IT1> 0.5,3.35,Sansabet,100,4.51,-100.00,true,
+197,2025-11-23 14:08:49.51218+00,Soccer,italy serie d group e,trestina,terranuova traiana,IT1> 1.5,3.7,Sansabet,100,11.61,-100.00,true,
+194,2025-11-23 14:07:45.406102+00,Tennis,atp challenger maia,alejo sanchez quilez,stefan palosi,P2 T> 8.5,2,Sansabet,100,20.78,-100.00,true,
+153,2025-11-23 14:04:37.702165+00,Soccer,slovenia u19 league,radomlje,ilirija 1911,H1 -3.5,4.1,Sansabet,100,3.09,-100.00,true,
+186,2025-11-23 14:01:57.231405+00,Soccer,spain la liga,real oviedo,rayo vallecano,IT1> 0.5,2.45,Sansabet,100,4.49,-100.00,true,
+106,2025-11-23 13:55:35.024819+00,Soccer,germany bundesliga 2,kaiserslautern,holstein kiel,IT2> 1.5,4,Sansabet,100,3.99,-100.00,true,
+181,2025-11-23 13:50:54.77021+00,Soccer,italy serie d group b,vogherese,chievo,T> 2.5,3.2,Sansabet,100,4.51,-100.00,true,
+96,2025-11-23 13:49:40.796675+00,Soccer,caf champions league,simba,atletico petroleos de luanda,T> 1.5,3.3,Sansabet,100,5.21,-100.00,true,
+179,2025-11-23 13:49:00.809786+00,Soccer,italy serie d group e,tau altopascio,scandicci,T> 2.5,3.1,Sansabet,100,3.05,210.00,true,
+94,2025-11-23 13:48:48.793656+00,Soccer,italy serie d group a,lavagnese,gozzano,T> 2.5,3.35,Sansabet,100,4.70,-100.00,true,
+160,2025-11-23 13:48:18.771828+00,Soccer,italy serie d group e,camaiore,follonica gavorrano,P1 H2 0.5,2.8,Sansabet,100,3.06,180.00,true,
+48,2025-11-23 13:48:04.767463+00,Soccer,italy serie d group b,real calepina,oltrepo,T> 2.5,3.2,Sansabet,100,3.70,220.00,true,
+163,2025-11-23 13:44:16.572257+00,Soccer,algeria ligue 2,msp batna,ib khemis el khechna,IT2> 1.5,3.25,Sansabet,100,3.18,-100.00,true,
+158,2025-11-23 13:44:02.550574+00,Soccer,jordan 1st division,al tora,sama,T> 1.5,3.1,Sansabet,100,3.34,210.00,true,
+151,2025-11-23 13:42:12.504298+00,Soccer,rwanda premier league,rayon sports,kigali,IT2> 0.5,3.5,Sansabet,100,3.13,250.00,true,
+137,2025-11-23 13:41:52.472349+00,Soccer,italy serie c group b,ascoli,arezzo,T> 2.5,3.75,Sansabet,100,3.23,-100.00,true,
+264,2025-11-23 13:41:32.470346+00,Soccer,france u19 league,nice,olympique rovenain,P1 H1 -1.5,2.35,Sansabet,100,3.16,-100.00,true,
+258,2025-11-23 13:39:06.379046+00,Soccer,switzerland super league,sion,zurich,P1 T> 1.5,3.7,Sansabet,100,3.65,270.00,true,
+257,2025-11-23 13:38:26.321338+00,Soccer,spain tercera division,logrones ii,pradejon,IT2> 0.5,3.7,Sansabet,100,3.24,-100.00,true,
+251,2025-11-23 13:36:08.171323+00,Soccer,belarus premier league,torpedo zhodino,isloch minsk,T< 0.5,4.35,Sansabet,100,3.25,335.00,true,
+250,2025-11-23 13:35:04.196865+00,Soccer,greece super league 2,egaleo,panargiakos,IT2> 0.5,3.6,Sansabet,100,5.49,-100.00,true,
+249,2025-11-23 13:34:26.242755+00,Soccer,belgium pro league,genk,mechelen,IT2> 1.5,2.5,Sansabet,100,3.98,-100.00,true,
+90,2025-11-23 13:26:11.994881+00,Tennis,itf men vale do lobo,alastair gray,georgii kravchenko,T> 17.5,2.05,Sansabet,100,4.67,-100.00,true,
+240,2025-11-23 13:23:07.755959+00,Soccer,vietnam cup,hai phong,phu dong,T> 2.5,3.35,Sansabet,100,3.72,235.00,true,
+25,2025-11-23 13:20:59.676259+00,Soccer,turkey super league women,cekmekoy,fenerbahce,T> 4.5,3.55,Sansabet,100,3.44,255.00,true,
+56,2025-11-23 13:17:35.492091+00,Soccer,serbia prva liga,smederevo,dubocica,H1 -2.5,2.65,Sansabet,100,3.09,165.00,true,
+238,2025-11-23 13:17:19.523035+00,Soccer,sweden superettan,utsiktens,norrby,T> 1.5,3.35,Sansabet,100,4.09,235.00,true,
+219,2025-11-23 13:08:51.132888+00,Soccer,caf confederation cup,maniema union,azam,T< 1.5,3.55,Sansabet,100,4.06,-100.00,true,
+217,2025-11-23 13:08:11.152738+00,Soccer,caf confederation cup,stellenbosch,as otoho,IT1< 1.5,2.35,Sansabet,100,3.65,135.00,true,
+157,2025-11-23 13:05:37.030418+00,Soccer,germany bundesliga 3,1860 munich,saarbrucken,P1 T> 1.5,3.15,Sansabet,100,3.02,-100.00,true,
+230,2025-11-23 13:04:54.987463+00,Tennis,atp challenger maia,alexey vatutin,tomas antonio serrano luis,P2 T> 8.5,2.3,Sansabet,100,3.84,130.00,true,
+150,2025-11-23 12:59:56.874676+00,Soccer,spain tercera division,lenense,caudal deportivo,H2 -1.5,3.05,Sansabet,100,3.31,-100.00,true,
+224,2025-11-23 12:56:44.717258+00,Tennis,atp challenger manama,matthew summers,sergey betov,P1 T> 8.5,2.9,Sansabet,100,5.35,190.00,true,
+118,2025-11-23 12:48:36.3929+00,Soccer,indonesia championship,persiba balikpapan,psis semarang,IT2> 0.5,3.9,Sansabet,100,4.43,290.00,true,
+141,2025-11-23 12:42:24.154041+00,Soccer,russia premier league,nizhny novgorod,zenit,T> 2.5,3.6,Sansabet,100,5.06,-100.00,true,
+69,2025-11-23 12:39:16.000973+00,Soccer,indonesia super league,bali united,persis solo,P1 T> 0.5,3.55,Sansabet,100,3.84,-100.00,true,
+63,2025-11-23 12:34:07.848815+00,Soccer,spain tercera division,atletico albacete,sonseca,H1 -2.5,2.05,Sansabet,100,3.37,105.00,true,
+58,2025-11-23 12:33:03.772705+00,Soccer,vietnam cup,cong an ha noi,viettel,T> 2.5,3.2,Sansabet,100,3.38,220.00,true,
+24,2025-11-23 12:30:39.695911+00,Soccer,spain segunda rfef group 5,rsd alcala sad,rayo majadahonda,H2 -2.5,3,Sansabet,100,3.27,-100.00,true,
+119,2025-11-23 12:26:57.521135+00,Soccer,spain tercera division,badajoz,villanovense,H1 -1.5,2.85,Sansabet,100,3.11,-100.00,true,
+232,2025-11-23 12:18:43.187029+00,Tennis,atp challenger montemar,gianluca cadenasso,zdenek kolar,1,3.85,Sansabet,100,117.59,-100.00,true,
+231,2025-11-23 12:15:49.056549+00,Soccer,czech republic first liga,mfk karvina,hradec kralove,T< 2.5,3.7,Sansabet,100,5.32,-100.00,true,
+109,2025-11-23 12:15:05.084789+00,Soccer,italy serie a,hellas verona,parma,IT2< 1.5,1.83,Sansabet,100,3.22,-100.00,true,
+229,2025-11-23 12:14:25.012289+00,Soccer,spain tercera division,berceo,anguiano,IT1> 1.5,3.3,Sansabet,100,3.42,-100.00,true,
+100,2025-11-23 12:10:04.870658+00,Soccer,spain primera division women,udg tenerife,atletico madrid,T> 2.5,3.2,Sansabet,100,7.43,220.00,true,
+202,2025-11-23 12:05:34.735523+00,Soccer,chinese taipei premier league,tainan city,taipower,H1 -3.5,3.3,Sansabet,100,3.53,-100.00,true,
+92,2025-11-23 12:02:38.653279+00,Soccer,turkey super league,goztepe,kocaelispor,T> 1.5,2.35,Sansabet,100,4.16,-100.00,true,
+87,2025-11-23 11:58:56.47041+00,Soccer,thailand league 1,kanchanaburi,rayong,T> 2.5,3.2,Sansabet,100,3.31,-100.00,true,
+169,2025-11-23 11:43:25.869223+00,Soccer,turkey super league women,1207 antalyaspor,besiktas,H2 -3.5,4.1,Sansabet,100,3.73,310.00,true,
+168,2025-11-23 11:41:31.962205+00,Soccer,thailand league 1,sukhothai,chonburi,IT1> 2.5,2.55,Sansabet,100,3.72,-100.00,true,
+152,2025-11-23 11:37:57.704656+00,Soccer,thailand league 1,nakhon ratchasima,ayutthaya united,P1 T> 1.5,3.65,Sansabet,100,6.14,-100.00,true,
+149,2025-11-23 11:37:11.821833+00,Soccer,thailand league 2,bangkok,chanthaburi,P1 T> 1.5,3.45,Sansabet,100,5.50,-100.00,true,
+207,2025-11-23 11:36:15.658323+00,Tennis,itf men heraklion,ioannis xilas,philip henning,P2 T< 7.5,2.75,Sansabet,100,13.71,-100.00,true,
+203,2025-11-23 11:31:41.532568+00,Tennis,atp challenger manama,aziz ouakaa,oren vasser,P1 T< 9.5,1.6,Sansabet,100,4.43,-100.00,true,
+32,2025-11-23 11:29:31.349378+00,Soccer,cambodia premier league,nagaworld,svay rieng,P1 H2 0.5,2.95,Sansabet,100,3.81,195.00,true,
+22,2025-11-23 11:24:41.482544+00,Tennis,itf women trnava,lucie havlickova,elizara yaneva,T> 28.5,2.25,Sansabet,100,4.31,-100.00,true,
+65,2025-11-23 11:22:11.036288+00,Soccer,spain segunda rfef group 5,coria,las palmas atletico,T> 2.5,3.15,Sansabet,100,4.23,-100.00,true,
+46,2025-11-23 11:20:59.050137+00,Soccer,spain segunda rfef group 4,extremadura,almeria ii,T> 2.5,3.15,Sansabet,100,4.56,215.00,true,
+196,2025-11-23 11:10:26.634882+00,Soccer,spain tercera division,l`hospitalet,ue vic,T< 1.5,3.55,Sansabet,100,3.64,-100.00,true,
+195,2025-11-23 11:10:00.588918+00,Soccer,spain segunda rfef group 4,ucam murcia,minera,IT2> 0.5,2.35,Sansabet,100,3.41,135.00,true,
+125,2025-11-23 11:09:38.592141+00,Soccer,kenya premier league,kakamega homeboyz,posta rangers,IT2> 0.5,3,Sansabet,100,5.07,-100.00,true,
+116,2025-11-23 10:50:15.757975+00,Soccer,spain tercera division,zamudio,lagun onak,T> 2.5,3.15,Sansabet,100,3.37,-100.00,true,
+173,2025-11-23 10:45:03.593087+00,Soccer,turkey 1st league,umraniyespor,bodrumspor,T> 2.5,2.55,Sansabet,100,13.66,-100.00,true,
+107,2025-11-23 10:41:35.406122+00,Tennis,itf women heraklion,eliska tichackova,natalija senic,P3 2G 3.0,2.05,Sansabet,100,3.98,-100.00,true,
+104,2025-11-23 09:57:05.499237+00,Soccer,thailand league 3,kasem bundit university,prime bangkok,IT1> 1.5,4.45,Sansabet,100,3.45,-100.00,true,
+99,2025-11-23 09:53:57.385909+00,Soccer,indonesia championship,persiku kudus,persela lamongan,IT1> 1.5,3.85,Sansabet,100,3.45,-100.00,true,
+142,2025-11-23 09:43:48.941966+00,Soccer,spain tercera division,real murcia ii,bala azul,IT2> 0.5,3.4,Sansabet,100,6.59,240.00,true,
+89,2025-11-23 09:39:28.61507+00,Soccer,thailand league 3,vrn muangnont,hua hin city,H1 0.5,2.5,Sansabet,100,3.13,150.00,true,
+138,2025-11-23 09:39:06.640786+00,Soccer,south africa diski challenge u23,mamelodi sundowns,polokwane city,H1 -4.5,2.65,Sansabet,100,3.09,-100.00,true,
+88,2025-11-23 09:38:14.572152+00,Soccer,hong kong hkfa 1. division,lucky mile,shatin,IT1< 1.5,1.95,Sansabet,100,3.13,-100.00,true,
+83,2025-11-23 09:31:30.445158+00,Soccer,malaysia super league,imigresen,pdrm,P1 T> 1.5,2.3,Sansabet,100,3.39,130.00,true,
+82,2025-11-23 09:29:29.16169+00,Soccer,south africa diski challenge u23,magesi,stellenbosch,IT1> 2.5,3.85,Sansabet,100,4.42,285.00,true,
+70,2025-11-23 09:21:15.968152+00,Tennis,atp challenger manama,oliver bonding,matisse bobichon,P2 T< 8.5,3.55,Sansabet,100,5.40,-100.00,true,
+112,2025-11-23 09:13:19.697666+00,Soccer,hong kong hkfa 1. division,south china,3 sing,H1 -2.5,2.95,Sansabet,100,4.41,195.00,true,
+111,2025-11-23 09:11:01.461673+00,Soccer,hong kong hkfa 1. division,wse,yuen long,H1 -3.5,4.35,Sansabet,100,7.25,335.00,true,
+59,2025-11-23 08:52:06.730284+00,Tennis,itf men antalya,felix gill,samuele pieri,P1 T> 9.5,2.9,Sansabet,100,16.62,-100.00,true,
+117,2025-11-23 08:03:38.375336+00,Soccer,chinese taipei premier league,taichung futuro,ac taipei,IT1> 1.5,3.15,Sansabet,100,3.39,-100.00,true,
+49,2025-11-23 07:59:06.201094+00,Tennis,atp challenger manama,ivan marrero curbelo,michael zhu,P2 T< 7.5,2.55,Sansabet,100,4.20,-100.00,true,
+42,2025-11-23 07:49:43.797825+00,Soccer,russia first league,yenisey krasnoyarsk,rodina moscow,T> 1.5,3.8,Sansabet,100,4.39,-100.00,true,
+79,2025-11-23 06:25:28.383427+00,Soccer,japan j2 league,blaublitz akita,vegalta sendai,T> 1.5,4,Sansabet,100,3.04,-100.00,true,
+72,2025-11-23 06:15:35.884686+00,Soccer,japan j2 league,fujieda myfc,sagan tosu,T> 1.5,3.15,Sansabet,100,3.59,-100.00,true,
+12,2025-11-23 06:09:15.519466+00,Soccer,hong kong hkfa 1. division,tung sing,kwun tong,T< 1.5,3.05,Sansabet,100,5.39,205.00,true,
+71,2025-11-23 06:07:51.617169+00,Soccer,korea republic k league 2,suwon bluewings,gimpo,T< 2.5,3.75,Sansabet,100,76.82,275.00,true,
+35,2025-11-23 06:04:51.392065+00,Soccer,korea republic k league 2,bucheon 1995,hwaseong,IT1> 0.5,3.85,Sansabet,100,3.26,-100.00,true,
+288,2025-11-23 05:53:06.872758+00,Soccer,korea republic k league 2,seongnam,busan ipark,IT2> 1.5,4.25,Sansabet,100,5.74,-100.00,true,
+17,2025-11-23 05:47:54.637943+00,Tennis,atp challenger playford,ryuki matsuda,jesse delaney,P1 1G 4.0,2.9,Sansabet,100,4.60,-100.00,true,
+10,2025-11-23 05:34:56.221287+00,Soccer,japan j2 league,omiya ardija,tokushima vortis,IT2> 1.5,2.95,Sansabet,100,52.08,195.00,true,
+223,2025-11-23 05:27:23.806994+00,Tennis,itf men kuala lumpur,karol filar,yuta kawahashi,P2 T< 9.5,3.6,Sansabet,100,32.71,-100.00,true,
+199,2025-11-23 05:20:21.55936+00,Soccer,japan football league,maruyasu okazaki,minebea mitsumi,H1 1.5,3.05,Sansabet,100,3.25,205.00,true,
+216,2025-11-23 05:16:21.413417+00,Tennis,atp challenger yokohama,kaichi uchida,rei sakamoto,P3 T< 9.5,4.8,Sansabet,100,43.91,-100.00,true,
+38,2025-11-23 04:44:39.900265+00,Soccer,japan football league,tiamo hirakata,reinmeer aomori,T> 4.5,3.25,Sansabet,100,3.13,225.00,true,
+23,2025-11-23 04:25:13.118272+00,Soccer,japan football league,yscc yokohama,iwate grulla morioka,T> 2.5,3.2,Sansabet,100,5.67,220.00,true,
+290,2025-11-23 04:24:02.895009+00,Soccer,japan j3 league,vanraure hachinohe,kamatamare sanuki,IT2> 1.5,2.75,Sansabet,100,7.88,-100.00,true,
+78,2025-11-23 04:15:34.724436+00,Soccer,japan football league,criacao shinjuku,asuka,T> 2.5,3.2,Sansabet,100,4.77,-100.00,true,
+1,2025-11-23 02:53:19.071217+00,Tennis,atp challenger playford,taisei ichikawa,emile hudd,P1 T> 8.5,1.83,Sansabet,100,3.06,-100.00,true,
+34,2025-11-23 02:44:38.525012+00,Soccer,guatemala primera division de ascenso,chiquimulilla,deportivo san pedro,H1 -1.5,3.25,Sansabet,100,4.03,-100.00,true,
+136,2025-11-23 02:42:50.677629+00,Tennis,atp challenger sydney,james duckworth,hayato matsuoka,T> 17.5,2.35,Sansabet,100,9.02,-100.00,true,
+61,2025-11-23 02:15:15.306117+00,Soccer,australia a league,auckland,brisbane roar,IT2> 0.5,2.15,Sansabet,100,4.46,115.00,true,
+64,2025-11-23 01:58:20.550085+00,Tennis,atp challenger playford,takuya kumasaka,matt hulme,P2 T< 9.5,2.4,Sansabet,100,5.34,-100.00,true,
+54,2025-11-23 01:39:11.642126+00,Soccer,mexico liga de expansión mx,irapuato,atletico morelia,P1 T> 1.5,4.05,Sansabet,100,3.91,-100.00,true,
+53,2025-11-23 01:36:39.650712+00,Soccer,colombia primera a,deportes tolima,atletico bucaramanga,T> 1.5,3.4,Sansabet,100,3.12,-100.00,true,
+50,2025-11-23 01:32:19.35448+00,Soccer,mexico liga premier,lobos ulmx,club calor,2,4.65,Sansabet,100,5.21,365.00,true,
+43,2025-11-23 01:00:05.884529+00,Soccer,brazil serie a,flamengo,bragantino,P1 T> 0.5,2.3,Sansabet,100,3.21,-100.00,true,
+40,2025-11-23 00:47:53.422778+00,Soccer,new zealand national womens league,southern united,western springs,T< 4.5,2.95,Sansabet,100,4.18,-100.00,true,
+39,2025-11-23 00:42:51.231688+00,Tennis,atp challenger playford,pavle marinkov,kody pearson,P2 1G 2.0,3.7,Sansabet,100,3.71,270.00,true,
+30,2025-11-23 00:41:25.108675+00,Soccer,nicaragua primera division,diriangen,managua,T< 0.5,4.2,Sansabet,100,7.39,-100.00,true,
+27,2025-11-23 00:28:06.571684+00,Soccer,argentina primera b nacional,estudiantes rio cuarto,deportivo madryn,T> 1.5,2.4,Sansabet,100,5.53,140.00,true,
+123,2025-11-23 00:26:36.424989+00,Tennis,itf women chihuahua,mary stoiana,kayla cross,P2 T< 9.5,3.75,Sansabet,100,23.98,-100.00,true,
+9,2025-11-23 00:25:30.394821+00,Soccer,bolivia primera division,jorge wilstermann,oriente petrolero,P1 H2 0.5,3.55,Sansabet,100,3.26,-100.00,true,
