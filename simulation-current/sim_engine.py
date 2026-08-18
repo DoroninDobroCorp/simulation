@@ -39,6 +39,8 @@ def set_roi(roi):
 
 def load_real_odds(filename='matching_teams_clean.csv'):
     import pandas as pd
+    if not os.path.isabs(filename):
+        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
     df = pd.read_csv(filename)
     return df['coefficient'].values.astype(float)
 
