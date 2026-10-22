@@ -1,0 +1,1303 @@
+<title>Лаборатория банкролла</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Monte Carlo симулятор банкролл-менеджмента для value-ставок: корректный движок, сравнение стратегий при равном риске, аудит прежних расчётов.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Лабораторный стенд: слева условия эксперимента (общие для всех вкладок), справа результаты. Бумага в линейку, чернила, графики — единственное громкое. */
+:root {
+  --bg: #eef1ee;
+  --surface: #fbfcfa;
+  --raise: #f4f6f3;
+  --ink: #121a1c;
+  --ink-2: #47525a;
+  --muted: #6f7a80;
+  --line: #dce1de;
+  --axis: #bfc7c4;
+  --accent: #3a2fb0;
+  --accent-ink: #ffffff;
+  --accent-wash: #e7e5fa;
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --band-1: rgba(42, 120, 214, 0.11);
+  --band-2: rgba(42, 120, 214, 0.24);
+  --path: rgba(71, 82, 90, 0.28);
+  --bar-muted: #b8c1c4;
+  --loss-wash: rgba(208, 59, 59, 0.06);
+  --good: #0ca30c;
+  --good-text: #006300;
+  --warn: #fab219;
+  --crit: #d03b3b;
+  --crit-text: #b42c2c;
+  --shadow: 0 1px 0 rgba(18, 26, 28, 0.04), 0 8px 24px -16px rgba(18, 26, 28, 0.18);
+  --f-display: "Unbounded", "Golos Text", system-ui, sans-serif;
+  --f-body: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1012; --surface: #14181a; --raise: #191e21; --ink: #e7ecea; --ink-2: #b2bbbb; --muted: #87929a;
+    --line: #252b2e; --axis: #3b4347; --accent: #a99cff; --accent-ink: #120f2e; --accent-wash: #231e48;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --band-1: rgba(57, 135, 229, 0.14); --band-2: rgba(57, 135, 229, 0.30); --path: rgba(178, 187, 187, 0.22);
+    --bar-muted: #4b5459; --loss-wash: rgba(208, 59, 59, 0.10); --good-text: #2fbf2f; --crit-text: #ef7a7a;
+    --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 30px -18px rgba(0, 0, 0, 0.7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1012; --surface: #14181a; --raise: #191e21; --ink: #e7ecea; --ink-2: #b2bbbb; --muted: #87929a;
+  --line: #252b2e; --axis: #3b4347; --accent: #a99cff; --accent-ink: #120f2e; --accent-wash: #231e48;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+  --band-1: rgba(57, 135, 229, 0.14); --band-2: rgba(57, 135, 229, 0.30); --path: rgba(178, 187, 187, 0.22);
+  --bar-muted: #4b5459; --loss-wash: rgba(208, 59, 59, 0.10); --good-text: #2fbf2f; --crit-text: #ef7a7a;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 30px -18px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.5 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1320px; margin: 0 auto; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: var(--accent); }
+code, .mono { font-family: var(--f-mono); font-size: 0.86em; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+/* ---------- шапка ---------- */
+.masthead { padding-block: 28px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 32px; align-items: end; }
+.brand { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.eyebrow { font: 500 11.5px/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 700 clamp(26px, 4.2vw, 44px)/1.05 var(--f-display); letter-spacing: -0.02em; }
+h1 .tick { color: var(--accent); }
+.thesis { max-width: 64ch; color: var(--ink-2); font-size: 16px; }
+.facts { display: flex; gap: 22px; flex-wrap: wrap; justify-content: flex-end; }
+.fact { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fact b { font: 600 22px/1.1 var(--f-body); }
+.fact span { font-size: 12px; color: var(--muted); }
+
+/* ---------- вкладки ---------- */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; margin-bottom: 20px; }
+.tabs button {
+  appearance: none; border: 0; background: none; color: var(--ink-2); cursor: pointer;
+  font: 500 14.5px/1 var(--f-body); padding: 12px 14px 13px; border-bottom: 2px solid transparent; white-space: nowrap;
+}
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+.tabs button:hover { color: var(--ink); }
+.tabs .count { font: 500 11px/1 var(--f-mono); margin-left: 6px; padding: 2px 6px; border-radius: 99px; background: var(--accent-wash); color: var(--accent); }
+
+/* ---------- стенд ---------- */
+.bench { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 24px; align-items: start; }
+.conditions {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  max-height: calc(100vh - 24px); overflow: auto;
+}
+.conditions summary { list-style: none; cursor: default; padding: 14px 16px 6px; }
+.conditions summary::-webkit-details-marker { display: none; }
+.conditions .sum-title { font: 600 14px/1.25 var(--f-body); display: grid; grid-template-columns: 1fr auto; column-gap: 8px; }
+.conditions .sum-title small { grid-column: 1; font: 400 12px/1.4 var(--f-body); color: var(--muted); }
+.group { padding: 10px 16px 14px; display: grid; gap: 12px; border-top: 1px solid var(--line); }
+.group:first-of-type { border-top: 0; }
+.group h3 { font: 500 11px/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-top: 4px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field > label, .field > .lab { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+.field output { font: 500 12.5px var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.field .hint { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; height: 20px; }
+select, input[type="number"] {
+  width: 100%; font: 14px var(--f-body); color: var(--ink); background: var(--raise);
+  border: 1px solid var(--line); border-radius: 7px; padding: 7px 9px; min-width: 0;
+}
+.seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--raise); border: 1px solid var(--line); border-radius: 8px; padding: 3px; gap: 3px; }
+.seg button { appearance: none; border: 0; background: none; border-radius: 6px; padding: 7px 6px; font: 500 12.5px/1.15 var(--f-body); color: var(--ink-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--ink-2); }
+.check input { accent-color: var(--accent); margin-top: 3px; }
+.check[aria-disabled="true"] { opacity: 0.5; }
+.reset { appearance: none; border: 0; background: none; color: var(--accent); font: 500 12.5px var(--f-body); cursor: pointer; padding: 0; }
+
+.pane { min-width: 0; display: grid; gap: 18px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px 14px; min-width: 0; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.panel h2 { font: 600 15px/1.25 var(--f-body); }
+.panel .sub { font-size: 12.5px; color: var(--muted); }
+.lede { color: var(--ink-2); max-width: 72ch; }
+.lede b { color: var(--ink); font-weight: 600; }
+
+/* стратегия */
+.strategy { display: grid; grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); gap: 14px 22px; align-items: start; }
+.strategy .params { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px 18px; }
+.formula { grid-column: 1 / -1; font: 13px/1.5 var(--f-mono); color: var(--ink-2); background: var(--raise); border-radius: 7px; padding: 8px 10px; overflow-x: auto; white-space: nowrap; }
+.formula b { color: var(--ink); font-weight: 500; }
+
+/* показатели */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px 12px 16px; position: relative; min-width: 0; }
+.kpi::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--axis); }
+.kpi[data-tone="good"]::before { background: var(--good); }
+.kpi[data-tone="warn"]::before { background: var(--warn); }
+.kpi[data-tone="crit"]::before { background: var(--crit); }
+.kpi .k-label { font-size: 12.5px; color: var(--ink-2); }
+.kpi .k-value { font: 600 28px/1.15 var(--f-body); margin-top: 4px; letter-spacing: -0.01em; }
+.kpi .k-note { font-size: 12px; color: var(--muted); margin-top: 2px; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.tone-chip { font: 500 11px/1 var(--f-body); padding: 3px 7px; border-radius: 99px; background: var(--raise); color: var(--ink-2); display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
+.tone-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--axis); }
+.tone-chip[data-tone="good"]::before { background: var(--good); }
+.tone-chip[data-tone="warn"]::before { background: var(--warn); }
+.tone-chip[data-tone="crit"]::before { background: var(--crit); }
+.minor { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13px; color: var(--ink-2); padding: 2px 2px 0; }
+.minor b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.status { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.busy { opacity: 0.55; transition: opacity 0.2s; }
+
+/* графики */
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { fill: var(--muted); font: 11.5px var(--f-body); font-variant-numeric: tabular-nums; }
+.chart .grid line { stroke: var(--line); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .base { stroke: var(--axis); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .ref { stroke: var(--ink-2); stroke-width: 1; opacity: 0.55; }
+.chart .ref-label { fill: var(--ink-2); font-weight: 500; }
+.chart .hover-line { stroke: var(--ink-2); stroke-width: 1; opacity: 0.6; pointer-events: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); margin: 2px 0 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.key-line { width: 16px; height: 2px; border-radius: 1px; display: inline-block; }
+.key-rect { width: 12px; height: 10px; border-radius: 2px; display: inline-block; }
+.tip {
+  position: absolute; pointer-events: none; z-index: 5; min-width: 150px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow);
+  padding: 8px 10px; font-size: 12.5px; color: var(--ink-2); display: grid; gap: 3px;
+}
+.tip .t-head { font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.tip .t-row { display: grid; grid-template-columns: 14px 1fr auto; gap: 8px; align-items: center; }
+.tip .t-row b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+
+/* таблицы */
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+th { font: 500 11.5px/1.2 var(--f-body); color: var(--muted); text-transform: none; }
+th:first-child, td:first-child { text-align: left; padding-left: 0; }
+td:first-child { white-space: normal; min-width: 180px; }
+tr.best td { font-weight: 600; }
+td .k { font: 12px var(--f-mono); color: var(--muted); display: block; }
+details.more { margin-top: 10px; }
+details.more summary { cursor: pointer; font-size: 13px; color: var(--accent); font-weight: 500; }
+details.more[open] summary { margin-bottom: 8px; }
+
+/* кнопки и прогресс */
+.toolbar { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: end; }
+.toolbar .field { min-width: 180px; }
+.btn {
+  appearance: none; border: 0; cursor: pointer; border-radius: 8px; padding: 10px 16px;
+  font: 600 14px/1 var(--f-body); background: var(--accent); color: var(--accent-ink);
+}
+.btn:hover { filter: brightness(1.08); }
+.btn[disabled] { opacity: 0.5; cursor: progress; }
+.btn.ghost { background: var(--raise); color: var(--ink); border: 1px solid var(--line); }
+.progress { height: 4px; background: var(--raise); border-radius: 2px; overflow: hidden; min-width: 140px; flex: 1; align-self: center; }
+.progress i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
+.source { display: inline-flex; gap: 6px; align-items: center; font-size: 12.5px; color: var(--ink-2); background: var(--raise); border-radius: 99px; padding: 4px 10px; }
+.source[data-stale="true"] { color: var(--crit-text); }
+.callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; color: var(--ink-2); max-width: 78ch; }
+.callout b { color: var(--ink); }
+
+/* аудит */
+.findings { display: grid; gap: 10px; }
+.finding { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 4px 16px; padding: 12px 0 12px; border-top: 1px solid var(--line); }
+.finding:first-child { border-top: 0; }
+.finding .sev { font: 500 11px/1 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; padding-top: 4px; display: flex; gap: 6px; align-items: flex-start; color: var(--ink-2); }
+.finding .sev::before { content: ""; width: 8px; height: 8px; border-radius: 2px; margin-top: 1px; flex: none; background: var(--axis); }
+.finding[data-sev="crit"] .sev::before { background: var(--crit); }
+.finding[data-sev="major"] .sev::before { background: var(--warn); }
+.finding h3 { font: 600 15px/1.35 var(--f-body); }
+.finding p { color: var(--ink-2); font-size: 14px; margin-top: 3px; max-width: 80ch; }
+.finding .where { font: 12px/1.5 var(--f-mono); color: var(--muted); margin-top: 4px; overflow-wrap: anywhere; }
+.finding .fix { font-size: 13px; margin-top: 4px; color: var(--good-text); }
+.finding .fix.open { color: var(--ink-2); }
+.cmp td.old { color: var(--crit-text); }
+
+footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
+footer code { color: var(--ink-2); }
+
+/* ---------- узкие экраны ---------- */
+@media (max-width: 1040px) {
+  .bench { grid-template-columns: minmax(0, 1fr); }
+  .conditions { position: static; max-height: none; }
+  .conditions summary { cursor: pointer; padding-bottom: 12px; }
+  .conditions summary .sum-title::after { content: "▾"; color: var(--muted); grid-column: 2; grid-row: 1; }
+  .conditions[open] summary .sum-title::after { content: "▴"; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .masthead { grid-template-columns: minmax(0, 1fr); }
+  .facts { justify-content: flex-start; }
+  .strategy { grid-template-columns: minmax(0, 1fr); }
+  .two { grid-template-columns: minmax(0, 1fr); }
+  .finding { grid-template-columns: minmax(0, 1fr); }
+  .kpi .k-value { font-size: 23px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">
+      <span class="eyebrow">Monte Carlo · value-ставки · банкролл</span>
+      <h1>Лаборатория банкролла<span class="tick">.</span></h1>
+      <p class="thesis">Перевес даёт модель, а размер ставки решает, переживёт ли банк дисперсию. Здесь каждая стратегия ставит от живого банка, все играют одни и те же ставки и исходы, а сравнение идёт при одинаковом риске.</p>
+    </div>
+    <div class="facts" aria-label="Коротко">
+      <div class="fact"><b id="fact-bets">1013</b><span>реальных ставок в данных</span></div>
+      <div class="fact"><b id="fact-odds">2.76</b><span>средний кэф</span></div>
+      <div class="fact"><b id="fact-bugs">—</b><span>ошибок найдено и исправлено</span></div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Разделы">
+    <button role="tab" id="tab-sim" aria-controls="view-sim" aria-selected="true">Симулятор</button>
+    <button role="tab" id="tab-risk" aria-controls="view-risk" aria-selected="false">Равный риск</button>
+    <button role="tab" id="tab-kelly" aria-controls="view-kelly" aria-selected="false">Келли и ошибка модели</button>
+    <button role="tab" id="tab-audit" aria-controls="view-audit" aria-selected="false">Аудит<span class="count" id="audit-count">—</span></button>
+  </nav>
+
+  <div class="bench">
+    <details class="conditions" id="conditions" open>
+      <summary><div class="sum-title">Условия эксперимента <small>общие для всех вкладок</small></div></summary>
+
+      <div class="group">
+        <h3>Рынок</h3>
+        <div class="field">
+          <span class="lab">Ставки</span>
+          <div class="seg" role="group" aria-label="Источник ставок">
+            <button type="button" id="src-real" aria-pressed="true">Реальные, 1013</button>
+            <button type="button" id="src-syn" aria-pressed="false">Синтетика по ТЗ</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="c-roi">Истинный средний ROI <output id="o-roi"></output></label>
+          <input type="range" id="c-roi" min="0" max="10" step="0.1" value="2.5">
+        </div>
+        <div class="field">
+          <label for="c-ev">Модель перевеса</label>
+          <select id="c-ev">
+            <option value="flat">Одинаковый EV у всех ставок</option>
+            <option value="scaled">EV каждой ставки из данных</option>
+          </select>
+          <span class="hint" id="ev-hint"></span>
+        </div>
+        <label class="check" id="calib-wrap"><input type="checkbox" id="c-calib" checked> Стратегия знает истинный EV (иначе видит оценку модели)</label>
+        <div class="field">
+          <label for="c-noise">Шум модели σ <output id="o-noise"></output></label>
+          <input type="range" id="c-noise" min="0" max="10" step="0.5" value="0">
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Дистанция</h3>
+        <div class="field">
+          <label for="c-bets">Ставок в серии <output id="o-bets"></output></label>
+          <input type="range" id="c-bets" min="100" max="5000" step="100" value="1000">
+        </div>
+        <div class="field">
+          <label for="c-sims">Симуляций</label>
+          <select id="c-sims">
+            <option value="500">500</option>
+            <option value="1000">1 000</option>
+            <option value="2000" selected>2 000</option>
+            <option value="5000">5 000</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Правила ставок</h3>
+        <div class="field">
+          <label for="c-cap">Максимум на ставку <output id="o-cap"></output></label>
+          <input type="range" id="c-cap" min="1" max="25" step="1" value="10">
+        </div>
+        <div class="field">
+          <label for="c-recalc">База для расчёта ставки</label>
+          <select id="c-recalc">
+            <option value="live">Текущий банк</option>
+            <option value="r30">Снимок раз в 30 ставок</option>
+            <option value="r3070">Снимок раз в 30–70 (backend)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="c-var">Отклонение суммы от расчётной</label>
+          <select id="c-var">
+            <option value="none">Нет, ставим ровно</option>
+            <option value="uniform">×0.8–1.2, в среднем ×1</option>
+            <option value="legacy">×0.35–1.15 (legacy, в среднем ×0.75)</option>
+          </select>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="c-bank">Банк</label><input type="number" id="c-bank" min="100" step="100" value="10000"></div>
+          <div class="field"><label for="c-seed">Seed</label><input type="number" id="c-seed" min="0" step="1" value="2026"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="c-round">Округлять до</label><input type="number" id="c-round" min="0" step="1" value="0"></div>
+          <div class="field"><label for="c-min">Мин. ставка</label><input type="number" id="c-min" min="0" step="1" value="0"></div>
+        </div>
+        <button type="button" class="reset" id="reset">Вернуть условия по умолчанию</button>
+      </div>
+    </details>
+
+    <main class="pane">
+      <!-- ================= СИМУЛЯТОР ================= -->
+      <section id="view-sim" role="tabpanel" aria-labelledby="tab-sim" class="pane">
+        <div class="panel">
+          <div class="strategy">
+            <div class="field">
+              <label for="s-key">Стратегия</label>
+              <select id="s-key"></select>
+              <span class="hint" id="s-desc"></span>
+            </div>
+            <div class="params" id="s-params"></div>
+            <div class="formula" id="s-formula"></div>
+          </div>
+        </div>
+
+        <div class="kpis" id="kpis"></div>
+        <div class="minor" id="minor"></div>
+
+        <div class="panel" id="fan-panel">
+          <div class="panel-head">
+            <div><h2>Траектории банка</h2><span class="sub">по горизонтали номер ставки, по вертикали прибыль от старта на логарифмической шкале</span></div>
+            <span class="status" id="sim-status">Считаю…</span>
+          </div>
+          <div class="legend" id="fan-legend"></div>
+          <div class="chart" id="fan"></div>
+          <details class="more"><summary>Таблица квантилей</summary><div class="table-wrap" id="fan-table"></div></details>
+        </div>
+
+        <div class="two">
+          <div class="panel">
+            <div class="panel-head"><h2>Итог серии</h2><span class="sub">доля симуляций по прибыли, шкала логарифмическая</span></div>
+            <div class="chart" id="hist-final"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Самая глубокая просадка</h2><span class="sub">от пика банка, за всю серию</span></div>
+            <div class="chart" id="hist-dd"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= РАВНЫЙ РИСК ================= -->
+      <section id="view-risk" role="tabpanel" aria-labelledby="tab-risk" class="pane" hidden>
+        <div class="panel">
+          <p class="lede">Стратегия, которая ставит больше, всегда выглядит прибыльнее в среднем и рискованнее. Поэтому здесь у каждой стратегии размер ставки умножается на коэффициент, который подбирается так, чтобы <b>все упирались в один и тот же лимит риска</b>. Внутри лимита берётся размер с лучшей медианой. Все стратегии играют одни и те же ставки и исходы.</p>
+        </div>
+        <div class="panel">
+          <div class="toolbar">
+            <div class="field">
+              <label for="r-profile">Профиль риска из ТЗ</label>
+              <select id="r-profile">
+                <option value="conservative">Консервативный: нет просадок ≥ 50%</option>
+                <option value="cautious" selected>Осторожный: просадка ≥ 50% не чаще 3.5%</option>
+                <option value="balanced">Сбалансированный: ≥ 50% не чаще 10%</option>
+                <option value="risky">Рискованный: ≥ 80% не чаще 5%</option>
+                <option value="extreme">Экстремальный: ≥ 80% не чаще 50%</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="r-sims">Симуляций на шаг</label>
+              <select id="r-sims"><option value="500">500</option><option value="1000" selected>1 000</option><option value="2000">2 000</option></select>
+            </div>
+            <button class="btn" id="r-run" type="button">Пересчитать в браузере</button>
+            <div class="progress" aria-hidden="true"><i id="r-prog"></i></div>
+          </div>
+          <div style="margin-top:12px"><span class="source" id="r-source"></span></div>
+        </div>
+        <div class="panel" id="risk-panel">
+          <div class="panel-head"><h2>Медианная прибыль за серию при равном риске</h2><span class="sub" id="r-sub"></span></div>
+          <div class="chart" id="risk-chart"></div>
+          <div class="table-wrap" id="risk-table" style="margin-top:12px"></div>
+          <p class="sub" id="r-note" style="margin-top:10px">При одинаковом EV у всех ставок Келли, постоянная прибыль и адаптивная постоянная прибыль ставят одно и то же с точностью до множителя (∝ 1 / (кэф − 1)), а фиксированный %, линейно и корень от ROI — постоянный процент. После калибровки под один риск они совпадают. Различия появляются в модели «EV каждой ставки из данных».</p>
+        </div>
+      </section>
+
+      <!-- ================= КЕЛЛИ ================= -->
+      <section id="view-kelly" role="tabpanel" aria-labelledby="tab-kelly" class="pane" hidden>
+        <div class="panel">
+          <p class="lede">Полный Келли для десятичного кэфа: <code>f* = EV / (кэф − 1)</code>. Он максимизирует рост медианы, но только если EV известен точно. Здесь та же доля Келли считается в трёх мирах: стратегия знает истинный EV; модель завышает EV (средняя оценка в данных 5.1%, а истинный средний ROI задан слева); то же плюс шум модели σ = 5% на каждую ставку.</p>
+        </div>
+        <div class="panel">
+          <div class="toolbar">
+            <button class="btn" id="k-run" type="button">Пересчитать в браузере</button>
+            <div class="progress" aria-hidden="true"><i id="k-prog"></i></div>
+            <span class="source" id="k-source"></span>
+          </div>
+        </div>
+        <p class="callout" id="k-callout"></p>
+        <div class="panel" id="kelly-panel">
+          <div class="legend" id="k-legend"></div>
+          <div class="two">
+            <div><div class="panel-head"><h2>Медианная прибыль</h2><span class="sub">по доле от полного Келли</span></div><div class="chart" id="k-growth"></div></div>
+            <div><div class="panel-head"><h2>Шанс просадки ≥ 50%</h2><span class="sub">по доле от полного Келли</span></div><div class="chart" id="k-dd"></div></div>
+          </div>
+          <details class="more"><summary>Таблица значений</summary><div class="table-wrap" id="k-table"></div></details>
+        </div>
+      </section>
+
+      <!-- ================= АУДИТ ================= -->
+      <section id="view-audit" role="tabpanel" aria-labelledby="tab-audit" class="pane" hidden>
+        <div class="panel">
+          <p class="lede" id="audit-lede"></p>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Старый код и исправленный на одних и тех же исходах</h2><span class="sub">ROI 7%, 1013 реальных кэфов, 4000 симуляций</span></div>
+          <div class="table-wrap" id="before-after"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Найденные ошибки</h2><span class="sub">подробно — AUDIT.md в репозитории</span></div>
+          <div class="findings" id="findings"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <span>Тот же движок на Python: <code>python -m brm.report</code> пересчитывает предрасчёт, <code>pytest tests</code> проверяет его против аналитических формул.</span>
+    <span id="foot-note"></span>
+  </footer>
+</div>
+
+<script type="text/plain" id="engine-src">__ENGINE__</script>
+<script>
+'use strict';
+const BETS = __REAL_BETS__;
+const PRE = __RESULTS__;
+const BEFORE_AFTER = __BEFORE_AFTER__;
+
+// ================= справочники =================
+const STRATS = {
+  fixed: { label: 'Фиксированный %', desc: 'Всегда одна и та же доля текущего банка.',
+    params: [['pct', 'Доля банка', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.pct}%</b> × банк` },
+  flat: { label: 'Флэт от начального банка', desc: 'Сумма не меняется вместе с банком. Так фактически считались 22 из 25 стратегий в старом коде.',
+    params: [['pct', 'Доля начального банка', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.pct}%</b> × начальный банк` },
+  kelly_half: { label: 'Келли (доля)', desc: 'Доля от полного Келли. 0.5 — половина Келли.',
+    params: [['mult', 'Доля от полного Келли', 0.05, 3, 0.05, 0.5, '×']], formula: (p) => `ставка = <b>${p.mult}</b> × EV / (кэф − 1) × банк` },
+  floor_kelly: { label: 'Келли с полом просадки', desc: 'Grossman–Zhou: Келли от подушки над полом. Просадка от пика не глубже 1 − пол.',
+    params: [['mult', 'Доля Келли от подушки', 0.1, 1.5, 0.05, 1, '×'], ['floor', 'Пол, доля пика', 10, 90, 5, 50, '%']],
+    formula: (p) => `ставка = min(<b>${p.mult}</b> × EV/(кэф − 1), 1) × (банк − <b>${p.floor}%</b> × пик)` },
+  log_formula: { label: 'Лог-формула (backend)', desc: 'Формула из backend/calculator. Зависит от вероятности проигрыша, почти не от перевеса.',
+    params: [['risk', 'Параметр risk', 2, 40, 0.5, 15, ''], ['edgeCap', 'Кап EV', 1, 20, 1, 8, '%']],
+    formula: (p) => `ставка = −log₁₀(1 − (1 + min(EV, ${p.edgeCap}%)) / кэф) / <b>${p.risk}</b> × банк` },
+  linear_roi: { label: 'Линейно от ROI', desc: 'Процент растёт пропорционально EV ставки.',
+    params: [['basePct', 'Ставка при базовом ROI', 0.1, 5, 0.1, 1, '%'], ['baseRoi', 'Базовый ROI', 1, 10, 0.5, 5, '%'], ['maxPct', 'Потолок', 1, 10, 0.5, 10, '%']],
+    formula: (p) => `ставка = <b>${p.basePct}%</b> × ROI / <b>${p.baseRoi}%</b>, не больше ${p.maxPct}%` },
+  sqrt_roi: { label: 'Корень от ROI', desc: 'Процент растёт как корень из EV ставки.',
+    params: [['basePct', 'Ставка при базовом ROI', 0.1, 5, 0.1, 1, '%'], ['baseRoi', 'Базовый ROI', 1, 10, 0.5, 5, '%'], ['maxPct', 'Потолок', 1, 10, 0.5, 10, '%']],
+    formula: (p) => `ставка = <b>${p.basePct}%</b> × √(ROI / <b>${p.baseRoi}%</b>), не больше ${p.maxPct}%` },
+  constant_profit: { label: 'Постоянная прибыль', desc: 'Выигрыш всегда даёт одну и ту же долю банка. При одинаковом EV это Келли в другом масштабе.',
+    params: [['target', 'Выигрыш, доля банка', 0.1, 5, 0.1, 1, '%'], ['maxPct', 'Потолок', 1, 10, 0.5, 10, '%']],
+    formula: (p) => `ставка = <b>${p.target}%</b> × банк / (кэф − 1), не больше ${p.maxPct}%` },
+  adaptive_constant_profit: { label: 'Адаптивная пост. прибыль', desc: 'Целевой выигрыш растёт с EV ставки (ROI 3% → 20%).',
+    params: [['minT', 'Выигрыш при ROI 3%', 0.1, 3, 0.1, 0.5, '%'], ['maxT', 'Выигрыш при ROI 20%', 0.5, 8, 0.1, 3, '%']],
+    formula: (p) => `ставка = (${p.minT}% … ${p.maxT}% по ROI) × банк / (кэф − 1), не больше 15%` },
+  linear_roi_odds: { label: 'ROI со штрафом за кэф', desc: 'Линейно от EV, меньше на высоких кэфах.',
+    params: [['basePct', 'Ставка при ROI 5%', 0.1, 5, 0.1, 1, '%'], ['penalty', 'Штраф за кэф 5.0', 0, 1, 0.05, 0.7, '']],
+    formula: (p) => `ставка = <b>${p.basePct}%</b> × ROI/5% × (1 − <b>${p.penalty}</b> × (кэф − 1.5)/3.5)` },
+  dynamic_percentage: { label: 'Динамический %', desc: 'Больше при банке выше 120% старта, меньше ниже 80% и 60%.',
+    params: [['pct', 'Базовый процент', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.pct}%</b> × (1.2 | 1 | 0.7 | 0.5 по банку к старту) × банк` },
+  drawdown_guard: { label: 'Защита от просадки', desc: 'Фиксированный процент, урезанный на просадке.',
+    params: [['pct', 'Базовый процент', 0.1, 10, 0.1, 2, '%'], ['cut', 'Порог просадки', 5, 60, 5, 20, '%'], ['factor', 'Множитель на просадке', 0.1, 1, 0.05, 0.5, '×']],
+    formula: (p) => `ставка = <b>${p.pct}%</b> × банк, ×<b>${p.factor}</b> при просадке > ${p.cut}%` },
+  anti_martingale: { label: 'Анти-мартингейл', desc: 'Растёт после выигрыша, сбрасывается после проигрыша. Исходы независимы, поэтому серии ничего не предсказывают.',
+    params: [['basePct', 'База', 0.2, 5, 0.1, 1, '%'], ['mult', 'Множитель после выигрыша', 1, 3, 0.05, 1.5, '×'], ['maxStreak', 'Максимум шагов', 1, 10, 1, 5, '']],
+    formula: (p) => `ставка = <b>${p.basePct}%</b> × <b>${p.mult}</b>^(серия выигрышей, до ${p.maxStreak}) × банк, не больше 10%` },
+  portfolio_theory: { label: 'Корзины кэфов', desc: 'Вес 0.4 для кэфов до 3.5, 0.2 для остальных.',
+    params: [['basePct', 'База', 0.1, 5, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.basePct}%</b> × (0.4 | 0.2) / 0.3 × банк` },
+};
+const ORDER = ['kelly_half', 'fixed', 'flat', 'floor_kelly', 'log_formula', 'constant_profit', 'adaptive_constant_profit',
+  'linear_roi', 'sqrt_roi', 'linear_roi_odds', 'dynamic_percentage', 'drawdown_guard', 'anti_martingale', 'portfolio_theory'];
+const PROFILE_TEXT = {
+  conservative: ['P(DD ≥ 50%)', 0], cautious: ['P(DD ≥ 50%)', 3.5], balanced: ['P(DD ≥ 50%)', 10], risky: ['P(DD ≥ 80%)', 5], extreme: ['P(DD ≥ 80%)', 50],
+};
+const KELLY_CASES = [
+  ['calibrated', 'Знает истинный EV', 's1', 'точный EV'],
+  ['overstated', 'Модель завышает EV', 's2', 'завышенный'],
+  ['overstated_noise', 'Завышает + шум 5%', 's3', '+ шум'],
+];
+const DEFAULTS = { source: 'real', roi: 2.5, ev: 'flat', calib: true, noise: 0, bets: 1000, sims: 2000, cap: 10, recalc: 'live', variation: 'none', bank: 10000, seed: 2026, round: 0, min: 0 };
+
+// ================= утилиты =================
+const $ = (id) => document.getElementById(id);
+const nf = (d) => new Intl.NumberFormat('ru-RU', { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmt = { 0: nf(0), 1: nf(1), 2: nf(2) };
+const num = (x, d = 1) => fmt[d].format(x).replace('-', '−');
+const pct = (x, d = 1) => num(x, d) + '%';
+const spct = (x, d = 1) => (x > 0 ? '+' : '') + pct(x, d);
+function profitLabel(mult) {
+  const p = (mult - 1) * 100;
+  if (Math.abs(p) < 0.5) return '0%';
+  const d = Math.abs(p) >= 10 ? 0 : 1;
+  return spct(p, d);
+}
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const SVGNS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function h(tag, attrs = {}, text) {
+  const e = document.createElement(tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function niceTicks(lo, hi, count = 5) {
+  const span = hi - lo || 1;
+  const step0 = span / count, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const err = step0 / mag;
+  const step = (err >= 7.5 ? 10 : err >= 3.5 ? 5 : err >= 1.5 ? 2 : 1) * mag;
+  const out = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + step * 1e-9; v += step) out.push(+v.toFixed(10));
+  return out;
+}
+const LOG_TICKS = [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7, 1, 1.5, 2, 3, 5, 7, 10, 20, 50, 100, 200, 500, 1000];
+function logTicks(lo, hi, max = 7) {
+  let t = LOG_TICKS.filter((v) => v >= lo && v <= hi);
+  while (t.length > max) t = t.filter((_, i) => i % 2 === 0 || t[i] === 1);
+  return t;
+}
+function chartBox(container, height) {
+  container.textContent = '';
+  const w = Math.max(280, container.clientWidth || 600);
+  const svg = el('svg', { viewBox: `0 0 ${w} ${height}`, width: w, height, role: 'img' }, container);
+  return { svg, w };
+}
+function tooltip(container) {
+  let t = container.querySelector('.tip');
+  if (!t) { t = h('div', { class: 'tip', role: 'status' }); t.hidden = true; container.appendChild(t); }
+  return t;
+}
+function showTip(tipEl, container, x, y, head, rows) {
+  tipEl.textContent = '';
+  tipEl.appendChild(h('div', { class: 't-head' }, head));
+  for (const [key, label, value] of rows) {
+    const r = h('div', { class: 't-row' });
+    const k = h('span');
+    if (key) { k.className = key.startsWith('rect:') ? 'key-rect' : 'key-line'; k.style.background = key.replace('rect:', ''); }
+    r.append(k, h('span', {}, label), h('b', {}, value));
+    tipEl.appendChild(r);
+  }
+  tipEl.hidden = false;
+  const cw = container.clientWidth, tw = tipEl.offsetWidth;
+  tipEl.style.left = Math.min(Math.max(0, x + 14), cw - tw) + 'px';
+  if (x + 14 + tw > cw) tipEl.style.left = Math.max(0, x - tw - 14) + 'px';
+  tipEl.style.top = Math.max(0, y - 10) + 'px';
+}
+
+// ================= воркеры =================
+const ENGINE_URL = URL.createObjectURL(new Blob([$('engine-src').textContent], { type: 'text/javascript' }));
+function spawn() {
+  const w = new Worker(ENGINE_URL);
+  w.postMessage({ type: 'init', odds: BETS.odds, ev: BETS.ev });
+  return w;
+}
+let simWorker = spawn();
+let heavyWorker = null;
+let jobId = 0;
+
+// ================= условия =================
+const state = { ...DEFAULTS, key: 'kelly_half', params: {} };
+function loadParams(key) {
+  const p = {};
+  for (const [id, , , , , def] of STRATS[key].params) p[id] = def;
+  return p;
+}
+state.params = loadParams(state.key);
+
+function readConditions() {
+  state.roi = +$('c-roi').value;
+  state.ev = $('c-ev').value;
+  state.calib = $('c-calib').checked;
+  state.noise = +$('c-noise').value;
+  state.bets = +$('c-bets').value;
+  state.sims = +$('c-sims').value;
+  state.cap = +$('c-cap').value;
+  state.recalc = $('c-recalc').value;
+  state.variation = $('c-var').value;
+  state.bank = Math.max(100, +$('c-bank').value || 10000);
+  state.seed = Math.max(0, Math.floor(+$('c-seed').value || 0));
+  state.round = Math.max(0, +$('c-round').value || 0);
+  state.min = Math.max(0, +$('c-min').value || 0);
+}
+function writeConditions(c) {
+  $('c-roi').value = c.roi; $('c-ev').value = c.ev; $('c-calib').checked = c.calib; $('c-noise').value = c.noise;
+  $('c-bets').value = c.bets; $('c-sims').value = c.sims; $('c-cap').value = c.cap; $('c-recalc').value = c.recalc;
+  $('c-var').value = c.variation; $('c-bank').value = c.bank; $('c-seed').value = c.seed; $('c-round').value = c.round; $('c-min').value = c.min;
+  setSource(c.source, false);
+}
+function marketCfg() {
+  return { source: state.source, evModel: state.ev, calibrated: state.calib, roi: state.roi / 100, estCap: 0.08, noise: state.noise / 100 };
+}
+function simCfg(nSims) {
+  return { nSims: nSims || state.sims, nBets: state.bets, bank0: state.bank, cap: state.cap / 100, recalc: state.recalc,
+    variation: state.variation, roundTo: state.round, minStake: state.min, seed: state.seed };
+}
+function syncOutputs() {
+  $('o-roi').textContent = pct(state.roi, 1);
+  $('o-noise').textContent = state.noise ? pct(state.noise, 1) : 'нет';
+  $('o-bets').textContent = num(state.bets, 0);
+  $('o-cap').textContent = pct(state.cap, 0) + ' банка';
+  const scaled = state.ev === 'scaled';
+  $('c-calib').disabled = !scaled;
+  $('calib-wrap').setAttribute('aria-disabled', String(!scaled));
+  $('ev-hint').textContent = scaled
+    ? 'Оценки EV из данных (кап 8%) пропорционально уменьшены, чтобы средний истинный ROI был равен заданному.'
+    : 'Как в simulation-current: у каждой ставки истинный EV равен среднему ROI.';
+}
+function setSource(src, fire = true) {
+  state.source = src;
+  $('src-real').setAttribute('aria-pressed', String(src === 'real'));
+  $('src-syn').setAttribute('aria-pressed', String(src === 'synthetic'));
+  if (fire) onConditions();
+}
+
+// предрасчёт из Python верен только для условий по умолчанию
+function preMatches(kind) {
+  const base = state.source === 'real' && Math.abs(state.roi - 2.5) < 1e-9 && state.bets === 1000 && state.recalc === 'live'
+    && state.variation === 'none' && state.round === 0 && state.min === 0;
+  if (kind === 'kelly') return base;
+  return base && state.cap === 10 && state.noise === 0 && (state.ev === 'flat' || state.calib);
+}
+
+// ================= симулятор =================
+function buildStrategyUI() {
+  const sel = $('s-key');
+  for (const k of ORDER) sel.appendChild(h('option', { value: k }, STRATS[k].label));
+  sel.value = state.key;
+  sel.addEventListener('change', () => { state.key = sel.value; state.params = loadParams(state.key); renderParams(); runSim(); });
+  renderParams();
+}
+function renderParams() {
+  const s = STRATS[state.key];
+  $('s-desc').textContent = s.desc;
+  const box = $('s-params');
+  box.textContent = '';
+  for (const [id, label, min, max, step, , unit] of s.params) {
+    const f = h('div', { class: 'field' });
+    const inputId = 'p-' + state.key + '-' + id;
+    const lab = h('label', { for: inputId }, label + ' ');
+    const out = h('output');
+    lab.appendChild(out);
+    const inp = h('input', { type: 'range', id: inputId, min, max, step, value: state.params[id] });
+    const show = () => { out.textContent = num(state.params[id], step < 0.1 ? 2 : step < 1 ? 1 : 0) + (unit ? (unit === '×' ? '×' : unit) : ''); };
+    inp.addEventListener('input', () => { state.params[id] = +inp.value; show(); renderFormula(); debouncedSim(); });
+    show();
+    f.append(lab, inp);
+    box.appendChild(f);
+  }
+  renderFormula();
+}
+function renderFormula() {
+  // формулы собираются только из чисел ползунков и фиксированного текста
+  $('s-formula').innerHTML = STRATS[state.key].formula(state.params);
+}
+let simTimer = 0;
+function debouncedSim() { clearTimeout(simTimer); simTimer = setTimeout(runSim, 140); }
+let lastSim = null;
+function runSim() {
+  const id = ++jobId;
+  $('fan-panel').classList.add('busy');
+  $('sim-status').textContent = 'Считаю…';
+  simWorker.onmessage = (e) => {
+    const m = e.data;
+    if (m.id !== id) return;
+    $('fan-panel').classList.remove('busy');
+    if (m.type === 'error') { $('sim-status').textContent = 'Ошибка: ' + m.message; return; }
+    lastSim = m.out;
+    renderSim();
+  };
+  simWorker.postMessage({ type: 'simulate', id, key: state.key, params: { ...state.params }, market: marketCfg(), cfg: simCfg() });
+}
+function tone(v, warnAt, critAt) { return v >= critAt ? 'crit' : v >= warnAt ? 'warn' : 'good'; }
+const TONE_TEXT = { good: 'приемлемо', warn: 'внимание', crit: 'опасно' };
+function renderSim() {
+  const o = lastSim, s = o.summary;
+  $('sim-status').textContent = `${num(state.sims, 0)} × ${num(state.bets, 0)} ставок · ${num(o.ms / 1000, 2)} с`;
+  const k = $('kpis');
+  k.textContent = '';
+  const tiles = [
+    ['Медианная прибыль', spct(s.median), `среднее ${spct(s.mean, 0)}`, s.median >= 0 ? null : 'crit'],
+    ['Закончить в минусе', pct(s.pLoss), 'доля симуляций', tone(s.pLoss, 25, 45)],
+    ['Просадка ≥ 50% от пика', pct(s.pDD50), `≥ 80%: ${pct(s.pDD80)}`, tone(s.pDD50, 5, 20)],
+    ['Медианная макс. просадка', pct(s.medianDD), `у 5% хуже ${pct(s.p95DD, 0)}`, tone(s.medianDD, 30, 50)],
+  ];
+  for (const [label, value, note, t] of tiles) {
+    const d = h('div', { class: 'kpi' });
+    if (t) d.dataset.tone = t;
+    const n = h('div', { class: 'k-note' });
+    if (t) { const c = h('span', { class: 'tone-chip' }, TONE_TEXT[t]); c.dataset.tone = t; n.appendChild(c); }
+    n.appendChild(h('span', {}, note));
+    d.append(h('div', { class: 'k-label' }, label), h('div', { class: 'k-value' }, value), n);
+    k.appendChild(d);
+  }
+  const minor = $('minor');
+  minor.textContent = '';
+  const items = [
+    ['5% худших хуже', spct(s.p5, 0)], ['5% лучших лучше', spct(s.p95, 0)], ['ROI с оборота', spct(s.roiTurnover, 2)],
+    ['средняя ставка', pct(s.avgStake, 2) + ' банка'], ['банк ниже половины старта', pct(s.pHalf)],
+    ['банкротство (< 1% старта)', pct(s.pRuin)], ['серия проигрышей, медиана / худшая', num(s.medianLossStreak, 0) + ' / ' + num(s.maxLossStreak, 0)],
+  ];
+  for (const [a, b] of items) { const sp = h('span', {}, a + ': '); sp.appendChild(h('b', {}, b)); minor.appendChild(sp); }
+  drawFan();
+  drawHistFinal();
+  drawHistDD();
+  renderFanTable();
+}
+
+function drawFan() {
+  const o = lastSim, box = $('fan');
+  const H = box.clientWidth < 520 ? 260 : 340;
+  const { svg, w } = chartBox(box, H);
+  const m = { l: 52, r: 16, t: 10, b: 30 };
+  const iw = w - m.l - m.r, ih = H - m.t - m.b;
+  let lo = Infinity, hi = -Infinity;
+  for (const v of o.q[0]) lo = Math.min(lo, v);
+  for (const v of o.q[4]) hi = Math.max(hi, v);
+  for (const v of o.mean) hi = Math.max(hi, v);
+  lo = Math.max(Math.min(lo, 0.9), 0.01); hi = Math.max(hi, 1.1);
+  const ly0 = Math.log(lo) - 0.05, ly1 = Math.log(hi) + 0.05;
+  const T = o.steps[o.steps.length - 1];
+  const X = (t) => m.l + (t / T) * iw;
+  const Y = (v) => m.t + ih - ((Math.log(Math.max(v, lo * 0.5)) - ly0) / (ly1 - ly0)) * ih;
+  const g = el('g', { class: 'grid' }, svg);
+  for (const v of logTicks(Math.exp(ly0), Math.exp(ly1))) {
+    el('line', { x1: m.l, x2: w - m.r, y1: Y(v), y2: Y(v) }, g);
+    el('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end' }, svg).textContent = profitLabel(v);
+  }
+  for (const t of niceTicks(0, T, Math.max(3, Math.floor(iw / 110)))) {
+    el('text', { x: X(t), y: H - 8, 'text-anchor': 'middle' }, svg).textContent = num(t, 0);
+  }
+  const area = (a, b) => {
+    let d = '';
+    o.steps.forEach((t, i) => { d += (i ? 'L' : 'M') + X(t).toFixed(1) + ',' + Y(a[i]).toFixed(1); });
+    for (let i = o.steps.length - 1; i >= 0; i--) d += 'L' + X(o.steps[i]).toFixed(1) + ',' + Y(b[i]).toFixed(1);
+    return d + 'Z';
+  };
+  const line = (a) => o.steps.map((t, i) => (i ? 'L' : 'M') + X(t).toFixed(1) + ',' + Y(a[i]).toFixed(1)).join('');
+  el('path', { d: area(o.q[4], o.q[0]), fill: css('--band-1') }, svg);
+  el('path', { d: area(o.q[3], o.q[1]), fill: css('--band-2') }, svg);
+  for (const p of o.paths) el('path', { d: line(p), fill: 'none', stroke: css('--path'), 'stroke-width': 1 }, svg);
+  el('line', { x1: m.l, x2: w - m.r, y1: Y(1), y2: Y(1), class: 'base' }, svg);
+  el('path', { d: line(o.mean), fill: 'none', stroke: css('--s2'), 'stroke-width': 1.75, 'stroke-linejoin': 'round' }, svg);
+  el('path', { d: line(o.q[2]), fill: 'none', stroke: css('--s1'), 'stroke-width': 2.25, 'stroke-linejoin': 'round' }, svg);
+  const last = o.steps.length - 1;
+  el('circle', { cx: X(T), cy: Y(o.q[2][last]), r: 4, fill: css('--s1'), stroke: css('--surface'), 'stroke-width': 2 }, svg);
+
+  const lg = $('fan-legend');
+  lg.textContent = '';
+  for (const [k, label] of [[css('--s1'), 'Медиана'], [css('--s2'), 'Среднее'], ['rect:' + css('--band-2'), '25–75% симуляций'], ['rect:' + css('--band-1'), '5–95%'], [css('--path'), 'Отдельные симуляции']]) {
+    const sp = h('span'), key = h('span', { class: k.startsWith('rect:') ? 'key-rect' : 'key-line' });
+    key.style.background = k.replace('rect:', '');
+    sp.append(key, document.createTextNode(label));
+    lg.appendChild(sp);
+  }
+  const hl = el('line', { y1: m.t, y2: m.t + ih, class: 'hover-line', visibility: 'hidden' }, svg);
+  const hit = el('rect', { x: m.l, y: m.t, width: iw, height: ih, fill: 'transparent', tabindex: 0, 'aria-label': 'Траектории банка: наведите, чтобы увидеть квантили' }, svg);
+  const tip = tooltip(box);
+  const at = (px) => {
+    const t = ((px - m.l) / iw) * T;
+    let i = 0, best = Infinity;
+    o.steps.forEach((s, j) => { const dd = Math.abs(s - t); if (dd < best) { best = dd; i = j; } });
+    hl.setAttribute('x1', X(o.steps[i])); hl.setAttribute('x2', X(o.steps[i])); hl.setAttribute('visibility', 'visible');
+    showTip(tip, box, X(o.steps[i]), m.t, `После ${num(o.steps[i], 0)} ставок`, [
+      ['rect:' + css('--band-1'), '95-й перцентиль', profitLabel(o.q[4][i])],
+      ['rect:' + css('--band-2'), '75-й', profitLabel(o.q[3][i])],
+      [css('--s1'), 'Медиана', profitLabel(o.q[2][i])],
+      ['rect:' + css('--band-2'), '25-й', profitLabel(o.q[1][i])],
+      ['rect:' + css('--band-1'), '5-й', profitLabel(o.q[0][i])],
+      [css('--s2'), 'Среднее', profitLabel(o.mean[i])],
+    ]);
+  };
+  hit.addEventListener('pointermove', (e) => { const r = svg.getBoundingClientRect(); at((e.clientX - r.left) * (w / r.width)); });
+  hit.addEventListener('pointerleave', () => { tip.hidden = true; hl.setAttribute('visibility', 'hidden'); });
+  hit.addEventListener('focus', () => at(m.l + iw));
+  hit.addEventListener('blur', () => { tip.hidden = true; hl.setAttribute('visibility', 'hidden'); });
+}
+
+function histogram(values, lo, hi, bins) {
+  const c = new Array(bins).fill(0), wd = (hi - lo) / bins;
+  for (const v of values) { let i = Math.floor((v - lo) / wd); if (i < 0) i = 0; if (i >= bins) i = bins - 1; c[i]++; }
+  return c;
+}
+function drawBars(box, counts, lo, hi, N, xLabel, ticks, refs, tipHead, shadeTo) {
+  const H = 200 + 14 * refs.length;
+  const { svg, w } = chartBox(box, H);
+  const m = { l: 40, r: 12, t: 12 + 14 * refs.length, b: 30 };
+  const iw = w - m.l - m.r, ih = H - m.t - m.b;
+  const X = (v) => m.l + ((v - lo) / (hi - lo)) * iw;
+  const maxC = Math.max(...counts, 1), maxShare = maxC / N * 100;
+  const Y = (share) => m.t + ih - (share / maxShare) * ih;
+  if (shadeTo !== undefined && shadeTo > lo) el('rect', { x: m.l, y: m.t, width: Math.max(0, X(Math.min(shadeTo, hi)) - m.l), height: ih, fill: css('--loss-wash') }, svg);
+  const g = el('g', { class: 'grid' }, svg);
+  for (const t of niceTicks(0, maxShare, 3)) {
+    el('line', { x1: m.l, x2: w - m.r, y1: Y(t), y2: Y(t) }, g);
+    el('text', { x: m.l - 6, y: Y(t) + 4, 'text-anchor': 'end' }, svg).textContent = num(t, t < 10 && t % 1 ? 1 : 0) + '%';
+  }
+  const bw = iw / counts.length;
+  const tip = tooltip(box);
+  counts.forEach((c, i) => {
+    const share = c / N * 100;
+    const x = m.l + i * bw + 1, width = Math.max(1, bw - 2), y = Y(share);
+    const hgt = m.t + ih - y;
+    if (hgt > 0.5) {
+      const r = Math.min(4, width / 2, hgt);
+      el('path', { d: `M${x},${m.t + ih}V${y + r}Q${x},${y} ${x + r},${y}H${x + width - r}Q${x + width},${y} ${x + width},${y + r}V${m.t + ih}Z`, fill: css('--s1') }, svg);
+    }
+    const hit = el('rect', { x: m.l + i * bw, y: m.t, width: bw, height: ih, fill: 'transparent' }, svg);
+    hit.addEventListener('pointermove', () => {
+      showTip(tip, box, m.l + (i + 0.5) * bw, m.t, tipHead(lo + i * (hi - lo) / counts.length, lo + (i + 1) * (hi - lo) / counts.length), [['rect:' + css('--s1'), 'симуляций', pct(share)]]);
+    });
+    hit.addEventListener('pointerleave', () => { tip.hidden = true; });
+  });
+  el('line', { x1: m.l, x2: w - m.r, y1: m.t + ih, y2: m.t + ih, class: 'base' }, svg);
+  for (const [v, label] of ticks) el('text', { x: X(v), y: H - 8, 'text-anchor': 'middle' }, svg).textContent = label;
+  refs.forEach(([v, label], j) => {
+    if (v < lo || v > hi) return;
+    // подписи порогов живут в отдельной полосе над графиком и не налезают на столбики
+    const ly = 11 + j * 14;
+    el('line', { x1: X(v), x2: X(v), y1: ly + 3, y2: m.t + ih, class: 'ref' }, svg);
+    const anchor = X(v) > w - 120 ? 'end' : 'start';
+    el('text', { x: X(v) + (anchor === 'end' ? -5 : 5), y: ly + 4, 'text-anchor': anchor, class: 'ref-label' }, svg).textContent = label;
+  });
+}
+function drawHistFinal() {
+  const o = lastSim, N = o.final.length;
+  const logs = Array.from(o.final, (v) => Math.log10(Math.max(v, 1e-4)));
+  const sorted = Float64Array.from(logs).sort();
+  let lo = sorted[Math.floor(N * 0.005)], hi = sorted[Math.min(N - 1, Math.ceil(N * 0.995))];
+  lo = Math.min(lo, -0.05); hi = Math.max(hi, 0.05);
+  const counts = histogram(logs, lo, hi, 36);
+  const ticks = logTicks(Math.pow(10, lo), Math.pow(10, hi), 6).map((v) => [Math.log10(v), profitLabel(v)]);
+  const loss = lastSim.summary.pLoss;
+  drawBars($('hist-final'), counts, lo, hi, N, '', ticks, [[0, `в минусе ${pct(loss, 0)}`]],
+    (a, b) => `${profitLabel(Math.pow(10, a))} … ${profitLabel(Math.pow(10, b))}`, 0);
+}
+function drawHistDD() {
+  const o = lastSim, N = o.maxDD.length, s = o.summary;
+  const vals = Array.from(o.maxDD, (v) => v * 100);
+  const counts = histogram(vals, 0, 100, 40);
+  const ticks = [0, 20, 40, 60, 80, 100].map((v) => [v, v + '%']);
+  drawBars($('hist-dd'), counts, 0, 100, N, '', ticks, [[50, `≥ 50%: ${pct(s.pDD50, 0)}`], [80, `≥ 80%: ${pct(s.pDD80, 0)}`]],
+    (a, b) => `просадка ${num(a, 1)}–${num(b, 1)}%`);
+}
+function renderFanTable() {
+  const o = lastSim;
+  const idxs = [...new Set([0.1, 0.25, 0.5, 0.75, 1].map((f) => Math.round((o.steps.length - 1) * f)))];
+  const t = h('table');
+  const hr = h('tr');
+  for (const c of ['После ставок', '5-й перцентиль', '25-й', 'Медиана', '75-й', '95-й', 'Среднее']) hr.appendChild(h('th', {}, c));
+  t.appendChild(hr);
+  for (const i of idxs) {
+    const r = h('tr');
+    r.appendChild(h('td', {}, num(o.steps[i], 0)));
+    for (const v of [o.q[0][i], o.q[1][i], o.q[2][i], o.q[3][i], o.q[4][i], o.mean[i]]) r.appendChild(h('td', {}, profitLabel(v)));
+    t.appendChild(r);
+  }
+  const box = $('fan-table');
+  box.textContent = '';
+  box.appendChild(t);
+}
+
+// ================= равный риск =================
+let riskRows = null, riskSource = null;
+function preRiskRows(profile) {
+  const block = state.ev === 'scaled' ? PRE.risk_matched.scaled_calibrated : PRE.risk_matched.flat;
+  const rows = block && block.profiles[profile];
+  if (!rows) return null;
+  return rows.map((r) => ({ key: r.key, scale: r.scale, scaleMax: r.scale_max, median: r.median_profit_pct, mean: r.mean_profit_pct, p5: r.p5_profit_pct,
+    pLoss: r.p_loss_pct, medianDD: r.median_max_dd_pct, pDD50: r.p_dd50_pct, pDD80: r.p_dd80_pct, avgStake: r.avg_stake_pct }));
+}
+function showRisk() {
+  const profile = $('r-profile').value;
+  const live = riskSource && riskSource.profile === profile && riskSource.sig === condSig() ? riskSource : null;
+  if (live) { riskRows = live.rows; }
+  else {
+    const pre = preRiskRows(profile);
+    riskRows = pre;
+    const src = $('r-source');
+    if (pre && preMatches('risk')) {
+      src.dataset.stale = 'false';
+      src.textContent = `Предрасчёт в Python: ${num(PRE.settings.n_sims, 0)} симуляций × ${num(PRE.settings.n_bets, 0)} ставок, ROI ${pct(PRE.settings.roi * 100, 1)}`;
+    } else {
+      src.dataset.stale = 'true';
+      src.textContent = 'Условия слева отличаются от предрасчёта. Нажмите «Пересчитать в браузере».';
+    }
+  }
+  if (live) {
+    const src = $('r-source');
+    src.dataset.stale = 'false';
+    src.textContent = `Посчитано в браузере: ${num(live.nSims, 0)} симуляций на шаг · ${num(live.ms / 1000, 1)} с`;
+  }
+  $('risk-panel').classList.toggle('busy', !live && !preMatches('risk'));
+  const [label, limit] = PROFILE_TEXT[profile];
+  $('r-sub').textContent = `лимит: ${label} ≤ ${pct(limit, 1)}`;
+  if (riskRows) { drawRisk(); renderRiskTable(); }
+  $('r-note').hidden = state.ev !== 'flat';
+}
+function condSig() { return JSON.stringify([marketCfg(), simCfg(1)]); }
+function runRisk() {
+  if (heavyWorker) heavyWorker.terminate();
+  heavyWorker = spawn();
+  const id = ++jobId, profile = $('r-profile').value, nSims = +$('r-sims').value, sig = condSig();
+  $('r-run').disabled = true;
+  $('r-prog').style.width = '2%';
+  const items = ORDER.map((k) => ({ key: k, params: loadParams(k) }));
+  heavyWorker.onmessage = (e) => {
+    const m = e.data;
+    if (m.id !== id) return;
+    if (m.type === 'progress') { $('r-prog').style.width = (m.done / m.total * 100) + '%'; $('r-source').textContent = `Калибрую стратегии: ${m.done} из ${m.total}`; return; }
+    $('r-run').disabled = false;
+    if (m.type === 'error') { $('r-source').textContent = 'Ошибка: ' + m.message; return; }
+    riskSource = { profile, sig, rows: m.rows, nSims, ms: m.ms };
+    showRisk();
+  };
+  heavyWorker.postMessage({ type: 'compare', id, items, profile, market: marketCfg(), cfg: simCfg(nSims) });
+}
+function drawRisk() {
+  const rows = riskRows, box = $('risk-chart');
+  const rowH = 30, m = { l: 0, r: 64, t: 6, b: 26 };
+  const narrow = box.clientWidth < 560;
+  m.l = narrow ? 150 : 210;
+  const H = m.t + m.b + rows.length * rowH;
+  const { svg, w } = chartBox(box, H);
+  const iw = w - m.l - m.r;
+  const vals = rows.map((r) => r.median);
+  const lo = Math.min(0, ...vals), hi = Math.max(0, ...vals) * 1.05 || 1;
+  const X = (v) => m.l + ((v - lo) / (hi - lo)) * iw;
+  const g = el('g', { class: 'grid' }, svg);
+  for (const t of niceTicks(lo, hi, narrow ? 3 : 5)) {
+    el('line', { x1: X(t), x2: X(t), y1: m.t, y2: H - m.b }, g);
+    el('text', { x: X(t), y: H - 8, 'text-anchor': 'middle' }, svg).textContent = spct(t, 0);
+  }
+  const tip = tooltip(box);
+  rows.forEach((r, i) => {
+    const y = m.t + i * rowH + 7, bh = rowH - 14;
+    const name = STRATS[r.key] ? STRATS[r.key].label : r.key;
+    const tl = el('text', { x: m.l - 10, y: y + bh / 2 + 4, 'text-anchor': 'end' }, svg);
+    tl.textContent = name;
+    tl.style.fill = css('--ink-2');
+    const x0 = X(0), x1 = X(r.median), xa = Math.min(x0, x1), wd = Math.max(1, Math.abs(x1 - x0));
+    const rad = Math.min(4, wd / 2, bh / 2);
+    const fill = i === 0 ? css('--s1') : css('--bar-muted');
+    const d = r.median >= 0
+      ? `M${xa},${y}H${xa + wd - rad}Q${xa + wd},${y} ${xa + wd},${y + rad}V${y + bh - rad}Q${xa + wd},${y + bh} ${xa + wd - rad},${y + bh}H${xa}Z`
+      : `M${xa + wd},${y}H${xa + rad}Q${xa},${y} ${xa},${y + rad}V${y + bh - rad}Q${xa},${y + bh} ${xa + rad},${y + bh}H${xa + wd}Z`;
+    el('path', { d, fill }, svg);
+    const vl = el('text', { x: r.median >= 0 ? x1 + 6 : x1 - 6, y: y + bh / 2 + 4, 'text-anchor': r.median >= 0 ? 'start' : 'end' }, svg);
+    vl.textContent = spct(r.median);
+    vl.style.fill = css('--ink');
+    vl.style.fontWeight = i === 0 ? '600' : '400';
+    const hit = el('rect', { x: 0, y: m.t + i * rowH, width: w, height: rowH, fill: 'transparent', tabindex: 0 }, svg);
+    const show = () => showTip(tip, box, Math.max(x1, x0), m.t + i * rowH, name, [
+      [null, 'медиана', spct(r.median)], [null, 'среднее', spct(r.mean, 0)], [null, '5% худших хуже', spct(r.p5, 0)],
+      [null, 'в минусе', pct(r.pLoss)], [null, 'просадка ≥ 50%', pct(r.pDD50)], [null, 'просадка ≥ 80%', pct(r.pDD80)],
+      [null, 'средняя ставка', pct(r.avgStake, 2)], [null, 'множитель размера', num(r.scale, 2) + '×'],
+    ]);
+    hit.addEventListener('pointermove', show);
+    hit.addEventListener('focus', show);
+    hit.addEventListener('pointerleave', () => { tip.hidden = true; });
+    hit.addEventListener('blur', () => { tip.hidden = true; });
+  });
+  el('line', { x1: X(0), x2: X(0), y1: m.t, y2: H - m.b, class: 'base' }, svg);
+}
+function renderRiskTable() {
+  const t = h('table');
+  const hr = h('tr');
+  for (const c of ['Стратегия', 'Медиана', 'Среднее', '5% худших', 'В минусе', 'Медиана DD', 'DD ≥ 50%', 'DD ≥ 80%', 'Ср. ставка', 'Размер ×']) hr.appendChild(h('th', {}, c));
+  t.appendChild(hr);
+  riskRows.forEach((r, i) => {
+    const tr = h('tr');
+    if (i === 0) tr.className = 'best';
+    const td = h('td', {}, STRATS[r.key] ? STRATS[r.key].label : r.key);
+    td.appendChild(h('span', { class: 'k' }, r.key));
+    tr.appendChild(td);
+    for (const v of [spct(r.median), spct(r.mean, 0), spct(r.p5, 0), pct(r.pLoss), pct(r.medianDD), pct(r.pDD50), pct(r.pDD80), pct(r.avgStake, 2), num(r.scale, 2)]) tr.appendChild(h('td', {}, v));
+    t.appendChild(tr);
+  });
+  const box = $('risk-table');
+  box.textContent = '';
+  box.appendChild(t);
+}
+
+// ================= Келли =================
+let kellyData = null, kellySource = null;
+function preKelly() {
+  const out = {};
+  for (const [k] of KELLY_CASES) {
+    out[k] = PRE.kelly_model_error[k].rows.map((r) => ({ mult: r.mult, median: r.median_profit_pct, pDD50: r.p_dd50_pct, pLoss: r.p_loss_pct, mean: r.mean_profit_pct, medianDD: r.median_max_dd_pct }));
+  }
+  return out;
+}
+function showKelly() {
+  const live = kellySource && kellySource.sig === condSig() ? kellySource : null;
+  const src = $('k-source');
+  if (live) {
+    kellyData = live.data;
+    src.dataset.stale = 'false';
+    src.textContent = `Посчитано в браузере: ${num(live.nSims, 0)} симуляций на точку · ${num(live.ms / 1000, 1)} с`;
+  } else {
+    kellyData = preKelly();
+    const ok = preMatches('kelly');
+    src.dataset.stale = String(!ok);
+    src.textContent = ok ? `Предрасчёт в Python: ${num(PRE.settings.n_sims, 0)} симуляций на точку, ROI ${pct(PRE.settings.roi * 100, 1)}`
+      : 'Условия слева отличаются от предрасчёта. Нажмите «Пересчитать в браузере».';
+  }
+  $('kelly-panel').classList.toggle('busy', !live && !preMatches('kelly'));
+  drawKelly();
+}
+function runKelly() {
+  if (heavyWorker) heavyWorker.terminate();
+  heavyWorker = spawn();
+  const id = ++jobId, sig = condSig(), nSims = Math.min(state.sims, 2000);
+  const mults = [0.1, 0.25, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.5, 2, 2.5, 3];
+  $('k-run').disabled = true;
+  heavyWorker.onmessage = (e) => {
+    const m = e.data;
+    if (m.id !== id) return;
+    if (m.type === 'progress') { $('k-prog').style.width = (m.done / m.total * 100) + '%'; return; }
+    $('k-run').disabled = false;
+    if (m.type === 'error') { $('k-source').textContent = 'Ошибка: ' + m.message; return; }
+    kellySource = { sig, data: m.out, nSims, ms: m.ms };
+    showKelly();
+  };
+  heavyWorker.postMessage({ type: 'kelly', id, mults, market: { ...marketCfg(), source: state.source }, cfg: simCfg(nSims) });
+}
+function drawLines(box, getY, yLabel, refY) {
+  const H = 260;
+  const { svg, w } = chartBox(box, H);
+  const m = { l: 46, r: 92, t: 12, b: 30 };
+  if (w < 420) m.r = 16;
+  const iw = w - m.l - m.r, ih = H - m.t - m.b;
+  const series = KELLY_CASES.map(([k, label, c, short]) => ({ k, label, short, color: css('--' + c), pts: kellyData[k].map((r) => [r.mult, getY(r)]) }));
+  const xs = series[0].pts.map((p) => p[0]);
+  const xMax = Math.max(...xs);
+  let lo = Math.min(0, ...series.flatMap((s) => s.pts.map((p) => p[1])));
+  let hi = Math.max(...series.flatMap((s) => s.pts.map((p) => p[1])));
+  hi = hi + (hi - lo) * 0.08;
+  const X = (v) => m.l + (v / xMax) * iw;
+  const Y = (v) => m.t + ih - ((v - lo) / (hi - lo)) * ih;
+  const g = el('g', { class: 'grid' }, svg);
+  for (const t of niceTicks(lo, hi, 4)) {
+    el('line', { x1: m.l, x2: w - m.r, y1: Y(t), y2: Y(t) }, g);
+    el('text', { x: m.l - 6, y: Y(t) + 4, 'text-anchor': 'end' }, svg).textContent = yLabel(t);
+  }
+  for (const t of [0, 0.5, 1, 1.5, 2, 2.5, 3].filter((v) => v <= xMax)) el('text', { x: X(t), y: H - 8, 'text-anchor': 'middle' }, svg).textContent = num(t, t % 1 ? 1 : 0) + '×';
+  el('line', { x1: m.l, x2: w - m.r, y1: Y(Math.max(lo, 0)), y2: Y(Math.max(lo, 0)), class: 'base' }, svg);
+  el('line', { x1: X(1), x2: X(1), y1: m.t, y2: m.t + ih, class: 'ref' }, svg);
+  el('text', { x: X(1) + 5, y: m.t + 10, class: 'ref-label' }, svg).textContent = 'полный Келли';
+  if (refY !== undefined) el('line', { x1: m.l, x2: w - m.r, y1: Y(refY), y2: Y(refY), class: 'ref' }, svg);
+  const labels = [];
+  for (const s of series) {
+    el('path', { d: s.pts.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(''), fill: 'none', stroke: s.color, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+    let bi = 0;
+    s.pts.forEach((p, i) => { if (p[1] > s.pts[bi][1]) bi = i; });
+    for (const p of s.pts) el('circle', { cx: X(p[0]), cy: Y(p[1]), r: 3, fill: s.color, stroke: css('--surface'), 'stroke-width': 1.5 }, svg);
+    const lp = s.pts[s.pts.length - 1];
+    labels.push({ y: Y(lp[1]), x: X(lp[0]), s });
+  }
+  if (m.r > 40) {
+    // подписываем конец линии, только если он не сливается с соседними; иначе хватает легенды и подсказки
+    const free = labels.filter((L) => labels.every((o) => o === L || Math.abs(o.y - L.y) >= 14));
+    for (const L of free) {
+      const t = el('text', { x: L.x + 8, y: L.y + 4 }, svg);
+      t.textContent = L.s.short;
+      t.style.fill = css('--ink-2');
+    }
+  }
+  const hl = el('line', { y1: m.t, y2: m.t + ih, class: 'hover-line', visibility: 'hidden' }, svg);
+  const hit = el('rect', { x: m.l, y: m.t, width: iw, height: ih, fill: 'transparent', tabindex: 0 }, svg);
+  const tip = tooltip(box);
+  const at = (px) => {
+    const v = ((px - m.l) / iw) * xMax;
+    let i = 0;
+    xs.forEach((x, j) => { if (Math.abs(x - v) < Math.abs(xs[i] - v)) i = j; });
+    hl.setAttribute('x1', X(xs[i])); hl.setAttribute('x2', X(xs[i])); hl.setAttribute('visibility', 'visible');
+    showTip(tip, box, X(xs[i]), m.t, `${num(xs[i], 2)} × полного Келли`, series.map((s) => [s.color, s.label, yLabel(s.pts[i][1])]));
+  };
+  hit.addEventListener('pointermove', (e) => { const r = svg.getBoundingClientRect(); at((e.clientX - r.left) * (w / r.width)); });
+  hit.addEventListener('pointerleave', () => { tip.hidden = true; hl.setAttribute('visibility', 'hidden'); });
+  hit.addEventListener('focus', () => at(X(1)));
+  hit.addEventListener('blur', () => { tip.hidden = true; hl.setAttribute('visibility', 'hidden'); });
+}
+function drawKelly() {
+  const lg = $('k-legend');
+  lg.textContent = '';
+  for (const [, label, c] of KELLY_CASES) { const sp = h('span'), k = h('span', { class: 'key-line' }); k.style.background = css('--' + c); sp.append(k, document.createTextNode(label)); lg.appendChild(sp); }
+  drawLines($('k-growth'), (r) => r.median, (v) => spct(v, 0));
+  drawLines($('k-dd'), (r) => r.pDD50, (v) => pct(v, 0));
+  const best = (k) => kellyData[k].reduce((a, b) => (b.median > a.median ? b : a));
+  const bc = best('calibrated'), bo = best('overstated');
+  const full = kellyData.calibrated.find((r) => r.mult === 1);
+  $('k-callout').innerHTML = '';
+  const c = $('k-callout');
+  c.append('Если EV известен точно, лучшая медиана у ', h('b', {}, `${num(bc.mult, 2)}× Келли`), ` (${spct(bc.median)}), но шанс просадки ≥ 50% там ${pct(bc.pDD50, 0)}. Если модель завышает EV, оптимум сдвигается к `,
+    h('b', {}, `${num(bo.mult, 2)}× Келли по модели`), '. Половина Келли по завышенной модели означает полный Келли по факту.');
+  if (full) c.append(` Полный Келли при точном EV: медиана ${spct(full.median)}, в минусе ${pct(full.pLoss, 0)} серий.`);
+  const t = h('table'), hr = h('tr');
+  hr.appendChild(h('th', {}, 'Доля Келли'));
+  for (const [, label] of KELLY_CASES) { hr.appendChild(h('th', {}, label + ': медиана')); hr.appendChild(h('th', {}, 'DD ≥ 50%')); }
+  t.appendChild(hr);
+  kellyData.calibrated.forEach((r, i) => {
+    const tr = h('tr');
+    tr.appendChild(h('td', {}, num(r.mult, 2) + '×'));
+    for (const [k] of KELLY_CASES) { tr.appendChild(h('td', {}, spct(kellyData[k][i].median))); tr.appendChild(h('td', {}, pct(kellyData[k][i].pDD50))); }
+    t.appendChild(tr);
+  });
+  $('k-table').textContent = '';
+  $('k-table').appendChild(t);
+}
+
+// ================= аудит =================
+const FINDINGS = [
+  ['crit', '«Процент от банка» на деле был флэтом от начального банка', 'В 22 из 25 стратегий размер ставки считался в первом проходе от массива банка, который не обновлялся и всегда был равен 1000. Компаундинга не было, а «avg_bet_% от текущего банка» в отчётах ничего не значил. Пример: fixed 2% на 500-й ставке ставил 1.18% ± 1.85 п.п. живого банка.', 'simulation-current/run_strategies_real_odds.py', 'Стратегии переведены на однопроходный движок brm, формулы сохранены.'],
+  ['crit', 'Банк уходил в минус', 'Второй проход разыгрывал суммы из другого пути без проверки банка. dynamic_percentage 5% с вариацией опускал банк до −237 006 при старте 1000 (22% симуляций в минусе), fixed_fraction 2% — до −826, target_based — до −1 739. Среднее «+4502%» было артефактом.', 'run_strategies_real_odds.py, dispersion_sim.py, kelly30_report.py, sim.html', 'Ставка никогда не больше живого банка.'],
+  ['crit', 'Ставки в 100 раз меньше задуманного', 'В dynamic_kelly, proportional_kelly, bayesian_kelly и test_kelly_realistic доля Келли делилась на 100 второй раз. proportional_kelly давал +1.2% вместо +239%, dynamic_kelly +0.4% вместо +50%.', 'run_strategies_real_odds.py, test_all_strategies_realistic.py:72', 'Единицы исправлены.'],
+  ['crit', '«Келли не работает» — следствие p = 1/кэф', 'В test_all_strategies_realistic.py вероятность выигрыша бралась как 1/кэф, то есть с нулевым перевесом. Ставка Келли поэтому всегда была 0. Вывод в BEST_STRATEGIES.md об этом.', 'test_all_strategies_realistic.py:62, BEST_STRATEGIES.md', 'p = (1 + ROI) / кэф. Документы помечены как устаревшие.'],
+  ['crit', 'Фиксированный ROI перестановкой не измерял риск', 'honest_engine и honest_sim переставляли один набор (кэф, исход). Итоговый банк — произведение множителей и от порядка не зависит, поэтому у флэт-% и Келли он одинаков во всех симуляциях: 5-й перцентиль = медиана = +15.6%. С независимыми исходами 5-й перцентиль −70%.', 'simulation-current/honest_engine.py, honest_sim.py', 'По умолчанию исходы независимые, старый режим — флагом fixed_roi с предупреждением.'],
+  ['crit', 'Рейтинги по среднему награждали перебор ставки', 'combat_*, massive_experiments и оптимизатор сортировали по средней прибыли. Её делают несколько сверхудачных симуляций: Келли ×3 даёт среднее +5070% при медиане +115% и 37.5% серий в минусе.', 'combat_final.py, combat_parallel.py, combat_resumable.py, massive_experiments.py, strategy_optimizer.py', 'Ранжирование по медиане.'],
+  ['crit', 'Оптимизатор выбирал удачу, а не параметры', '100 случайных наборов, каждый оценён один раз на своём случайном потоке, лучший без перепроверки. Extreme adaptive_bet: заявлено 16 173%, при перепрогоне 3 591%. Скоринг рискованных профилей поощрял сливы, лимиты допускали превышение на 10%, кэш старого прогона подхватывался молча.', 'simulation-original/strategy_optimizer.py', 'Общий seed, перепроверка top-5 на независимом seed, медиана, строгие лимиты, кэш с подписью настроек.'],
+  ['crit', 'Адаптивные стратегии не адаптировались', 'volatility_adjusted, sharpe_optimized и multi_objective считали волатильность по плоскому банку, и она всегда была 0: результат volatility_adjusted совпадал с fixed_fraction до цифры. В original adaptive_bet получал статичный max_bank.', 'run_strategies_real_odds.py, simulation-original/bet_simulator.py', 'Стратегии видят живой банк и его историю.'],
+  ['major', 'Вариация суммы уменьшала ставку на 25%', 'Множители 0.35–1.15 в среднем дают 0.75. Вывод «вариация снижает риск и прибыль» объясняется меньшей средней ставкой, а не разбросом.', 'run_strategies_real_odds.py, README', 'В симуляторе есть вариант ×0.8–1.2 со средним 1. Описание исправлено.'],
+  ['major', 'Слитые симуляции считались как «0% прибыли»', 'После банкротства хвост истории оставался равен начальному банку, и финальный банк был 1000 вместо ~0.', 'logarithmic_kelly.py, kelly_correct.py, test_all_strategies_realistic.py', 'Хвост заполняется фактическим банком.'],
+  ['major', 'ROI с оборота занижался', 'Среднее отношений прибыль/оборот по симуляциям при компаундинге смещено вниз: 7% показывались как ~5.2%.', 'run_strategies_real_odds.py', 'Суммарная прибыль / суммарный оборот.'],
+  ['major', 'Генератор из ТЗ давал средний кэф 2.45', 'Beta(2, 2.2) на [1.5, 3.5] имеет среднее 2.45 при требуемых 2.8.', 'simulation-original/distribution_generator.py', 'Параметры Beta выводятся из нужного среднего.'],
+  ['major', 'У каждой ставки свой EV, но в расчёт шёл один ROI', 'В matching_teams_clean.csv есть EV каждой ставки (от −3% до +293%), а симуляции давали всем ставкам один ROI. ROI-зависимые стратегии вырождались в фиксированный процент.', 'run_strategies_real_odds.py, config.py', 'Модель «EV каждой ставки из данных» в brm и в симуляторе.'],
+  ['major', 'Лог-формула ставит без перевеса', '−log₁₀(1 − p) / risk зависит от вероятности проигрыша, а не от перевеса: при нулевом EV на кэфе 1.5 и risk 15 ставка 3.2% банка. Это не Келли.', 'logarithmic_kelly.py, backend/calculator', 'Оставлена как есть и показана при равном риске рядом с Келли.'],
+  ['minor', 'Просадка в HTML-симуляторах проверялась раз в 50 ставок', 'Провалы между проверками пропускались, а «период перерасчёта банкролла» на ставку не влиял.', 'sim.html, simulation.html, supersim.html', 'Просадка после каждой ставки, период задаёт базу ставки.'],
+  ['minor', 'Склейка при возобновлении и выброшенные убыточные варианты', 'combat_final узнавал готовые задачи только по параметрам, и linear_roi/sqrt_roi с одинаковыми параметрами склеивались. Фильтр profit > 0 выкидывал честные убыточные варианты.', 'combat_final.py', 'Ключ (стратегия, параметры), фильтр убран.'],
+  ['minor', 'Неравные условия в combat-сравнениях', 'kelly_correct всегда применяет вариацию 0.35–1.15, а у части соперников её нет. «Келли 1.0» там на деле около 0.75 Келли с шумом.', 'kelly_correct.py, combat_final.py', null],
+];
+function renderAudit() {
+  const crit = FINDINGS.filter((f) => f[0] === 'crit').length;
+  $('audit-count').textContent = FINDINGS.length;
+  $('fact-bugs').textContent = FINDINGS.filter((f) => f[4]).length;
+  $('audit-lede').textContent = `Короткий ответ: прежние симуляции некорректны. ${crit} ошибок меняли выводы, ещё ${FINDINGS.length - crit} искажали метрики. Все, кроме одной, исправлены в коде; документы с выводами на старом коде помечены. Ниже сравнение до и после на одних и тех же исходах и полный список.`;
+  const box = $('findings');
+  box.textContent = '';
+  const SEV = { crit: 'Критично', major: 'Значимо', minor: 'Мелочь' };
+  for (const [sev, title, what, where, fix] of FINDINGS) {
+    const d = h('article', { class: 'finding' });
+    d.dataset.sev = sev;
+    const body = h('div');
+    body.append(h('h3', {}, title), h('p', {}, what), h('div', { class: 'where' }, where));
+    body.appendChild(h('div', { class: 'fix' + (fix ? '' : ' open') }, fix ? '✓ Исправлено: ' + fix : 'Не исправлено, учитывайте при чтении старых сравнений.'));
+    d.append(h('div', { class: 'sev' }, SEV[sev]), body);
+    box.appendChild(d);
+  }
+  const t = h('table', { class: 'cmp' }), hr = h('tr');
+  for (const c of ['Стратегия', 'Было: среднее', 'Было: медиана', 'Было: мин. банк', 'Стало: среднее', 'Стало: медиана', 'Стало: мин. банк', 'Ставка на 500-й, % живого банка: было → стало']) hr.appendChild(h('th', {}, c));
+  t.appendChild(hr);
+  for (const r of BEFORE_AFTER) {
+    const tr = h('tr');
+    tr.appendChild(h('td', {}, r.case));
+    const o = r.old, n = r.new;
+    const bad = o.min_bank < 0;
+    tr.append(h('td', {}, spct(o.mean_profit)), h('td', {}, spct(o.median_profit)));
+    const mb = h('td', {}, num(o.min_bank, 0));
+    if (bad) mb.className = 'old';
+    tr.append(mb, h('td', {}, spct(n.mean_profit)), h('td', {}, spct(n.median_profit)), h('td', {}, num(n.min_bank, 0)),
+      h('td', {}, `${num(o.stake_pct_live_median, 2)}% ± ${num(o.stake_pct_live_spread / 2, 2)} → ${num(n.stake_pct_live_median, 2)}%`));
+    t.appendChild(tr);
+  }
+  $('before-after').textContent = '';
+  $('before-after').appendChild(t);
+}
+
+// ================= вкладки и связка =================
+const TABS = ['sim', 'risk', 'kelly', 'audit'];
+let current = 'sim';
+function openTab(name, push = true) {
+  if (!TABS.includes(name)) name = 'sim';
+  current = name;
+  for (const t of TABS) {
+    $('tab-' + t).setAttribute('aria-selected', String(t === name));
+    $('tab-' + t).tabIndex = t === name ? 0 : -1;
+    $('view-' + t).hidden = t !== name;
+  }
+  $('conditions').hidden = name === 'audit';
+  document.querySelector('.bench').style.gridTemplateColumns = name === 'audit' ? 'minmax(0, 1fr)' : '';
+  if (push) { try { history.replaceState(null, '', '#' + name); } catch (e) { /* в песочнице может быть запрещено */ } }
+  if (name === 'sim' && lastSim) renderSim();
+  if (name === 'risk') showRisk();
+  if (name === 'kelly') showKelly();
+}
+for (const t of TABS) {
+  $('tab-' + t).addEventListener('click', () => openTab(t));
+  $('tab-' + t).addEventListener('keydown', (e) => {
+    const i = TABS.indexOf(t);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      const n = TABS[(i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length];
+      openTab(n); $('tab-' + n).focus();
+    }
+  });
+}
+function onConditions() {
+  readConditions();
+  syncOutputs();
+  debouncedSim();
+  if (current === 'risk') showRisk();
+  if (current === 'kelly') showKelly();
+}
+for (const id of ['c-roi', 'c-noise', 'c-bets', 'c-cap']) $(id).addEventListener('input', onConditions);
+for (const id of ['c-ev', 'c-calib', 'c-sims', 'c-recalc', 'c-var', 'c-bank', 'c-seed', 'c-round', 'c-min']) $(id).addEventListener('change', onConditions);
+$('src-real').addEventListener('click', () => setSource('real'));
+$('src-syn').addEventListener('click', () => setSource('synthetic'));
+$('reset').addEventListener('click', () => { writeConditions(DEFAULTS); onConditions(); });
+$('r-run').addEventListener('click', runRisk);
+$('r-profile').addEventListener('change', showRisk);
+$('k-run').addEventListener('click', runKelly);
+window.addEventListener('hashchange', () => { const t = location.hash.replace('#', ''); if (TABS.includes(t) && t !== current) openTab(t, false); });
+
+let rsTimer = 0;
+new ResizeObserver(() => { clearTimeout(rsTimer); rsTimer = setTimeout(() => openTab(current, false), 120); }).observe(document.querySelector('.pane'));
+if (window.matchMedia) {
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  if (mq.addEventListener) mq.addEventListener('change', () => openTab(current, false));
+}
+new MutationObserver(() => openTab(current, false)).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+// ================= старт =================
+(function init() {
+  const avgOdds = BETS.odds.reduce((a, b) => a + b, 0) / BETS.odds.length;
+  $('fact-bets').textContent = num(BETS.odds.length, 0);
+  $('fact-odds').textContent = num(avgOdds, 2);
+  $('foot-note').textContent = `Данные: ${BETS.odds.length} ставок из matching_teams_clean.csv (только кэф и EV). Предрасчёт: ${num(PRE.settings.n_sims, 0)} симуляций, seed ${PRE.settings.seed}.`;
+  // на широком экране панель условий всегда раскрыта, на узком — свёрнута до нажатия
+  const narrowMq = window.matchMedia ? window.matchMedia('(max-width: 1040px)') : null;
+  const fitConditions = () => { $('conditions').open = !(narrowMq && narrowMq.matches); };
+  fitConditions();
+  if (narrowMq && narrowMq.addEventListener) narrowMq.addEventListener('change', fitConditions);
+  $('conditions').querySelector('summary').addEventListener('click', (e) => { if (!(narrowMq && narrowMq.matches)) e.preventDefault(); });
+  writeConditions(DEFAULTS);
+  readConditions();
+  syncOutputs();
+  buildStrategyUI();
+  renderAudit();
+  const hash = (location.hash || '').replace('#', '');
+  openTab(TABS.includes(hash) ? hash : 'sim', false);
+  runSim();
+})();
+</script>

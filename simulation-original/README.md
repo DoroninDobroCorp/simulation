@@ -1,3 +1,5 @@
+> ⚠️ First generation of the simulator. Its correctness bugs (odds mean 2.45 instead of 2.8, static state for the adaptive strategy, noise-driven optimizer picks) are fixed; the numbers in `optimization_report.txt` and `SUMMARY.md` are outdated. See [../AUDIT.md](../AUDIT.md) and the corrected engine in [../brm](../brm). · Первое поколение симулятора; ошибки исправлены, старые отчёты устарели — см. [../AUDIT.md](../AUDIT.md).
+
 🇬🇧 [English](#-english) | 🇷🇺 [Русский](#-русский)
 
 ---

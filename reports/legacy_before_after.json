@@ -1,0 +1,212 @@
+[
+ {
+  "case": "dynamic_percentage 1.5%",
+  "old": {
+   "mean_profit": 235.54782775743882,
+   "median_profit": 140.9808705752202,
+   "min_bank": 392.58957895191656,
+   "p_negative_bank": 0.0,
+   "p_dd50": 21.825,
+   "stake_pct_live_median": 1.7999999999999998,
+   "stake_pct_live_spread": 0.75
+  },
+  "new": {
+   "mean_profit": 235.54782775743882,
+   "median_profit": 140.9808705752203,
+   "min_bank": 392.58957895191634,
+   "p_negative_bank": 0.0,
+   "p_dd50": 21.825,
+   "stake_pct_live_median": 1.7999999999999998,
+   "stake_pct_live_spread": 0.75
+  }
+ },
+ {
+  "case": "dynamic_percentage 1.5% + вариация",
+  "old": {
+   "mean_profit": 176.21558169526017,
+   "median_profit": 105.65392737631443,
+   "min_bank": 180.91133213017906,
+   "p_negative_bank": 0.0,
+   "p_dd50": 15.6,
+   "stake_pct_live_median": 1.3389056300290876,
+   "stake_pct_live_spread": 1.7776621287450036
+  },
+  "new": {
+   "mean_profit": 145.5774543583381,
+   "median_profit": 100.72058080454835,
+   "min_bank": 438.6028661229986,
+   "p_negative_bank": 0.0,
+   "p_dd50": 6.7250000000000005,
+   "stake_pct_live_median": 1.2599999999999998,
+   "stake_pct_live_spread": 1.38
+  }
+ },
+ {
+  "case": "dynamic_percentage 5% + вариация",
+  "old": {
+   "mean_profit": 4501.812053135119,
+   "median_profit": 68.91020726431617,
+   "min_bank": -237006.52620477616,
+   "p_negative_bank": 21.875,
+   "p_dd50": 97.675,
+   "stake_pct_live_median": 3.6979841431417935,
+   "stake_pct_live_spread": 10.618990514017591
+  },
+  "new": {
+   "mean_profit": 1991.6248068988787,
+   "median_profit": 137.5237126891572,
+   "min_bank": 79.52541665562904,
+   "p_negative_bank": 0.0,
+   "p_dd50": 99.825,
+   "stake_pct_live_median": 3.599999999999999,
+   "stake_pct_live_spread": 5.224999999999999
+  }
+ },
+ {
+  "case": "kelly_criterion risk=2",
+  "old": {
+   "mean_profit": 173.75175984848377,
+   "median_profit": 176.97845212432685,
+   "min_bank": 0.038104061497107544,
+   "p_negative_bank": 0.0,
+   "p_dd50": 21.75,
+   "stake_pct_live_median": 1.4341921130000057,
+   "stake_pct_live_spread": 2.601834219903084
+  },
+  "new": {
+   "mean_profit": 471.2005301879949,
+   "median_profit": 278.27029091756344,
+   "min_bank": 117.90350970673693,
+   "p_negative_bank": 0.0,
+   "p_dd50": 50.625,
+   "stake_pct_live_median": 2.8000000000000003,
+   "stake_pct_live_spread": 4.440892098500626e-16
+  }
+ },
+ {
+  "case": "fixed_fraction 2%",
+  "old": {
+   "mean_profit": 141.01411499999975,
+   "median_profit": 139.0899999999997,
+   "min_bank": -825.9999999999999,
+   "p_negative_bank": 0.975,
+   "p_dd50": 18.5,
+   "stake_pct_live_median": 1.1828720132481672,
+   "stake_pct_live_spread": 1.850869782262813
+  },
+  "new": {
+   "mean_profit": 313.25503868174303,
+   "median_profit": 179.45100912648257,
+   "min_bank": 125.72304950194528,
+   "p_negative_bank": 0.0,
+   "p_dd50": 41.425,
+   "stake_pct_live_median": 2.0,
+   "stake_pct_live_spread": 0.0
+  }
+ },
+ {
+  "case": "linear_roi (по умолчанию)",
+  "old": {
+   "mean_profit": 98.69708685065469,
+   "median_profit": 97.36300000000003,
+   "min_bank": 0.11616714112809635,
+   "p_negative_bank": 0.0,
+   "p_dd50": 7.199999999999999,
+   "stake_pct_live_median": 0.9442552376393376,
+   "stake_pct_live_spread": 1.0280194957565603
+  },
+  "new": {
+   "mean_profit": 169.41193602894577,
+   "median_profit": 121.32701434904034,
+   "min_bank": 248.25374056725045,
+   "p_negative_bank": 0.0,
+   "p_dd50": 11.35,
+   "stake_pct_live_median": 1.4000000000000001,
+   "stake_pct_live_spread": 2.220446049250313e-16
+  }
+ },
+ {
+  "case": "proportional_kelly",
+  "old": {
+   "mean_profit": 1.2265086030602803,
+   "median_profit": 1.2425513697006063,
+   "min_bank": 987.0164630360163,
+   "p_negative_bank": 0.0,
+   "p_dd50": 0.0,
+   "stake_pct_live_median": 0.019469995949310943,
+   "stake_pct_live_spread": 0.0003065200977473252
+  },
+  "new": {
+   "mean_profit": 239.3765979619568,
+   "median_profit": 178.81484040209557,
+   "min_bank": 237.9836294139592,
+   "p_negative_bank": 0.0,
+   "p_dd50": 14.424999999999999,
+   "stake_pct_live_median": 1.9600000000000002,
+   "stake_pct_live_spread": 0.0
+  }
+ },
+ {
+  "case": "dynamic_kelly",
+  "old": {
+   "mean_profit": 0.40883620102160684,
+   "median_profit": 0.4141837899017564,
+   "min_bank": 995.6721543453467,
+   "p_negative_bank": 0.0,
+   "p_dd50": 0.0,
+   "stake_pct_live_median": 0.006518824281137179,
+   "stake_pct_live_spread": 3.436087933462485e-05
+  },
+  "new": {
+   "mean_profit": 50.42322491755493,
+   "median_profit": 47.713154964942504,
+   "min_bank": 638.8943083606638,
+   "p_negative_bank": 0.0,
+   "p_dd50": 0.0,
+   "stake_pct_live_median": 0.6533333333333337,
+   "stake_pct_live_spread": 2.220446049250313e-16
+  }
+ },
+ {
+  "case": "target_based 3%→1%",
+  "old": {
+   "mean_profit": 211.52117250000018,
+   "median_profit": 208.6350000000003,
+   "min_bank": -1739.0,
+   "p_negative_bank": 4.8500000000000005,
+   "p_dd50": 37.3,
+   "stake_pct_live_median": 1.4674950176619124,
+   "stake_pct_live_spread": 3.3625207802554886
+  },
+  "new": {
+   "mean_profit": 216.1250525738466,
+   "median_profit": 200.5548824028623,
+   "min_bank": 36.25986382041338,
+   "p_negative_bank": 0.0,
+   "p_dd50": 41.4,
+   "stake_pct_live_median": 1.0,
+   "stake_pct_live_spread": 2.0
+  }
+ },
+ {
+  "case": "volatility_adjusted",
+  "old": {
+   "mean_profit": 141.01411499999975,
+   "median_profit": 139.0899999999997,
+   "min_bank": -825.9999999999999,
+   "p_negative_bank": 0.975,
+   "p_dd50": 18.5,
+   "stake_pct_live_median": 1.1828720132481672,
+   "stake_pct_live_spread": 1.850869782262813
+  },
+  "new": {
+   "mean_profit": 299.26337606892946,
+   "median_profit": 175.29424133716742,
+   "min_bank": 132.48555065072583,
+   "p_negative_bank": 0.0,
+   "p_dd50": 38.9,
+   "stake_pct_live_median": 1.9492612659933501,
+   "stake_pct_live_spread": 0.009798283757948667
+  }
+ }
+]

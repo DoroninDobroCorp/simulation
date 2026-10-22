@@ -1,0 +1,1707 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Лаборатория банкролла</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Monte Carlo симулятор банкролл-менеджмента для value-ставок: корректный движок, сравнение стратегий при равном риске, аудит прежних расчётов.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Лабораторный стенд: слева условия эксперимента (общие для всех вкладок), справа результаты. Бумага в линейку, чернила, графики — единственное громкое. */
+:root {
+  --bg: #eef1ee;
+  --surface: #fbfcfa;
+  --raise: #f4f6f3;
+  --ink: #121a1c;
+  --ink-2: #47525a;
+  --muted: #6f7a80;
+  --line: #dce1de;
+  --axis: #bfc7c4;
+  --accent: #3a2fb0;
+  --accent-ink: #ffffff;
+  --accent-wash: #e7e5fa;
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --band-1: rgba(42, 120, 214, 0.11);
+  --band-2: rgba(42, 120, 214, 0.24);
+  --path: rgba(71, 82, 90, 0.28);
+  --bar-muted: #b8c1c4;
+  --loss-wash: rgba(208, 59, 59, 0.06);
+  --good: #0ca30c;
+  --good-text: #006300;
+  --warn: #fab219;
+  --crit: #d03b3b;
+  --crit-text: #b42c2c;
+  --shadow: 0 1px 0 rgba(18, 26, 28, 0.04), 0 8px 24px -16px rgba(18, 26, 28, 0.18);
+  --f-display: "Unbounded", "Golos Text", system-ui, sans-serif;
+  --f-body: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1012; --surface: #14181a; --raise: #191e21; --ink: #e7ecea; --ink-2: #b2bbbb; --muted: #87929a;
+    --line: #252b2e; --axis: #3b4347; --accent: #a99cff; --accent-ink: #120f2e; --accent-wash: #231e48;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --band-1: rgba(57, 135, 229, 0.14); --band-2: rgba(57, 135, 229, 0.30); --path: rgba(178, 187, 187, 0.22);
+    --bar-muted: #4b5459; --loss-wash: rgba(208, 59, 59, 0.10); --good-text: #2fbf2f; --crit-text: #ef7a7a;
+    --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 30px -18px rgba(0, 0, 0, 0.7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1012; --surface: #14181a; --raise: #191e21; --ink: #e7ecea; --ink-2: #b2bbbb; --muted: #87929a;
+  --line: #252b2e; --axis: #3b4347; --accent: #a99cff; --accent-ink: #120f2e; --accent-wash: #231e48;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+  --band-1: rgba(57, 135, 229, 0.14); --band-2: rgba(57, 135, 229, 0.30); --path: rgba(178, 187, 187, 0.22);
+  --bar-muted: #4b5459; --loss-wash: rgba(208, 59, 59, 0.10); --good-text: #2fbf2f; --crit-text: #ef7a7a;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 30px -18px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.5 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1320px; margin: 0 auto; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: var(--accent); }
+code, .mono { font-family: var(--f-mono); font-size: 0.86em; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+/* ---------- шапка ---------- */
+.masthead { padding-block: 28px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 32px; align-items: end; }
+.brand { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.eyebrow { font: 500 11.5px/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 700 clamp(26px, 4.2vw, 44px)/1.05 var(--f-display); letter-spacing: -0.02em; }
+h1 .tick { color: var(--accent); }
+.thesis { max-width: 64ch; color: var(--ink-2); font-size: 16px; }
+.facts { display: flex; gap: 22px; flex-wrap: wrap; justify-content: flex-end; }
+.fact { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.fact b { font: 600 22px/1.1 var(--f-body); }
+.fact span { font-size: 12px; color: var(--muted); }
+
+/* ---------- вкладки ---------- */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; margin-bottom: 20px; }
+.tabs button {
+  appearance: none; border: 0; background: none; color: var(--ink-2); cursor: pointer;
+  font: 500 14.5px/1 var(--f-body); padding: 12px 14px 13px; border-bottom: 2px solid transparent; white-space: nowrap;
+}
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+.tabs button:hover { color: var(--ink); }
+.tabs .count { font: 500 11px/1 var(--f-mono); margin-left: 6px; padding: 2px 6px; border-radius: 99px; background: var(--accent-wash); color: var(--accent); }
+
+/* ---------- стенд ---------- */
+.bench { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 24px; align-items: start; }
+.conditions {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  max-height: calc(100vh - 24px); overflow: auto;
+}
+.conditions summary { list-style: none; cursor: default; padding: 14px 16px 6px; }
+.conditions summary::-webkit-details-marker { display: none; }
+.conditions .sum-title { font: 600 14px/1.25 var(--f-body); display: grid; grid-template-columns: 1fr auto; column-gap: 8px; }
+.conditions .sum-title small { grid-column: 1; font: 400 12px/1.4 var(--f-body); color: var(--muted); }
+.group { padding: 10px 16px 14px; display: grid; gap: 12px; border-top: 1px solid var(--line); }
+.group:first-of-type { border-top: 0; }
+.group h3 { font: 500 11px/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-top: 4px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field > label, .field > .lab { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+.field output { font: 500 12.5px var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.field .hint { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; height: 20px; }
+select, input[type="number"] {
+  width: 100%; font: 14px var(--f-body); color: var(--ink); background: var(--raise);
+  border: 1px solid var(--line); border-radius: 7px; padding: 7px 9px; min-width: 0;
+}
+.seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--raise); border: 1px solid var(--line); border-radius: 8px; padding: 3px; gap: 3px; }
+.seg button { appearance: none; border: 0; background: none; border-radius: 6px; padding: 7px 6px; font: 500 12.5px/1.15 var(--f-body); color: var(--ink-2); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--ink-2); }
+.check input { accent-color: var(--accent); margin-top: 3px; }
+.check[aria-disabled="true"] { opacity: 0.5; }
+.reset { appearance: none; border: 0; background: none; color: var(--accent); font: 500 12.5px var(--f-body); cursor: pointer; padding: 0; }
+
+.pane { min-width: 0; display: grid; gap: 18px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px 14px; min-width: 0; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.panel h2 { font: 600 15px/1.25 var(--f-body); }
+.panel .sub { font-size: 12.5px; color: var(--muted); }
+.lede { color: var(--ink-2); max-width: 72ch; }
+.lede b { color: var(--ink); font-weight: 600; }
+
+/* стратегия */
+.strategy { display: grid; grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); gap: 14px 22px; align-items: start; }
+.strategy .params { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px 18px; }
+.formula { grid-column: 1 / -1; font: 13px/1.5 var(--f-mono); color: var(--ink-2); background: var(--raise); border-radius: 7px; padding: 8px 10px; overflow-x: auto; white-space: nowrap; }
+.formula b { color: var(--ink); font-weight: 500; }
+
+/* показатели */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px 12px 16px; position: relative; min-width: 0; }
+.kpi::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--axis); }
+.kpi[data-tone="good"]::before { background: var(--good); }
+.kpi[data-tone="warn"]::before { background: var(--warn); }
+.kpi[data-tone="crit"]::before { background: var(--crit); }
+.kpi .k-label { font-size: 12.5px; color: var(--ink-2); }
+.kpi .k-value { font: 600 28px/1.15 var(--f-body); margin-top: 4px; letter-spacing: -0.01em; }
+.kpi .k-note { font-size: 12px; color: var(--muted); margin-top: 2px; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.tone-chip { font: 500 11px/1 var(--f-body); padding: 3px 7px; border-radius: 99px; background: var(--raise); color: var(--ink-2); display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
+.tone-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--axis); }
+.tone-chip[data-tone="good"]::before { background: var(--good); }
+.tone-chip[data-tone="warn"]::before { background: var(--warn); }
+.tone-chip[data-tone="crit"]::before { background: var(--crit); }
+.minor { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13px; color: var(--ink-2); padding: 2px 2px 0; }
+.minor b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.status { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.busy { opacity: 0.55; transition: opacity 0.2s; }
+
+/* графики */
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { fill: var(--muted); font: 11.5px var(--f-body); font-variant-numeric: tabular-nums; }
+.chart .grid line { stroke: var(--line); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .base { stroke: var(--axis); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .ref { stroke: var(--ink-2); stroke-width: 1; opacity: 0.55; }
+.chart .ref-label { fill: var(--ink-2); font-weight: 500; }
+.chart .hover-line { stroke: var(--ink-2); stroke-width: 1; opacity: 0.6; pointer-events: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); margin: 2px 0 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.key-line { width: 16px; height: 2px; border-radius: 1px; display: inline-block; }
+.key-rect { width: 12px; height: 10px; border-radius: 2px; display: inline-block; }
+.tip {
+  position: absolute; pointer-events: none; z-index: 5; min-width: 150px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow);
+  padding: 8px 10px; font-size: 12.5px; color: var(--ink-2); display: grid; gap: 3px;
+}
+.tip .t-head { font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.tip .t-row { display: grid; grid-template-columns: 14px 1fr auto; gap: 8px; align-items: center; }
+.tip .t-row b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+
+/* таблицы */
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
+th { font: 500 11.5px/1.2 var(--f-body); color: var(--muted); text-transform: none; }
+th:first-child, td:first-child { text-align: left; padding-left: 0; }
+td:first-child { white-space: normal; min-width: 180px; }
+tr.best td { font-weight: 600; }
+td .k { font: 12px var(--f-mono); color: var(--muted); display: block; }
+details.more { margin-top: 10px; }
+details.more summary { cursor: pointer; font-size: 13px; color: var(--accent); font-weight: 500; }
+details.more[open] summary { margin-bottom: 8px; }
+
+/* кнопки и прогресс */
+.toolbar { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: end; }
+.toolbar .field { min-width: 180px; }
+.btn {
+  appearance: none; border: 0; cursor: pointer; border-radius: 8px; padding: 10px 16px;
+  font: 600 14px/1 var(--f-body); background: var(--accent); color: var(--accent-ink);
+}
+.btn:hover { filter: brightness(1.08); }
+.btn[disabled] { opacity: 0.5; cursor: progress; }
+.btn.ghost { background: var(--raise); color: var(--ink); border: 1px solid var(--line); }
+.progress { height: 4px; background: var(--raise); border-radius: 2px; overflow: hidden; min-width: 140px; flex: 1; align-self: center; }
+.progress i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
+.source { display: inline-flex; gap: 6px; align-items: center; font-size: 12.5px; color: var(--ink-2); background: var(--raise); border-radius: 99px; padding: 4px 10px; }
+.source[data-stale="true"] { color: var(--crit-text); }
+.callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; color: var(--ink-2); max-width: 78ch; }
+.callout b { color: var(--ink); }
+
+/* аудит */
+.findings { display: grid; gap: 10px; }
+.finding { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 4px 16px; padding: 12px 0 12px; border-top: 1px solid var(--line); }
+.finding:first-child { border-top: 0; }
+.finding .sev { font: 500 11px/1 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; padding-top: 4px; display: flex; gap: 6px; align-items: flex-start; color: var(--ink-2); }
+.finding .sev::before { content: ""; width: 8px; height: 8px; border-radius: 2px; margin-top: 1px; flex: none; background: var(--axis); }
+.finding[data-sev="crit"] .sev::before { background: var(--crit); }
+.finding[data-sev="major"] .sev::before { background: var(--warn); }
+.finding h3 { font: 600 15px/1.35 var(--f-body); }
+.finding p { color: var(--ink-2); font-size: 14px; margin-top: 3px; max-width: 80ch; }
+.finding .where { font: 12px/1.5 var(--f-mono); color: var(--muted); margin-top: 4px; overflow-wrap: anywhere; }
+.finding .fix { font-size: 13px; margin-top: 4px; color: var(--good-text); }
+.finding .fix.open { color: var(--ink-2); }
+.cmp td.old { color: var(--crit-text); }
+
+footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
+footer code { color: var(--ink-2); }
+
+/* ---------- узкие экраны ---------- */
+@media (max-width: 1040px) {
+  .bench { grid-template-columns: minmax(0, 1fr); }
+  .conditions { position: static; max-height: none; }
+  .conditions summary { cursor: pointer; padding-bottom: 12px; }
+  .conditions summary .sum-title::after { content: "▾"; color: var(--muted); grid-column: 2; grid-row: 1; }
+  .conditions[open] summary .sum-title::after { content: "▴"; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .masthead { grid-template-columns: minmax(0, 1fr); }
+  .facts { justify-content: flex-start; }
+  .strategy { grid-template-columns: minmax(0, 1fr); }
+  .two { grid-template-columns: minmax(0, 1fr); }
+  .finding { grid-template-columns: minmax(0, 1fr); }
+  .kpi .k-value { font-size: 23px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">
+      <span class="eyebrow">Monte Carlo · value-ставки · банкролл</span>
+      <h1>Лаборатория банкролла<span class="tick">.</span></h1>
+      <p class="thesis">Перевес даёт модель, а размер ставки решает, переживёт ли банк дисперсию. Здесь каждая стратегия ставит от живого банка, все играют одни и те же ставки и исходы, а сравнение идёт при одинаковом риске.</p>
+    </div>
+    <div class="facts" aria-label="Коротко">
+      <div class="fact"><b id="fact-bets">1013</b><span>реальных ставок в данных</span></div>
+      <div class="fact"><b id="fact-odds">2.76</b><span>средний кэф</span></div>
+      <div class="fact"><b id="fact-bugs">—</b><span>ошибок найдено и исправлено</span></div>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Разделы">
+    <button role="tab" id="tab-sim" aria-controls="view-sim" aria-selected="true">Симулятор</button>
+    <button role="tab" id="tab-risk" aria-controls="view-risk" aria-selected="false">Равный риск</button>
+    <button role="tab" id="tab-kelly" aria-controls="view-kelly" aria-selected="false">Келли и ошибка модели</button>
+    <button role="tab" id="tab-audit" aria-controls="view-audit" aria-selected="false">Аудит<span class="count" id="audit-count">—</span></button>
+  </nav>
+
+  <div class="bench">
+    <details class="conditions" id="conditions" open>
+      <summary><div class="sum-title">Условия эксперимента <small>общие для всех вкладок</small></div></summary>
+
+      <div class="group">
+        <h3>Рынок</h3>
+        <div class="field">
+          <span class="lab">Ставки</span>
+          <div class="seg" role="group" aria-label="Источник ставок">
+            <button type="button" id="src-real" aria-pressed="true">Реальные, 1013</button>
+            <button type="button" id="src-syn" aria-pressed="false">Синтетика по ТЗ</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="c-roi">Истинный средний ROI <output id="o-roi"></output></label>
+          <input type="range" id="c-roi" min="0" max="10" step="0.1" value="2.5">
+        </div>
+        <div class="field">
+          <label for="c-ev">Модель перевеса</label>
+          <select id="c-ev">
+            <option value="flat">Одинаковый EV у всех ставок</option>
+            <option value="scaled">EV каждой ставки из данных</option>
+          </select>
+          <span class="hint" id="ev-hint"></span>
+        </div>
+        <label class="check" id="calib-wrap"><input type="checkbox" id="c-calib" checked> Стратегия знает истинный EV (иначе видит оценку модели)</label>
+        <div class="field">
+          <label for="c-noise">Шум модели σ <output id="o-noise"></output></label>
+          <input type="range" id="c-noise" min="0" max="10" step="0.5" value="0">
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Дистанция</h3>
+        <div class="field">
+          <label for="c-bets">Ставок в серии <output id="o-bets"></output></label>
+          <input type="range" id="c-bets" min="100" max="5000" step="100" value="1000">
+        </div>
+        <div class="field">
+          <label for="c-sims">Симуляций</label>
+          <select id="c-sims">
+            <option value="500">500</option>
+            <option value="1000">1 000</option>
+            <option value="2000" selected>2 000</option>
+            <option value="5000">5 000</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>Правила ставок</h3>
+        <div class="field">
+          <label for="c-cap">Максимум на ставку <output id="o-cap"></output></label>
+          <input type="range" id="c-cap" min="1" max="25" step="1" value="10">
+        </div>
+        <div class="field">
+          <label for="c-recalc">База для расчёта ставки</label>
+          <select id="c-recalc">
+            <option value="live">Текущий банк</option>
+            <option value="r30">Снимок раз в 30 ставок</option>
+            <option value="r3070">Снимок раз в 30–70 (backend)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="c-var">Отклонение суммы от расчётной</label>
+          <select id="c-var">
+            <option value="none">Нет, ставим ровно</option>
+            <option value="uniform">×0.8–1.2, в среднем ×1</option>
+            <option value="legacy">×0.35–1.15 (legacy, в среднем ×0.75)</option>
+          </select>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="c-bank">Банк</label><input type="number" id="c-bank" min="100" step="100" value="10000"></div>
+          <div class="field"><label for="c-seed">Seed</label><input type="number" id="c-seed" min="0" step="1" value="2026"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="c-round">Округлять до</label><input type="number" id="c-round" min="0" step="1" value="0"></div>
+          <div class="field"><label for="c-min">Мин. ставка</label><input type="number" id="c-min" min="0" step="1" value="0"></div>
+        </div>
+        <button type="button" class="reset" id="reset">Вернуть условия по умолчанию</button>
+      </div>
+    </details>
+
+    <main class="pane">
+      <!-- ================= СИМУЛЯТОР ================= -->
+      <section id="view-sim" role="tabpanel" aria-labelledby="tab-sim" class="pane">
+        <div class="panel">
+          <div class="strategy">
+            <div class="field">
+              <label for="s-key">Стратегия</label>
+              <select id="s-key"></select>
+              <span class="hint" id="s-desc"></span>
+            </div>
+            <div class="params" id="s-params"></div>
+            <div class="formula" id="s-formula"></div>
+          </div>
+        </div>
+
+        <div class="kpis" id="kpis"></div>
+        <div class="minor" id="minor"></div>
+
+        <div class="panel" id="fan-panel">
+          <div class="panel-head">
+            <div><h2>Траектории банка</h2><span class="sub">по горизонтали номер ставки, по вертикали прибыль от старта на логарифмической шкале</span></div>
+            <span class="status" id="sim-status">Считаю…</span>
+          </div>
+          <div class="legend" id="fan-legend"></div>
+          <div class="chart" id="fan"></div>
+          <details class="more"><summary>Таблица квантилей</summary><div class="table-wrap" id="fan-table"></div></details>
+        </div>
+
+        <div class="two">
+          <div class="panel">
+            <div class="panel-head"><h2>Итог серии</h2><span class="sub">доля симуляций по прибыли, шкала логарифмическая</span></div>
+            <div class="chart" id="hist-final"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Самая глубокая просадка</h2><span class="sub">от пика банка, за всю серию</span></div>
+            <div class="chart" id="hist-dd"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= РАВНЫЙ РИСК ================= -->
+      <section id="view-risk" role="tabpanel" aria-labelledby="tab-risk" class="pane" hidden>
+        <div class="panel">
+          <p class="lede">Стратегия, которая ставит больше, всегда выглядит прибыльнее в среднем и рискованнее. Поэтому здесь у каждой стратегии размер ставки умножается на коэффициент, который подбирается так, чтобы <b>все упирались в один и тот же лимит риска</b>. Внутри лимита берётся размер с лучшей медианой. Все стратегии играют одни и те же ставки и исходы.</p>
+        </div>
+        <div class="panel">
+          <div class="toolbar">
+            <div class="field">
+              <label for="r-profile">Профиль риска из ТЗ</label>
+              <select id="r-profile">
+                <option value="conservative">Консервативный: нет просадок ≥ 50%</option>
+                <option value="cautious" selected>Осторожный: просадка ≥ 50% не чаще 3.5%</option>
+                <option value="balanced">Сбалансированный: ≥ 50% не чаще 10%</option>
+                <option value="risky">Рискованный: ≥ 80% не чаще 5%</option>
+                <option value="extreme">Экстремальный: ≥ 80% не чаще 50%</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="r-sims">Симуляций на шаг</label>
+              <select id="r-sims"><option value="500">500</option><option value="1000" selected>1 000</option><option value="2000">2 000</option></select>
+            </div>
+            <button class="btn" id="r-run" type="button">Пересчитать в браузере</button>
+            <div class="progress" aria-hidden="true"><i id="r-prog"></i></div>
+          </div>
+          <div style="margin-top:12px"><span class="source" id="r-source"></span></div>
+        </div>
+        <div class="panel" id="risk-panel">
+          <div class="panel-head"><h2>Медианная прибыль за серию при равном риске</h2><span class="sub" id="r-sub"></span></div>
+          <div class="chart" id="risk-chart"></div>
+          <div class="table-wrap" id="risk-table" style="margin-top:12px"></div>
+          <p class="sub" id="r-note" style="margin-top:10px">При одинаковом EV у всех ставок Келли, постоянная прибыль и адаптивная постоянная прибыль ставят одно и то же с точностью до множителя (∝ 1 / (кэф − 1)), а фиксированный %, линейно и корень от ROI — постоянный процент. После калибровки под один риск они совпадают. Различия появляются в модели «EV каждой ставки из данных».</p>
+        </div>
+      </section>
+
+      <!-- ================= КЕЛЛИ ================= -->
+      <section id="view-kelly" role="tabpanel" aria-labelledby="tab-kelly" class="pane" hidden>
+        <div class="panel">
+          <p class="lede">Полный Келли для десятичного кэфа: <code>f* = EV / (кэф − 1)</code>. Он максимизирует рост медианы, но только если EV известен точно. Здесь та же доля Келли считается в трёх мирах: стратегия знает истинный EV; модель завышает EV (средняя оценка в данных 5.1%, а истинный средний ROI задан слева); то же плюс шум модели σ = 5% на каждую ставку.</p>
+        </div>
+        <div class="panel">
+          <div class="toolbar">
+            <button class="btn" id="k-run" type="button">Пересчитать в браузере</button>
+            <div class="progress" aria-hidden="true"><i id="k-prog"></i></div>
+            <span class="source" id="k-source"></span>
+          </div>
+        </div>
+        <p class="callout" id="k-callout"></p>
+        <div class="panel" id="kelly-panel">
+          <div class="legend" id="k-legend"></div>
+          <div class="two">
+            <div><div class="panel-head"><h2>Медианная прибыль</h2><span class="sub">по доле от полного Келли</span></div><div class="chart" id="k-growth"></div></div>
+            <div><div class="panel-head"><h2>Шанс просадки ≥ 50%</h2><span class="sub">по доле от полного Келли</span></div><div class="chart" id="k-dd"></div></div>
+          </div>
+          <details class="more"><summary>Таблица значений</summary><div class="table-wrap" id="k-table"></div></details>
+        </div>
+      </section>
+
+      <!-- ================= АУДИТ ================= -->
+      <section id="view-audit" role="tabpanel" aria-labelledby="tab-audit" class="pane" hidden>
+        <div class="panel">
+          <p class="lede" id="audit-lede"></p>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Старый код и исправленный на одних и тех же исходах</h2><span class="sub">ROI 7%, 1013 реальных кэфов, 4000 симуляций</span></div>
+          <div class="table-wrap" id="before-after"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Найденные ошибки</h2><span class="sub">подробно — AUDIT.md в репозитории</span></div>
+          <div class="findings" id="findings"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <span>Тот же движок на Python: <code>python -m brm.report</code> пересчитывает предрасчёт, <code>pytest tests</code> проверяет его против аналитических формул.</span>
+    <span id="foot-note"></span>
+  </footer>
+</div>
+
+<script type="text/plain" id="engine-src">/*
+ * Движок Monte Carlo для браузера (Web Worker). Повторяет brm/engine.py:
+ * ставка считается от базы на текущем шаге и сразу разыгрывается, ставка не больше
+ * живого банка, рынок и исходы идут из отдельного генератора (common random numbers),
+ * просадка — максимум (пик - банк) / пик после каждой ставки.
+ */
+'use strict';
+
+let DATA = null;
+let SYN = null;
+
+// ---------- генераторы случайных чисел ----------
+function makeRng(seed, stream) {
+  let s = ((seed >>> 0) ^ Math.imul(stream + 1, 0x9e3779b9)) >>> 0;
+  const sm = () => {
+    s = (s + 0x9e3779b9) | 0;
+    let z = s;
+    z = Math.imul(z ^ (z >>> 16), 0x85ebca6b);
+    z = Math.imul(z ^ (z >>> 13), 0xc2b2ae35);
+    return (z ^ (z >>> 16)) >>> 0;
+  };
+  let a = sm(), b = sm(), c = sm(), d = sm();
+  const r = () => {
+    a |= 0; b |= 0; c |= 0; d |= 0;
+    const t = (((a + b) | 0) + d) | 0;
+    d = (d + 1) | 0;
+    a = b ^ (b >>> 9);
+    b = (c + (c << 3)) | 0;
+    c = (c << 21) | (c >>> 11);
+    c = (c + t) | 0;
+    return (t >>> 0) / 4294967296;
+  };
+  for (let i = 0; i < 15; i++) r();
+  return r;
+}
+
+function gauss(r) {
+  let u = 0;
+  while (u === 0) u = r();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r());
+}
+
+function gamma(r, k) {
+  if (k < 1) return gamma(r, k + 1) * Math.pow(r(), 1 / k);
+  const d = k - 1 / 3, c = 1 / Math.sqrt(9 * d);
+  for (;;) {
+    let x, v;
+    do { x = gauss(r); v = 1 + c * x; } while (v <= 0);
+    v = v * v * v;
+    const u = r();
+    if (u < 1 - 0.0331 * x * x * x * x) return d * v;
+    if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v;
+  }
+}
+
+// Генератор из ТЗ: кэф в [1.5, 3.5] со средним 2.8, ROI из смеси 3–6 / 6–12 / 12–20% (85/10/5)
+function syntheticPool(size = 20000, seed = 7) {
+  const r = makeRng(seed, 9);
+  const lo = 1.5, hi = 3.5, m = (2.8 - lo) / (hi - lo), conc = 4;
+  const odds = new Float64Array(size), ev = new Float64Array(size);
+  const ranges = [[0.03, 0.06], [0.06, 0.12], [0.12, 0.20]];
+  for (let i = 0; i < size; i++) {
+    const x = gamma(r, m * conc), y = gamma(r, (1 - m) * conc);
+    odds[i] = lo + (hi - lo) * x / (x + y);
+    const u = r();
+    const [a, b] = ranges[u < 0.85 ? 0 : u < 0.95 ? 1 : 2];
+    ev[i] = a + (b - a) * r();
+  }
+  return { odds, ev };
+}
+
+// ---------- рынок: что видит стратегия и что правда ----------
+function buildMarket(c) {
+  const pool = c.source === 'synthetic' ? (SYN || (SYN = syntheticPool())) : DATA;
+  const n = pool.odds.length;
+  const est = new Float64Array(n), tru = new Float64Array(n);
+  let k = 1;
+  if (c.evModel === 'flat') {
+    est.fill(c.roi);
+    tru.fill(c.roi);
+  } else {
+    let sum = 0;
+    for (let i = 0; i < n; i++) { est[i] = Math.min(pool.ev[i], c.estCap); sum += est[i]; }
+    const mean = sum / n;
+    if (!(mean > 0)) throw new Error('Средняя оценка EV в данных не положительна');
+    k = c.roi / mean;
+    for (let i = 0; i < n; i++) tru[i] = est[i] * k;
+    if (c.calibrated) est.set(tru);
+  }
+  let so = 0;
+  for (let i = 0; i < n; i++) so += pool.odds[i];
+  return { odds: pool.odds, est, tru, n, k, noise: c.noise, avgOdds: so / n };
+}
+
+// ---------- стратегии: доля базы на ставку ----------
+const kellyF = (o, e) => (e > 0 ? e / (o - 1) : 0);
+const clip01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
+
+function makeStrategy(key, p, nSims) {
+  switch (key) {
+    case 'fixed': { const f = p.pct / 100; return { frac: () => f }; }
+    case 'flat': { const a = p.pct / 100; return { frac: (o, e, b, pk, base, b0) => a * b0 / Math.max(base, 1e-12) }; }
+    case 'kelly_half': return { frac: (o, e) => p.mult * kellyF(o, e) };
+    case 'floor_kelly': {
+      const fl = p.floor / 100;
+      return { frac: (o, e, b, pk, base) => Math.min(p.mult * kellyF(o, e), 1) * Math.max(b - fl * pk, 0) / Math.max(base, 1e-12) };
+    }
+    case 'log_formula': {
+      const cap = p.edgeCap / 100;
+      return { frac: (o, e) => { const ee = Math.min(e, cap); const q = 1 - (1 + ee) / o; return ee > 0 && q > 0 ? -Math.log10(q) / p.risk : 0; } };
+    }
+    case 'linear_roi':
+      return { frac: (o, e) => { const roi = e * 100; return roi > 0 ? Math.min(p.basePct * roi / p.baseRoi, p.maxPct) / 100 : 0; } };
+    case 'sqrt_roi':
+      return { frac: (o, e) => { const roi = e * 100; return roi > 0 ? Math.min(p.basePct * Math.sqrt(roi / p.baseRoi), p.maxPct) / 100 : 0; } };
+    case 'constant_profit':
+      return { frac: (o) => Math.min(p.target / 100 / Math.max(o - 1, 1e-9), p.maxPct / 100) };
+    case 'adaptive_constant_profit':
+      return {
+        frac: (o, e) => {
+          const k = clip01((e * 100 - 3) / (20 - 3));
+          const t = p.minT + (p.maxT - p.minT) * k;
+          const f = o > 1.05 ? t / 100 / (o - 1) : 0.01;
+          return Math.min(f, 0.15);
+        },
+      };
+    case 'linear_roi_odds':
+      return {
+        frac: (o, e) => {
+          const pct = p.basePct * (e * 100 / 5) * (1 - p.penalty * clip01((o - 1.5) / 3.5));
+          return Math.min(Math.max(pct, 0), 10) / 100;
+        },
+      };
+    case 'dynamic_percentage':
+      return {
+        frac: (o, e, b, pk, base, b0) => {
+          const r = b / b0;
+          let m = r > 1.2 ? 1.2 : 1;
+          if (r < 0.8) m = 0.7;
+          if (r < 0.6) m = 0.5;
+          return p.pct * m / 100;
+        },
+      };
+    case 'drawdown_guard':
+      return { frac: (o, e, b, pk) => p.pct / 100 * ((pk - b) / pk > p.cut / 100 ? p.factor : 1) };
+    case 'anti_martingale': {
+      const pct = new Float64Array(nSims).fill(p.basePct), streak = new Int32Array(nSims);
+      return {
+        frac: (o, e, b, pk, base, b0, s) => pct[s] / 100,
+        update: (s, won) => {
+          if (won) {
+            streak[s]++;
+            if (streak[s] < p.maxStreak) pct[s] = Math.min(pct[s] * p.mult, 10);
+          } else { streak[s] = 0; pct[s] = p.basePct; }
+        },
+      };
+    }
+    case 'portfolio_theory':
+      return { frac: (o) => p.basePct * (o < 3.5 ? 0.4 : 0.2) / 0.3 / 100 };
+    default:
+      throw new Error('Неизвестная стратегия: ' + key);
+  }
+}
+
+// ---------- статистика ----------
+function quantileSorted(a, q) {
+  const pos = (a.length - 1) * q, lo = Math.floor(pos), hi = Math.min(lo + 1, a.length - 1);
+  return a[lo] + (a[hi] - a[lo]) * (pos - lo);
+}
+const sortedCopy = (src) => Float64Array.from(src).sort();
+
+function summarize(r, cfg) {
+  const N = r.final.length, b0 = cfg.bank0;
+  const profit = new Float64Array(N), dd = new Float64Array(N), lg = new Float64Array(N);
+  let sumP = 0, loss = 0, d20 = 0, d50 = 0, d80 = 0, half = 0, ruin = 0, sumProfit = 0, sumTurn = 0, stakeAvg = 0;
+  for (let s = 0; s < N; s++) {
+    profit[s] = (r.final[s] / b0 - 1) * 100;
+    dd[s] = r.maxDD[s] * 100;
+    lg[s] = Math.log(Math.max(r.final[s], 1e-300) / b0) / cfg.nBets;
+    sumP += profit[s];
+    if (profit[s] < 0) loss++;
+    if (dd[s] >= 20) d20++;
+    if (dd[s] >= 50) d50++;
+    if (dd[s] >= 80) d80++;
+    if (r.minBank[s] < 0.5 * b0) half++;
+    if (r.ruined[s]) ruin++;
+    sumProfit += r.final[s] - b0;
+    sumTurn += r.turnover[s];
+    stakeAvg += r.stakeSum[s] / Math.max(r.nPlaced[s], 1);
+  }
+  const sp = sortedCopy(profit), sd = sortedCopy(dd), sl = sortedCopy(lg), ls = sortedCopy(r.maxLoss);
+  return {
+    median: quantileSorted(sp, 0.5), mean: sumP / N,
+    p5: quantileSorted(sp, 0.05), p25: quantileSorted(sp, 0.25), p75: quantileSorted(sp, 0.75), p95: quantileSorted(sp, 0.95),
+    pLoss: loss / N * 100, medianDD: quantileSorted(sd, 0.5), p95DD: quantileSorted(sd, 0.95),
+    pDD20: d20 / N * 100, pDD50: d50 / N * 100, pDD80: d80 / N * 100,
+    pHalf: half / N * 100, pRuin: ruin / N * 100,
+    roiTurnover: sumTurn > 0 ? sumProfit / sumTurn * 100 : 0,
+    avgStake: stakeAvg / N * 100,
+    growth: quantileSorted(sl, 0.5) * 100,
+    medianLossStreak: quantileSorted(ls, 0.5), maxLossStreak: ls[ls.length - 1],
+  };
+}
+
+// ---------- сам прогон ----------
+const LEGACY_VAR = [0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1, 1.05, 1.1, 1.15];
+
+function simulate(strat, mk, cfg, opts = {}) {
+  const N = cfg.nSims, T = cfg.nBets, n = mk.n, b0 = cfg.bank0, cap = opts.cap ?? cfg.cap;
+  const scale = opts.scale ?? 1, full = !!opts.full;
+  const rm = makeRng(cfg.seed, 1), rs = makeRng(cfg.seed, 2);
+  const odds = mk.odds, est = mk.est, tru = mk.tru, noise = mk.noise;
+  const bank = new Float64Array(N).fill(b0), peak = new Float64Array(N).fill(b0);
+  const minBank = new Float64Array(N).fill(b0), maxDD = new Float64Array(N);
+  const turnover = new Float64Array(N), stakeSum = new Float64Array(N);
+  const nPlaced = new Int32Array(N), lossRun = new Int32Array(N), maxLoss = new Int32Array(N);
+  const ruined = new Uint8Array(N);
+  const ruinAbs = 0.01 * b0;
+
+  let snap = null, since = null, period = null;
+  if (cfg.recalc !== 'live') {
+    snap = new Float64Array(N).fill(b0); since = new Int32Array(N); period = new Int32Array(N);
+    for (let s = 0; s < N; s++) period[s] = cfg.recalc === 'r30' ? 30 : 30 + Math.floor(rs() * 41);
+  }
+  const vr = cfg.variation;
+
+  const stride = Math.max(1, Math.round(T / 120));
+  const steps = [];
+  const q = [[], [], [], [], []], mean = [];
+  const nPaths = full ? Math.min(12, N) : 0;
+  const paths = Array.from({ length: nPaths }, () => []);
+  const scratch = full ? new Float64Array(N) : null;
+  const QS = [0.05, 0.25, 0.5, 0.75, 0.95];
+  const record = (t) => {
+    steps.push(t);
+    scratch.set(bank);
+    scratch.sort();
+    for (let i = 0; i < 5; i++) q[i].push(quantileSorted(scratch, QS[i]) / b0);
+    let m = 0;
+    for (let s = 0; s < N; s++) m += bank[s];
+    mean.push(m / N / b0);
+    for (let i = 0; i < nPaths; i++) paths[i].push(bank[i] / b0);
+  };
+  if (full) record(0);
+
+  const frac = strat.frac, upd = strat.update;
+  for (let t = 0; t < T; t++) {
+    for (let s = 0; s < N; s++) {
+      const idx = (rm() * n) | 0;
+      const o = odds[idx], e = est[idx];
+      let et = tru[idx];
+      if (noise > 0) et += noise * gauss(rm);
+      const won = rm() < (1 + et) / o;
+
+      const b = bank[s];
+      let base = b;
+      if (snap !== null) {
+        if (since[s] >= period[s]) { snap[s] = b; since[s] = 0; }
+        base = snap[s];
+        since[s]++;
+      }
+      let f = frac(o, e, b, peak[s], base, b0, s) * scale;
+      if (!(f > 0)) f = 0; else if (f > cap) f = cap;
+      let stake = f * base;
+      if (vr === 'uniform') stake *= 0.8 + 0.4 * rs();
+      else if (vr === 'legacy') stake *= LEGACY_VAR[(rs() * 17) | 0];
+      if (cfg.roundTo > 0) stake = Math.round(stake / cfg.roundTo) * cfg.roundTo;
+      if (stake < cfg.minStake) stake = 0;
+      if (ruined[s]) stake = 0;
+      if (stake > b) stake = b;
+
+      let nb = won ? b + stake * (o - 1) : b - stake;
+      if (nb < 0) nb = 0;
+      bank[s] = nb;
+      if (stake > 0) {
+        turnover[s] += stake;
+        nPlaced[s]++;
+        stakeSum[s] += stake / b;
+        if (won) lossRun[s] = 0; else { lossRun[s]++; if (lossRun[s] > maxLoss[s]) maxLoss[s] = lossRun[s]; }
+      }
+      if (nb > peak[s]) peak[s] = nb;
+      const d = (peak[s] - nb) / peak[s];
+      if (d > maxDD[s]) maxDD[s] = d;
+      if (nb < minBank[s]) minBank[s] = nb;
+      if (nb < ruinAbs) ruined[s] = 1;
+      if (upd) upd(s, won);
+    }
+    if (full && ((t + 1) % stride === 0 || t + 1 === T)) record(t + 1);
+  }
+  const res = { final: bank, maxDD, minBank, turnover, stakeSum, nPlaced, maxLoss, ruined };
+  const out = { summary: summarize(res, cfg) };
+  if (full) {
+    out.steps = steps; out.q = q; out.mean = mean; out.paths = paths;
+    out.final = Float32Array.from(bank, (x) => x / b0);
+    out.maxDD = Float32Array.from(maxDD);
+  }
+  return out;
+}
+
+// ---------- калибровка под риск-профиль ----------
+const PROFILES = {
+  conservative: ['pDD50', 0], cautious: ['pDD50', 3.5], balanced: ['pDD50', 10], risky: ['pDD80', 5], extreme: ['pDD80', 50],
+};
+
+function calibrate(key, params, mk, cfg, profile, iters = 10) {
+  const [metric, limit] = PROFILES[profile];
+  const floorKelly = key === 'floor_kelly';
+  const floor = metric === 'pDD50' ? 50 : 20;
+  const scaleHi = floorKelly ? 1.5 : 64;
+  const ev = (s) => {
+    const strat = floorKelly ? makeStrategy(key, { mult: s, floor }, cfg.nSims) : makeStrategy(key, params, cfg.nSims);
+    return simulate(strat, mk, cfg, { scale: floorKelly ? 1 : s }).summary;
+  };
+  const feasible = new Map();
+  let lo = 0, hi = Math.min(1, scaleHi);
+  let m = ev(hi);
+  if (m[metric] <= limit) {
+    feasible.set(hi, m);
+    let broke = false;
+    while (hi < scaleHi) {
+      lo = hi; hi = Math.min(hi * 2, scaleHi);
+      m = ev(hi);
+      if (m[metric] > limit) { broke = true; break; }
+      feasible.set(hi, m);
+    }
+    if (!broke) lo = hi;
+  }
+  if (lo !== hi) {
+    for (let i = 0; i < iters; i++) {
+      const mid = (lo + hi) / 2;
+      m = ev(mid);
+      if (m[metric] <= limit) { lo = mid; feasible.set(mid, m); } else hi = mid;
+    }
+  }
+  if (!feasible.size) return null;
+  const sMax = Math.max(...feasible.keys());
+  for (const k of [0.4, 0.55, 0.7, 0.85]) {
+    const s = sMax * k;
+    if (!feasible.has(s)) { m = ev(s); if (m[metric] <= limit) feasible.set(s, m); }
+  }
+  let best = null;
+  for (const [s, mm] of feasible) if (!best || mm.median > best[1].median) best = [s, mm];
+  return { scale: best[0], scaleMax: sMax, ...best[1] };
+}
+
+// ---------- обработчик сообщений ----------
+self.onmessage = (ev) => {
+  const m = ev.data;
+  try {
+    if (m.type === 'init') {
+      DATA = { odds: Float64Array.from(m.odds), ev: Float64Array.from(m.ev) };
+      return;
+    }
+    const t0 = performance.now();
+    const mk = buildMarket(m.market);
+    if (m.type === 'simulate') {
+      const out = simulate(makeStrategy(m.key, m.params, m.cfg.nSims), mk, m.cfg, { full: true });
+      out.ms = performance.now() - t0;
+      out.marketK = mk.k;
+      out.avgOdds = mk.avgOdds;
+      self.postMessage({ type: 'simulate', id: m.id, out }, [out.final.buffer, out.maxDD.buffer]);
+    } else if (m.type === 'compare') {
+      const rows = [];
+      m.items.forEach((it, i) => {
+        const r = calibrate(it.key, it.params, mk, m.cfg, m.profile);
+        if (r) rows.push({ key: it.key, ...r });
+        self.postMessage({ type: 'progress', id: m.id, done: i + 1, total: m.items.length, label: it.key });
+      });
+      rows.sort((a, b) => b.median - a.median);
+      self.postMessage({ type: 'compare', id: m.id, rows, ms: performance.now() - t0 });
+    } else if (m.type === 'kelly') {
+      const cases = {
+        calibrated: { ...m.market, evModel: 'scaled', calibrated: true, noise: 0 },
+        overstated: { ...m.market, evModel: 'scaled', calibrated: false, noise: 0 },
+        overstated_noise: { ...m.market, evModel: 'scaled', calibrated: false, noise: 0.05 },
+      };
+      const out = {};
+      const total = Object.keys(cases).length * m.mults.length;
+      let done = 0;
+      for (const [name, mc] of Object.entries(cases)) {
+        const mkc = buildMarket(mc);
+        out[name] = m.mults.map((k) => {
+          const s = simulate(makeStrategy('kelly_half', { mult: k }, m.cfg.nSims), mkc, m.cfg, { cap: 1 }).summary;
+          done++;
+          self.postMessage({ type: 'progress', id: m.id, done, total, label: name });
+          return { mult: k, ...s };
+        });
+      }
+      self.postMessage({ type: 'kelly', id: m.id, out, ms: performance.now() - t0 });
+    }
+  } catch (err) {
+    self.postMessage({ type: 'error', id: m.id, message: String((err && err.message) || err) });
+  }
+};
+</script>
+<script>
+'use strict';
+const BETS = {"odds":[2.35,2.6,2.25,1.8,2.4,2.35,2.3,2.1,3.1,3.15,2.2,2.4,7.4,1.83,2.13,1.72,2.38,2.4,2.05,1.92,1.4,2.5,2.9,2.35,2.45,3.45,1.88,1.58,2.1,2.6,4.75,2.4,1.63,2.95,3.35,2.15,1.83,2.55,1.65,2.7,2.05,2.05,3.1,3.4,2.65,1.7,2.4,3.6,3.25,3.65,1.85,1.75,2.05,2.05,1.97,1.85,2.26,1.85,2.05,1.8,1.92,3.9,2.3,4.5,2.25,2.3,2.55,3.75,4.5,1.77,2.1,1.8,4.0,2.38,2.22,2.9,2.1,2.05,2.4,3.85,1.84,2.15,2.25,4.5,1.76,2.0,3.1,2.44,1.71,1.72,1.79,2.15,2.2,1.92,1.98,2.15,1.8,2.75,2.25,2.03,2.47,4.1,1.6,4.0,2.0,2.16,3.05,3.35,2.95,4.4,1.87,1.48,1.7,1.71,2.1,1.32,4.45,1.43,1.82,3.05,1.74,1.67,2.03,1.7,1.93,3.85,2.1,2.15,2.17,2.1,2.15,2.4,1.56,2.03,4.4,2.1,1.5,1.8,2.05,2.2,2.1,1.91,3.1,2.2,2.1,2.05,2.55,2.25,2.2,2.03,2.16,2.15,2.26,1.7,2.15,2.2,2.4,2.16,2.14,5.1,3.4,2.25,1.8,2.5,2.16,3.2,1.44,2.2,3.2,2.16,4.1,1.75,4.25,1.85,3.35,2.59,1.7,2.1,2.4,1.83,2.35,2.3,3.9,2.35,3.7,2.95,2.15,1.83,4.0,2.1,3.65,3.05,3.1,2.73,2.26,3.5,4.5,2.35,1.65,1.45,2.0,3.65,3.3,3.2,1.67,3.1,2.15,2.15,2.55,2.5,2.6,4.0,1.75,2.03,3.45,2.03,2.1,3.1,2.15,2.4,2.09,2.0,2.35,2.65,2.1,3.5,1.87,1.78,2.1,2.05,2.2,3.1,4.3,3.2,2.26,3.2,3.1,2.65,1.8,2.15,1.7,5.2,2.15,2.5,2.35,3.05,3.0,3.1,1.85,2.65,1.75,3.25,2.55,2.15,2.15,4.1,1.8,2.35,2.2,2.35,2.15,1.6,4.4,3.15,3.25,3.35,2.65,2.2,2.65,3.9,2.0,4.25,3.1,3.95,2.26,2.16,2.0,1.93,2.16,2.65,1.48,2.16,2.09,2.05,2.2,3.95,3.5,3.8,3.5,1.99,1.6,4.2,2.2,3.65,3.1,3.85,3.55,3.1,4.25,2.35,2.2,1.85,1.85,2.45,3.8,4.0,3.55,2.35,2.4,2.25,3.3,4.1,2.55,2.2,2.16,2.2,2.59,4.1,4.05,2.4,3.8,2.25,2.25,3.35,3.85,4.4,2.59,3.35,2.03,2.35,3.05,3.8,2.35,1.8,1.53,3.35,3.25,2.2,2.75,3.8,2.26,4.5,2.45,1.8,3.8,2.65,4.75,2.26,1.65,1.95,3.7,3.55,3.35,4.0,1.8,2.05,3.3,2.2,2.5,2.15,3.2,2.5,2.15,1.7,4.15,3.15,2.15,3.95,3.75,2.1,2.3,3.2,1.8,2.15,3.05,2.4,1.85,2.03,3.4,3.15,3.75,3.4,3.25,1.8,2.65,3.2,2.85,3.45,4.0,1.83,3.15,2.55,3.1,3.1,3.65,2.1,1.73,1.6,1.58,2.9,3.2,1.58,2.25,2.15,3.5,3.05,3.9,2.2,3.45,2.2,2.6,2.1,1.58,1.73,3.1,2.0,2.75,3.25,3.4,3.65,2.1,3.45,2.45,2.2,1.7,1.98,2.1,2.65,2.5,4.6,2.25,4.35,1.73,2.35,2.6,2.95,2.15,3.35,2.1,2.1,2.03,1.38,2.1,2.35,2.4,2.5,2.1,2.15,1.65,2.2,2.5,2.35,2.1,2.65,3.22,1.66,2.75,2.26,2.15,2.2,2.35,2.16,2.59,2.15,4.25,3.5,2.6,2.3,3.6,2.15,3.1,2.15,2.55,2.45,2.4,4.55,3.2,3.2,3.2,3.3,1.85,1.9,3.15,3.3,2.85,3.05,3.4,2.45,2.3,2.5,2.5,4.1,4.45,2.15,2.7,2.55,3.3,2.3,2.5,2.9,2.25,2.25,2.6,1.93,1.85,1.8,2.2,4.55,3.0,2.45,2.25,2.25,5.1,1.63,2.35,3.25,2.35,2.05,5.3,3.8,3.15,1.58,2.65,2.55,2.65,4.3,2.45,2.55,2.55,3.35,1.88,2.35,2.2,2.65,2.7,2.25,2.2,2.8,3.1,2.35,2.55,2.45,2.25,2.15,1.83,1.9,2.4,2.75,2.2,2.25,2.6,3.0,2.1,2.1,3.75,4.0,3.15,2.55,1.88,4.15,3.7,2.2,3.15,3.0,2.35,2.15,3.8,3.15,2.4,1.88,2.45,2.25,1.63,3.3,4.2,4.35,3.25,3.7,2.05,1.75,2.05,2.15,3.15,2.6,3.35,3.2,2.9,2.6,3.1,3.25,3.2,2.45,3.5,3.65,4.35,3.1,2.7,2.6,3.8,4.55,2.1,1.75,2.85,3.1,2.6,1.8,3.15,2.65,1.85,2.2,1.93,2.45,2.8,4.2,1.63,1.75,4.05,3.15,3.35,4.3,2.45,2.35,3.55,2.75,2.9,2.6,2.45,3.2,2.4,1.53,2.05,4.0,1.98,2.7,2.0,1.85,2.4,3.85,1.88,2.6,1.88,1.85,2.35,1.85,1.55,3.95,2.1,2.1,2.75,2.4,1.48,2.25,4.05,2.7,2.15,3.6,2.35,3.4,1.8,4.35,3.15,4.05,3.35,3.15,2.5,1.53,4.15,1.65,2.25,1.85,1.58,3.4,2.75,2.15,3.65,1.85,3.15,3.35,2.6,3.15,3.2,2.4,3.15,2.45,2.45,2.75,3.0,3.2,3.35,2.05,3.15,2.35,3.15,2.55,2.1,1.93,2.65,2.0,3.05,3.75,2.7,2.5,1.98,1.78,1.78,3.9,2.15,3.95,1.58,2.0,3.0,3.15,2.95,3.35,1.78,2.4,2.1,2.25,4.35,3.85,2.2,3.15,3.95,3.35,3.3,3.8,2.55,3.95,3.6,2.7,2.45,2.5,4.05,3.1,1.85,2.1,2.15,2.1,2.0,2.35,1.88,1.98,2.45,1.58,1.63,2.85,4.1,2.1,1.58,3.7,2.15,3.65,3.95,3.15,4.65,2.35,3.35,3.1,3.15,2.45,3.6,1.8,3.2,4.3,4.35,1.93,3.2,3.15,1.85,4.35,3.2,3.2,2.0,1.9,2.0,2.25,2.65,4.35,1.98,2.35,2.65,2.6,2.95,2.2,3.15,1.88,2.6,2.9,2.7,3.6,3.45,2.45,3.45,2.7,2.25,3.15,1.83,3.2,3.35,2.35,3.7,3.6,3.0,2.4,4.0,2.0,2.35,2.4,3.8,3.05,3.55,2.2,3.75,2.7,2.55,3.75,4.5,2.3,2.4,3.35,3.2,3.15,2.35,1.63,3.2,2.2,4.0,2.15,3.85,2.55,3.3,2.6,3.4,2.2,3.1,3.9,4.85,4.55,1.85,3.6,2.45,3.2,3.3,4.1,4.35,2.25,3.65,3.45,3.1,3.7,2.8,3.15,3.05,2.15,2.65,1.98,3.6,3.4,3.4,3.45,2.95,3.1,4.25,2.55,1.53,2.2,2.2,3.4,3.0,4.45,2.35,2.15,2.25,2.45,2.1,2.6,3.4,2.75,3.1,3.45,3.05,2.15,4.25,3.35,2.7,3.15,2.5,3.55,2.7,3.05,3.0,2.9,2.45,4.15,3.3,3.15,2.75,3.0,3.2,2.5,2.2,3.0,4.2,3.2,3.35,3.7,2.0,4.1,2.45,4.0,3.2,3.3,3.1,3.35,2.8,3.2,3.25,3.1,3.5,3.75,2.35,3.7,3.7,4.35,3.6,2.5,2.05,3.35,3.55,2.65,3.35,3.55,2.35,3.15,2.3,3.05,2.9,3.9,3.6,3.55,2.05,3.2,3.0,2.85,3.85,3.7,1.83,3.3,3.2,3.3,2.35,3.2,4.1,2.55,3.65,3.45,2.75,1.6,2.95,2.25,3.15,3.15,3.55,2.35,3.0,3.15,2.55,2.05,4.45,3.85,3.4,2.5,2.65,1.95,2.3,3.85,3.55,2.95,4.35,2.9,3.15,2.55,3.8,4.0,3.15,3.05,3.75,3.85,4.25,2.9,2.95,3.6,3.05,4.8,3.25,3.2,2.75,3.2,1.83,3.25,2.35,2.15,2.4,4.05,3.4,4.65,2.3,2.95,3.7,4.2,2.4,3.75,3.55],"ev":[0.0566,0.1326,0.0371,0.0363,0.035,0.0469,0.0357,0.0305,0.0328,0.0635,0.092,0.0333,2.9329,0.0357,0.0526,0.0382,0.0314,0.0817,0.0358,0.1245,0.0454,0.101,0.0563,0.0736,0.1274,0.1153,0.051,0.0584,0.0542,0.0877,0.1985,0.0568,0.0661,0.1071,0.0572,0.0835,0.0665,0.0866,0.0503,0.0678,0.0714,0.0774,0.066,0.0573,0.0606,0.0514,0.0636,0.0581,0.0576,0.0511,0.0543,0.05,0.0394,0.0471,0.0313,0.033,0.0929,0.0593,0.0464,0.0619,0.2227,0.0628,0.0712,0.1581,0.0893,0.0344,0.0632,0.0412,0.0504,0.0412,0.0494,0.0383,0.0553,0.0989,0.0329,0.0341,0.0536,0.0519,0.069,0.0704,0.0382,0.0538,0.0351,0.1371,0.0393,0.0606,0.0478,0.0309,0.0576,0.0685,0.0397,0.045,0.0375,0.0313,0.034,0.1085,0.0813,0.0648,0.0321,0.0306,0.0463,0.2032,0.0361,0.0441,0.0406,0.0487,0.1318,0.1746,0.1989,0.1602,0.0526,0.0319,0.2288,0.0627,0.0884,0.0637,0.0661,0.0517,0.0572,0.0718,0.0572,0.0862,0.0698,0.0936,0.1356,0.1561,0.0565,0.0551,0.0509,0.0536,0.0364,0.0311,0.0437,0.0692,0.0613,0.0301,0.058,0.0305,0.0359,0.0352,0.0315,0.0633,0.057,0.0439,0.0386,0.0399,0.1168,0.0373,0.0439,0.0305,0.0609,0.033,0.0366,0.0306,0.1381,0.0896,0.0647,0.0436,0.083,0.0664,0.0414,0.0386,0.0336,0.0415,0.0679,0.0523,0.047,0.0436,0.0523,0.051,0.0303,0.1453,0.06,0.0339,0.0489,0.0317,0.0553,0.0319,0.072,0.0634,0.038,0.0331,0.0628,0.0393,0.0593,0.1233,0.0639,0.0305,0.0333,0.0524,0.0689,0.0567,0.0566,0.0363,0.0302,0.0489,0.0614,0.0428,-0.0204,-0.0322,0.0468,0.0586,0.0586,0.0507,0.0313,0.033,0.049,0.0631,0.1024,0.0563,0.1055,0.4334,0.1664,0.0305,0.0762,0.0454,0.0407,-0.0011,0.033,0.0742,0.0352,0.0324,0.0533,0.0504,0.0344,0.0886,0.0401,0.0921,0.0465,0.0387,0.0317,0.0555,0.0985,0.0508,0.0398,0.0981,0.0397,0.0471,0.0316,0.0445,0.0771,1.3115,0.0301,0.0418,0.0373,0.059,0.0507,0.0628,0.0455,0.0306,0.0327,0.0658,0.4995,0.0636,0.0477,0.0344,0.0412,0.0502,0.0305,0.0601,0.0574,0.0825,0.0882,0.0577,0.0567,0.1959,0.1118,0.0633,0.0532,0.0545,0.0364,0.0702,0.0568,0.1219,0.064,0.0306,0.0338,0.0643,0.0479,0.0606,0.0547,0.0695,0.0558,0.0541,0.041,0.0651,0.1114,0.0411,0.0529,0.0335,0.0641,0.0698,0.0819,0.0593,0.0343,0.078,0.0742,0.0364,0.0622,0.0548,0.0305,0.0514,0.0322,0.0506,0.066,0.0548,0.0364,0.3059,0.058,0.08,0.0624,0.0578,0.053,0.0312,0.0306,0.0469,0.0369,0.0533,0.0577,0.057,0.0618,0.0536,0.0549,0.0449,0.0531,0.0501,0.0871,0.0572,0.0305,0.0655,0.0506,0.1998,0.3168,0.0685,0.0743,0.0557,0.0599,0.0587,0.0718,0.0661,0.0731,0.0541,0.0503,0.0544,0.1052,0.0649,0.1148,0.0366,0.0341,0.0664,0.032,0.0675,0.0417,0.0308,0.0417,0.0343,0.0417,0.0469,0.0402,0.0376,0.0808,0.0664,0.2084,0.0331,0.0332,0.032,0.0376,0.0555,0.0313,0.068,0.0342,0.0345,0.0306,0.0359,0.0316,0.0324,0.0816,0.0393,0.0383,0.0304,0.0338,0.0421,0.0622,0.0481,0.0317,0.0366,0.0342,0.0334,0.0466,0.044,0.0306,0.0386,0.0373,0.0309,0.0455,0.0414,0.041,0.0411,0.0303,0.0859,0.0339,0.0572,0.0445,0.0973,0.0455,0.0447,0.0404,0.1222,0.035,0.0542,0.0333,0.0444,0.0819,0.0426,0.042,0.151,0.0543,0.0285,0.0417,0.0472,0.032,0.0353,0.0329,0.0305,0.0337,0.0431,0.0359,0.0922,0.0402,0.0733,0.0468,0.0463,0.0361,0.0307,0.0465,0.0502,0.0613,0.043,0.0313,0.0336,0.0305,0.0428,0.0407,0.0681,0.0581,0.0415,0.0416,0.0407,0.0867,0.0372,0.0702,0.0516,0.0389,0.0571,0.1043,0.0382,0.1107,0.064,0.0462,0.069,0.0424,0.0496,0.0942,0.0302,0.0362,0.0776,0.0743,0.0451,0.0543,0.0672,0.0479,0.035,0.0462,0.0736,0.0515,0.1245,0.0338,0.0811,0.0459,0.0564,0.0333,0.0585,0.0482,0.0561,0.0347,0.0596,0.0305,0.0337,0.0464,0.0348,0.0304,0.0327,0.0698,0.0514,0.0577,0.0362,0.0462,0.0344,0.0767,0.0562,0.0606,0.0798,0.0431,0.0336,0.0449,0.0589,0.1729,0.0575,0.0414,0.0443,0.0407,0.0757,0.1374,0.039,0.0359,0.0322,0.0444,0.0422,0.2026,0.1144,0.0365,0.0436,0.038,0.0432,0.0407,0.1953,0.0344,0.0535,0.0365,0.0391,0.0328,0.0509,0.0337,0.0445,0.0893,0.0546,0.0678,0.074,0.0366,0.0502,0.0782,0.055,0.0516,0.033,0.0485,0.0355,0.0614,0.1462,0.042,0.1025,0.0762,0.036,0.0926,0.0961,0.0628,0.0484,0.0843,0.0778,0.0716,0.0845,0.0354,0.0483,0.4634,0.0627,0.0516,0.1423,0.0341,0.0368,0.039,0.0482,0.0426,0.1872,0.0319,0.0404,0.0556,0.5126,0.4943,0.0448,0.0383,0.0615,0.0969,0.0315,0.0344,0.0548,0.0593,0.0313,0.0755,0.0548,0.0305,0.0338,0.0538,0.0448,0.1398,0.0346,0.0441,0.0392,0.1778,0.0365,0.0702,0.0674,0.0895,0.1107,0.0526,0.0307,0.0332,0.0519,0.0312,0.0373,0.0685,0.0362,0.0424,0.1061,0.2288,0.0353,0.0623,0.0346,0.0309,0.2684,0.3905,0.0528,0.3664,0.0352,0.0309,0.2311,0.1184,0.0431,0.0993,0.0338,0.0348,0.0334,0.1831,0.3566,0.0566,0.0592,0.0545,0.0349,0.0509,0.0311,0.034,0.1476,0.0316,0.1337,0.0311,0.053,0.0565,0.065,0.2154,0.0596,0.1312,0.0406,0.0582,0.1613,0.0514,0.0912,0.0575,0.0478,0.0385,0.0544,0.0885,0.0574,0.1604,0.172,0.0333,0.0354,0.0391,0.0469,0.0689,0.0302,0.0767,0.0342,0.0301,0.0508,0.1169,0.0365,0.0308,0.0388,0.0302,0.061,0.0729,0.0448,0.0331,0.0445,0.0681,0.0315,0.1262,0.1677,0.0301,0.0344,0.0463,0.0746,0.042,0.0819,0.0502,0.1009,0.0305,0.1947,0.0341,0.0431,0.0447,0.0405,0.0823,0.1333,0.0391,0.038,0.1398,0.0415,0.0388,0.0768,0.0571,0.0431,0.036,0.0871,0.0412,0.0411,0.0406,0.0944,0.0347,0.0516,0.0336,0.0324,0.0368,0.2437,0.03,0.0393,0.1192,0.0374,0.0473,0.03,0.0517,0.1103,0.0511,0.1006,0.1046,0.0337,0.0342,0.0514,0.0421,0.0355,0.0459,0.0303,0.1275,0.0359,0.0448,0.0615,0.0579,0.102,0.139,0.0361,0.0564,0.0565,0.0577,0.162,0.03,0.0824,0.078,0.0479,0.0767,0.0309,0.0399,0.0385,0.0526,0.0489,0.0338,0.0323,0.5449,0.0941,0.0366,0.1258,0.032,0.0622,0.0345,0.0542,0.0459,0.0595,0.0652,0.1215,0.0406,0.0356,0.0424,0.1765,0.0342,0.0397,0.054,0.1222,0.0716,0.0497,0.0411,0.363,0.1022,0.0332,0.0508,0.1171,0.0471,0.0478,0.0316,0.0415,0.0352,0.0498,0.0399,0.0542,0.0667,0.0378,0.0423,0.04,0.0647,0.0426,0.1459,0.0505,0.071,0.0429,0.0464,0.037,0.0441,0.0426,0.0343,0.0374,0.0685,0.232,0.0333,0.031,0.0372,0.032,0.0315,0.0652,0.0448,0.0353,0.0415,0.0348,0.0324,0.0636,0.0488,0.0385,0.0404,0.0313,0.0372,0.0373,0.2114,0.0613,0.0657,0.0412,0.0307,0.0312,0.0376,0.0389,0.0318,0.1079,0.0411,0.0366,0.0427,0.0387,0.0368,0.0337,0.0301,0.0826,0.0309,0.0531,0.0397,0.0387,0.0421,0.031,0.0322,0.3528,0.0315,0.0969,0.0544,0.0336,0.0342,0.0447,0.0444,0.2522,0.046,0.0403,0.0305,0.0387,0.0475,0.1413,0.0319,0.0357,0.0392,0.0307,0.0587,0.036,0.0396,0.0393,0.0584,0.0509,0.114,0.033,0.0615,0.0418,0.0377,0.0675,0.0302,0.0398,0.0318,0.0301,0.0751,0.0327,0.0313,0.0657,0.0436,0.0444,0.0554,0.0341,0.0451,0.1161,0.2078,0.0309,0.0449,0.0399,0.0451,0.0521,0.0305,0.047,0.0306,0.037,0.0318,0.0334,0.0313,0.0323,0.0316,0.0365,0.0324,0.0325,0.0549,0.0398,0.0467,0.0372,0.0344,0.0309,0.0409,0.0406,0.0365,0.0302,0.0384,0.0331,0.0535,0.0443,0.0506,0.0384,0.0337,0.0338,0.0327,0.0311,1.1759,0.0532,0.0322,0.0342,0.0743,0.0353,0.0416,0.0331,0.0373,0.0372,0.0614,0.055,0.1371,0.0443,0.0381,0.0431,0.0423,0.0456,0.0364,0.0341,0.0507,0.0337,0.1366,0.0398,0.0345,0.0345,0.0659,0.0313,0.0309,0.0313,0.0339,0.0442,0.054,0.0441,0.0725,0.1662,0.0339,0.042,0.0439,0.0304,0.0359,0.0539,0.7682,0.0326,0.0574,0.046,0.5208,0.3271,0.0325,0.4391,0.0313,0.0567,0.0788,0.0477,0.0306,0.0403,0.0902,0.0446,0.0534,0.0391,0.0312,0.0521,0.0321,0.0418,0.0371,0.0739,0.0553,0.2398,0.0326]};
+const PRE = {"settings":{"n_sims":2500,"n_bets":1000,"roi":0.025,"cap":0.1,"seed":2026,"pool_size":1013,"avg_odds":2.7572754195459033,"seconds":284.0},"horizon":{"unit_return_sd":1.3325,"rows":[{"n_bets":250,"p_roi_negative_analytic_pct":38.34,"p_loss_flat_mc_pct":37.84,"roi_sd_pp":8.43},{"n_bets":500,"p_roi_negative_analytic_pct":33.74,"p_loss_flat_mc_pct":33.09,"roi_sd_pp":5.96},{"n_bets":1000,"p_roi_negative_analytic_pct":27.65,"p_loss_flat_mc_pct":27.03,"roi_sd_pp":4.21},{"n_bets":2000,"p_roi_negative_analytic_pct":20.07,"p_loss_flat_mc_pct":20.22,"roi_sd_pp":2.98},{"n_bets":5000,"p_roi_negative_analytic_pct":9.23,"p_loss_flat_mc_pct":8.81,"roi_sd_pp":1.88},{"n_bets":10000,"p_roi_negative_analytic_pct":3.03,"p_loss_flat_mc_pct":2.89,"roi_sd_pp":1.33}]},"risk_matched":{"flat":{"description":"все ставки с EV +2.50%","profiles":{"conservative":[{"median_profit_pct":16.248,"mean_profit_pct":31.537,"p5_profit_pct":-34.04,"p95_profit_pct":149.657,"p_loss_pct":35.96,"median_max_dd_pct":32.785,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":1.037,"roi_turnover_pct":2.519,"median_growth_per_bet_pct":0.015,"key":"floor_kelly","scale":1.5,"scale_max":1.5,"label":"Келли от подушки над полом 50% пика"},{"median_profit_pct":14.032,"mean_profit_pct":17.419,"p5_profit_pct":-22.345,"p95_profit_pct":67.333,"p_loss_pct":27.56,"median_max_dd_pct":19.966,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.633,"roi_turnover_pct":2.535,"median_growth_per_bet_pct":0.013,"key":"constant_profit","scale":0.8904,"scale_max":0.8904,"label":"выигрыш = 1% банка"},{"median_profit_pct":14.032,"mean_profit_pct":17.419,"p5_profit_pct":-22.345,"p95_profit_pct":67.333,"p_loss_pct":27.56,"median_max_dd_pct":19.966,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.633,"roi_turnover_pct":2.535,"median_growth_per_bet_pct":0.013,"key":"adaptive_constant_profit","scale":1.7808,"scale_max":1.7808,"label":"выигрыш 0.5–3% банка по ROI"},{"median_profit_pct":14.029,"mean_profit_pct":17.415,"p5_profit_pct":-22.341,"p95_profit_pct":67.317,"p_loss_pct":27.56,"median_max_dd_pct":19.962,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.633,"roi_turnover_pct":2.535,"median_growth_per_bet_pct":0.013,"key":"kelly_half","scale":0.7122,"scale_max":0.7122,"label":"половина Келли: f = 0.5·EV/(k-1)"},{"median_profit_pct":13.617,"mean_profit_pct":16.515,"p5_profit_pct":-21.825,"p95_profit_pct":65.309,"p_loss_pct":27.68,"median_max_dd_pct":19.349,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.604,"roi_turnover_pct":2.529,"median_growth_per_bet_pct":0.013,"key":"log_formula","scale":0.3901,"scale_max":0.3901,"label":"f = -log10(1-p)/15 (backend)"},{"median_profit_pct":12.623,"mean_profit_pct":15.344,"p5_profit_pct":-21.439,"p95_profit_pct":61.801,"p_loss_pct":28.44,"median_max_dd_pct":18.921,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.566,"roi_turnover_pct":2.521,"median_growth_per_bet_pct":0.012,"key":"linear_roi_odds","scale":1.5122,"scale_max":1.5122,"label":"ROI со штрафом за высокий кэф"},{"median_profit_pct":11.472,"mean_profit_pct":13.8,"p5_profit_pct":-21.288,"p95_profit_pct":57.046,"p_loss_pct":30.28,"median_max_dd_pct":18.548,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.511,"roi_turnover_pct":2.531,"median_growth_per_bet_pct":0.011,"key":"fixed","scale":0.2554,"scale_max":0.2554,"label":"f = 2% банка"},{"median_profit_pct":11.472,"mean_profit_pct":13.8,"p5_profit_pct":-21.288,"p95_profit_pct":57.046,"p_loss_pct":30.28,"median_max_dd_pct":18.548,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.511,"roi_turnover_pct":2.531,"median_growth_per_bet_pct":0.011,"key":"linear_roi","scale":1.0215,"scale_max":1.0215,"label":"1% при ROI 5%, линейно"},{"median_profit_pct":11.471,"mean_profit_pct":13.797,"p5_profit_pct":-21.284,"p95_profit_pct":57.033,"p_loss_pct":30.28,"median_max_dd_pct":18.545,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.511,"roi_turnover_pct":2.531,"median_growth_per_bet_pct":0.011,"key":"sqrt_roi","scale":0.7222,"scale_max":0.7222,"label":"1% при ROI 5%, корень"},{"median_profit_pct":11.276,"mean_profit_pct":16.341,"p5_profit_pct":-23.796,"p95_profit_pct":75.067,"p_loss_pct":32.16,"median_max_dd_pct":21.85,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.593,"roi_turnover_pct":2.515,"median_growth_per_bet_pct":0.011,"key":"dynamic_percentage","scale":0.2898,"scale_max":0.2898,"label":"2% с поправкой на банк"},{"median_profit_pct":11.21,"mean_profit_pct":13.713,"p5_profit_pct":-20.154,"p95_profit_pct":55.151,"p_loss_pct":28.48,"median_max_dd_pct":17.785,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.509,"roi_turnover_pct":2.525,"median_growth_per_bet_pct":0.011,"key":"portfolio_theory","scale":0.2109,"scale_max":0.2109,"label":"веса по корзинам кэфов"},{"median_profit_pct":10.635,"mean_profit_pct":14.999,"p5_profit_pct":-21.529,"p95_profit_pct":67.729,"p_loss_pct":35.64,"median_max_dd_pct":21.165,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.546,"roi_turnover_pct":2.513,"median_growth_per_bet_pct":0.01,"key":"drawdown_guard","scale":0.296,"scale_max":0.4229,"label":"2%, x0.5 на просадке > 20%"},{"median_profit_pct":10.534,"mean_profit_pct":10.423,"p5_profit_pct":-17.379,"p95_profit_pct":38.078,"p_loss_pct":26.44,"median_max_dd_pct":14.05,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.394,"roi_turnover_pct":2.55,"median_growth_per_bet_pct":0.01,"key":"flat","scale":0.2043,"scale_max":0.2043,"label":"ставка = 2% НАЧАЛЬНОГО банка (без компаундинга)"},{"median_profit_pct":10.17,"mean_profit_pct":13.91,"p5_profit_pct":-23.43,"p95_profit_pct":64.569,"p_loss_pct":34.32,"median_max_dd_pct":19.959,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.501,"roi_turnover_pct":2.582,"median_growth_per_bet_pct":0.01,"key":"anti_martingale","scale":0.3477,"scale_max":0.3477,"label":"x1.5 после выигрыша"}],"cautious":[{"median_profit_pct":19.015,"mean_profit_pct":26.218,"p5_profit_pct":-32.738,"p95_profit_pct":111.066,"p_loss_pct":29.8,"median_max_dd_pct":28.404,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.923,"roi_turnover_pct":2.52,"median_growth_per_bet_pct":0.017,"key":"log_formula","scale":0.5962,"scale_max":0.5962,"label":"f = -log10(1-p)/15 (backend)"},{"median_profit_pct":18.864,"mean_profit_pct":26.368,"p5_profit_pct":-32.213,"p95_profit_pct":108.264,"p_loss_pct":29.64,"median_max_dd_pct":28.196,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.925,"roi_turnover_pct":2.527,"median_growth_per_bet_pct":0.017,"key":"constant_profit","scale":1.301,"scale_max":1.301,"label":"выигрыш = 1% банка"},{"median_profit_pct":18.864,"mean_profit_pct":26.368,"p5_profit_pct":-32.213,"p95_profit_pct":108.264,"p_loss_pct":29.64,"median_max_dd_pct":28.196,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.925,"roi_turnover_pct":2.527,"median_growth_per_bet_pct":0.017,"key":"adaptive_constant_profit","scale":2.6021,"scale_max":2.6021,"label":"выигрыш 0.5–3% банка по ROI"},{"median_profit_pct":18.863,"mean_profit_pct":26.367,"p5_profit_pct":-32.212,"p95_profit_pct":108.258,"p_loss_pct":29.64,"median_max_dd_pct":28.195,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.925,"roi_turnover_pct":2.527,"median_growth_per_bet_pct":0.017,"key":"kelly_half","scale":1.0408,"scale_max":1.0408,"label":"половина Келли: f = 0.5·EV/(k-1)"},{"median_profit_pct":18.001,"mean_profit_pct":25.246,"p5_profit_pct":-33.227,"p95_profit_pct":109.419,"p_loss_pct":30.88,"median_max_dd_pct":28.653,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.897,"roi_turnover_pct":2.51,"median_growth_per_bet_pct":0.017,"key":"linear_roi_odds","scale":2.394,"scale_max":2.394,"label":"ROI со штрафом за высокий кэф"},{"median_profit_pct":17.796,"mean_profit_pct":17.609,"p5_profit_pct":-29.36,"p95_profit_pct":64.328,"p_loss_pct":26.44,"median_max_dd_pct":22.202,"p_dd50_pct":3.48,"p_dd80_pct":0.12,"avg_stake_pct":0.66,"roi_turnover_pct":2.55,"median_growth_per_bet_pct":0.016,"key":"flat","scale":0.3452,"scale_max":0.3452,"label":"ставка = 2% НАЧАЛЬНОГО банка (без компаундинга)"},{"median_profit_pct":16.815,"mean_profit_pct":24.255,"p5_profit_pct":-33.418,"p95_profit_pct":105.644,"p_loss_pct":31.0,"median_max_dd_pct":28.784,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.865,"roi_turnover_pct":2.51,"median_growth_per_bet_pct":0.016,"key":"portfolio_theory","scale":0.3584,"scale_max":0.3584,"label":"веса по корзинам кэфов"},{"median_profit_pct":16.38,"mean_profit_pct":22.747,"p5_profit_pct":-33.15,"p95_profit_pct":100.559,"p_loss_pct":32.6,"median_max_dd_pct":28.275,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.813,"roi_turnover_pct":2.519,"median_growth_per_bet_pct":0.015,"key":"fixed","scale":0.4067,"scale_max":0.4067,"label":"f = 2% банка"},{"median_profit_pct":16.38,"mean_profit_pct":22.747,"p5_profit_pct":-33.15,"p95_profit_pct":100.559,"p_loss_pct":32.6,"median_max_dd_pct":28.275,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.813,"roi_turnover_pct":2.519,"median_growth_per_bet_pct":0.015,"key":"linear_roi","scale":1.627,"scale_max":1.627,"label":"1% при ROI 5%, линейно"},{"median_profit_pct":16.38,"mean_profit_pct":22.746,"p5_profit_pct":-33.149,"p95_profit_pct":100.555,"p_loss_pct":32.6,"median_max_dd_pct":28.274,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.813,"roi_turnover_pct":2.519,"median_growth_per_bet_pct":0.015,"key":"sqrt_roi","scale":1.1504,"scale_max":1.1504,"label":"1% при ROI 5%, корень"},{"median_profit_pct":16.248,"mean_profit_pct":31.537,"p5_profit_pct":-34.04,"p95_profit_pct":149.657,"p_loss_pct":35.96,"median_max_dd_pct":32.785,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":1.037,"roi_turnover_pct":2.519,"median_growth_per_bet_pct":0.015,"key":"floor_kelly","scale":1.5,"scale_max":1.5,"label":"Келли от подушки над полом 50% пика"},{"median_profit_pct":13.419,"mean_profit_pct":22.203,"p5_profit_pct":-35.218,"p95_profit_pct":110.221,"p_loss_pct":36.8,"median_max_dd_pct":29.609,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.776,"roi_turnover_pct":2.557,"median_growth_per_bet_pct":0.013,"key":"anti_martingale","scale":0.5383,"scale_max":0.5383,"label":"x1.5 после выигрыша"},{"median_profit_pct":13.394,"mean_profit_pct":27.074,"p5_profit_pct":-33.87,"p95_profit_pct":136.279,"p_loss_pct":37.24,"median_max_dd_pct":33.002,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.928,"roi_turnover_pct":2.492,"median_growth_per_bet_pct":0.013,"key":"dynamic_percentage","scale":0.457,"scale_max":0.4573,"label":"2% с поправкой на банк"},{"median_profit_pct":10.564,"mean_profit_pct":13.464,"p5_profit_pct":-20.307,"p95_profit_pct":58.571,"p_loss_pct":33.16,"median_max_dd_pct":18.964,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.495,"roi_turnover_pct":2.523,"median_growth_per_bet_pct":0.01,"key":"drawdown_guard","scale":0.2615,"scale_max":0.6538,"label":"2%, x0.5 на просадке > 20%"}],"balanced":[{"median_profit_pct":22.968,"mean_profit_pct":22.726,"p5_profit_pct":-37.894,"p95_profit_pct":83.025,"p_loss_pct":26.44,"median_max_dd_pct":27.391,"p_dd50_pct":10.0,"p_dd80_pct":0.84,"avg_stake_pct":0.858,"roi_turnover_pct":2.551,"median_growth_per_bet_pct":0.021,"key":"flat","scale":0.4456,"scale_max":0.4456,"label":"ставка = 2% НАЧАЛЬНОГО банка (без компаундинга)"},{"median_profit_pct":21.5,"mean_profit_pct":32.296,"p5_profit_pct":-38.863,"p95_profit_pct":142.207,"p_loss_pct":31.16,"median_max_dd_pct":33.464,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":1.112,"roi_turnover_pct":2.514,"median_growth_per_bet_pct":0.019,"key":"log_formula","scale":0.718,"scale_max":0.718,"label":"f = -log10(1-p)/15 (backend)"},{"median_profit_pct":21.355,"mean_profit_pct":32.597,"p5_profit_pct":-38.424,"p95_profit_pct":138.801,"p_loss_pct":30.6,"median_max_dd_pct":33.319,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":1.117,"roi_turnover_pct":2.521,"median_growth_per_bet_pct":0.019,"key":"kelly_half","scale":1.2571,"scale_max":1.2571,"label":"половина Келли: f = 0.5·EV/(k-1)"},{"median_profit_pct":21.355,"mean_profit_pct":32.596,"p5_profit_pct":-38.422,"p95_profit_pct":138.794,"p_loss_pct":30.6,"median_max_dd_pct":33.318,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":1.117,"roi_turnover_pct":2.521,"median_growth_per_bet_pct":0.019,"key":"constant_profit","scale":1.5713,"scale_max":1.5713,"label":"выигрыш = 1% банка"},{"median_profit_pct":21.355,"mean_profit_pct":32.596,"p5_profit_pct":-38.422,"p95_profit_pct":138.794,"p_loss_pct":30.6,"median_max_dd_pct":33.318,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":1.117,"roi_turnover_pct":2.521,"median_growth_per_bet_pct":0.019,"key":"adaptive_constant_profit","scale":3.1426,"scale_max":3.1426,"label":"выигрыш 0.5–3% банка по ROI"},{"median_profit_pct":20.155,"mean_profit_pct":30.844,"p5_profit_pct":-39.184,"p95_profit_pct":138.685,"p_loss_pct":32.08,"median_max_dd_pct":33.536,"p_dd50_pct":9.92,"p_dd80_pct":0.0,"avg_stake_pct":1.073,"roi_turnover_pct":2.504,"median_growth_per_bet_pct":0.018,"key":"linear_roi_odds","scale":2.8652,"scale_max":2.8652,"label":"ROI со штрафом за высокий кэф"},{"median_profit_pct":18.735,"mean_profit_pct":29.687,"p5_profit_pct":-39.501,"p95_profit_pct":134.111,"p_loss_pct":32.16,"median_max_dd_pct":33.761,"p_dd50_pct":9.96,"p_dd80_pct":0.0,"avg_stake_pct":1.038,"roi_turnover_pct":2.503,"median_growth_per_bet_pct":0.017,"key":"portfolio_theory","scale":0.4302,"scale_max":0.4302,"label":"веса по корзинам кэфов"},{"median_profit_pct":18.466,"mean_profit_pct":28.239,"p5_profit_pct":-39.664,"p95_profit_pct":129.554,"p_loss_pct":33.84,"median_max_dd_pct":33.591,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":0.99,"roi_turnover_pct":2.511,"median_growth_per_bet_pct":0.017,"key":"sqrt_roi","scale":1.3999,"scale_max":1.3999,"label":"1% при ROI 5%, корень"},{"median_profit_pct":18.465,"mean_profit_pct":28.238,"p5_profit_pct":-39.663,"p95_profit_pct":129.552,"p_loss_pct":33.84,"median_max_dd_pct":33.59,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":0.99,"roi_turnover_pct":2.511,"median_growth_per_bet_pct":0.017,"key":"linear_roi","scale":1.9797,"scale_max":1.9797,"label":"1% при ROI 5%, линейно"},{"median_profit_pct":18.464,"mean_profit_pct":28.234,"p5_profit_pct":-39.659,"p95_profit_pct":129.531,"p_loss_pct":33.84,"median_max_dd_pct":33.587,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":0.99,"roi_turnover_pct":2.511,"median_growth_per_bet_pct":0.017,"key":"fixed","scale":0.4949,"scale_max":0.4949,"label":"f = 2% банка"},{"median_profit_pct":16.248,"mean_profit_pct":31.537,"p5_profit_pct":-34.04,"p95_profit_pct":149.657,"p_loss_pct":35.96,"median_max_dd_pct":32.785,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":1.037,"roi_turnover_pct":2.519,"median_growth_per_bet_pct":0.015,"key":"floor_kelly","scale":1.5,"scale_max":1.5,"label":"Келли от подушки над полом 50% пика"},{"median_profit_pct":14.313,"mean_profit_pct":26.903,"p5_profit_pct":-41.159,"p95_profit_pct":138.117,"p_loss_pct":38.24,"median_max_dd_pct":34.487,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":0.925,"roi_turnover_pct":2.542,"median_growth_per_bet_pct":0.013,"key":"anti_martingale","scale":0.6418,"scale_max":0.6418,"label":"x1.5 после выигрыша"},{"median_profit_pct":13.498,"mean_profit_pct":26.621,"p5_profit_pct":-33.368,"p95_profit_pct":133.765,"p_loss_pct":37.04,"median_max_dd_pct":32.696,"p_dd50_pct":3.28,"p_dd80_pct":0.0,"avg_stake_pct":0.915,"roi_turnover_pct":2.491,"median_growth_per_bet_pct":0.013,"key":"dynamic_percentage","scale":0.4505,"scale_max":0.53,"label":"2% с поправкой на банк"},{"median_profit_pct":10.465,"mean_profit_pct":15.961,"p5_profit_pct":-22.431,"p95_profit_pct":73.473,"p_loss_pct":36.2,"median_max_dd_pct":22.225,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.577,"roi_turnover_pct":2.512,"median_growth_per_bet_pct":0.01,"key":"drawdown_guard","scale":0.3176,"scale_max":0.7939,"label":"2%, x0.5 на просадке > 20%"}],"risky":[{"median_profit_pct":32.521,"mean_profit_pct":31.993,"p5_profit_pct":-54.962,"p95_profit_pct":117.555,"p_loss_pct":26.44,"median_max_dd_pct":35.862,"p_dd50_pct":25.4,"p_dd80_pct":5.0,"avg_stake_pct":1.268,"roi_turnover_pct":2.546,"median_growth_per_bet_pct":0.028,"key":"flat","scale":0.6309,"scale_max":0.6309,"label":"ставка = 2% НАЧАЛЬНОГО банка (без компаундинга)"},{"median_profit_pct":25.618,"mean_profit_pct":56.515,"p5_profit_pct":-58.429,"p95_profit_pct":281.584,"p_loss_pct":35.76,"median_max_dd_pct":49.533,"p_dd50_pct":49.16,"p_dd80_pct":1.36,"avg_stake_pct":1.794,"roi_turnover_pct":2.488,"median_growth_per_bet_pct":0.023,"key":"log_formula","scale":1.1582,"scale_max":1.3625,"label":"f = -log10(1-p)/15 (backend)"},{"median_profit_pct":25.307,"mean_profit_pct":57.005,"p5_profit_pct":-58.029,"p95_profit_pct":272.325,"p_loss_pct":35.12,"median_max_dd_pct":49.55,"p_dd50_pct":48.24,"p_dd80_pct":1.48,"avg_stake_pct":1.799,"roi_turnover_pct":2.496,"median_growth_per_bet_pct":0.023,"key":"constant_profit","scale":2.5305,"scale_max":2.9771,"label":"выигрыш = 1% банка"},{"median_profit_pct":25.307,"mean_profit_pct":57.005,"p5_profit_pct":-58.029,"p95_profit_pct":272.325,"p_loss_pct":35.12,"median_max_dd_pct":49.55,"p_dd50_pct":48.24,"p_dd80_pct":1.48,"avg_stake_pct":1.799,"roi_turnover_pct":2.496,"median_growth_per_bet_pct":0.023,"key":"adaptive_constant_profit","scale":5.061,"scale_max":5.9541,"label":"выигрыш 0.5–3% банка по ROI"},{"median_profit_pct":25.307,"mean_profit_pct":57.011,"p5_profit_pct":-58.033,"p95_profit_pct":272.358,"p_loss_pct":35.12,"median_max_dd_pct":49.553,"p_dd50_pct":48.28,"p_dd80_pct":1.48,"avg_stake_pct":1.8,"roi_turnover_pct":2.496,"median_growth_per_bet_pct":0.023,"key":"kelly_half","scale":2.0246,"scale_max":2.3818,"label":"половина Келли: f = 0.5·EV/(k-1)"},{"median_profit_pct":23.276,"mean_profit_pct":54.107,"p5_profit_pct":-59.011,"p95_profit_pct":274.557,"p_loss_pct":36.36,"median_max_dd_pct":49.832,"p_dd50_pct":49.72,"p_dd80_pct":1.56,"avg_stake_pct":1.741,"roi_turnover_pct":2.478,"median_growth_per_bet_pct":0.021,"key":"linear_roi_odds","scale":4.6476,"scale_max":5.4678,"label":"ROI со штрафом за высокий кэф"},{"median_profit_pct":22.744,"mean_profit_pct":52.836,"p5_profit_pct":-52.538,"p95_profit_pct":258.132,"p_loss_pct":36.52,"median_max_dd_pct":46.997,"p_dd50_pct":39.88,"p_dd80_pct":0.0,"avg_stake_pct":1.642,"roi_turnover_pct":2.497,"median_growth_per_bet_pct":0.02,"key":"floor_kelly","scale":1.275,"scale_max":1.5,"label":"Келли от подушки над полом 20% пика"},{"median_profit_pct":21.022,"mean_profit_pct":45.346,"p5_profit_pct":-56.466,"p95_profit_pct":228.694,"p_loss_pct":37.84,"median_max_dd_pct":47.348,"p_dd50_pct":41.8,"p_dd80_pct":0.96,"avg_stake_pct":1.5,"roi_turnover_pct":2.487,"median_growth_per_bet_pct":0.019,"key":"fixed","scale":0.75,"scale_max":0.9414,"label":"f = 2% банка"},{"median_profit_pct":21.022,"mean_profit_pct":45.346,"p5_profit_pct":-56.466,"p95_profit_pct":228.694,"p_loss_pct":37.84,"median_max_dd_pct":47.348,"p_dd50_pct":41.8,"p_dd80_pct":0.96,"avg_stake_pct":1.5,"roi_turnover_pct":2.487,"median_growth_per_bet_pct":0.019,"key":"linear_roi","scale":3.0,"scale_max":3.7661,"label":"1% при ROI 5%, линейно"},{"median_profit_pct":20.982,"mean_profit_pct":42.337,"p5_profit_pct":-53.87,"p95_profit_pct":210.493,"p_loss_pct":37.16,"median_max_dd_pct":45.197,"p_dd50_pct":35.88,"p_dd80_pct":0.56,"avg_stake_pct":1.414,"roi_turnover_pct":2.491,"median_growth_per_bet_pct":0.019,"key":"sqrt_roi","scale":2.0,"scale_max":2.6631,"label":"1% при ROI 5%, корень"},{"median_profit_pct":20.929,"mean_profit_pct":41.455,"p5_profit_pct":-50.983,"p95_profit_pct":200.662,"p_loss_pct":34.76,"median_max_dd_pct":43.112,"p_dd50_pct":31.0,"p_dd80_pct":0.24,"avg_stake_pct":1.392,"roi_turnover_pct":2.486,"median_growth_per_bet_pct":0.019,"key":"portfolio_theory","scale":0.5771,"scale_max":0.8245,"label":"веса по корзинам кэфов"},{"median_profit_pct":14.466,"mean_profit_pct":28.338,"p5_profit_pct":-42.875,"p95_profit_pct":146.8,"p_loss_pct":38.64,"median_max_dd_pct":35.945,"p_dd50_pct":12.96,"p_dd80_pct":0.0,"avg_stake_pct":0.97,"roi_turnover_pct":2.537,"median_growth_per_bet_pct":0.014,"key":"anti_martingale","scale":0.6729,"scale_max":1.2234,"label":"x1.5 после выигрыша"},{"median_profit_pct":13.441,"mean_profit_pct":27.708,"p5_profit_pct":-34.252,"p95_profit_pct":139.633,"p_loss_pct":37.28,"median_max_dd_pct":33.525,"p_dd50_pct":3.96,"p_dd80_pct":0.0,"avg_stake_pct":0.946,"roi_turnover_pct":2.493,"median_growth_per_bet_pct":0.013,"key":"dynamic_percentage","scale":0.4661,"scale_max":1.1653,"label":"2% с поправкой на банк"},{"median_profit_pct":10.271,"mean_profit_pct":29.871,"p5_profit_pct":-35.648,"p95_profit_pct":162.046,"p_loss_pct":41.8,"median_max_dd_pct":34.609,"p_dd50_pct":4.44,"p_dd80_pct":0.0,"avg_stake_pct":0.991,"roi_turnover_pct":2.479,"median_growth_per_bet_pct":0.01,"key":"drawdown_guard","scale":0.681,"scale_max":1.7024,"label":"2%, x0.5 на просадке > 20%"}]}},"scaled_calibrated":{"description":"EV из данных (кап 8%) x 0.49 -> средний ROI +2.50%, оценка откалибрована","profiles":{"conservative":[{"median_profit_pct":18.483,"mean_profit_pct":35.295,"p5_profit_pct":-34.609,"p95_profit_pct":161.743,"p_loss_pct":35.56,"median_max_dd_pct":33.624,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":1.02,"roi_turnover_pct":2.819,"median_growth_per_bet_pct":0.017,"key":"floor_kelly","scale":1.5,"scale_max":1.5,"label":"Келли от подушки над полом 50% пика"},{"median_profit_pct":14.184,"mean_profit_pct":17.005,"p5_profit_pct":-21.901,"p95_profit_pct":64.581,"p_loss_pct":27.52,"median_max_dd_pct":19.336,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.609,"roi_turnover_pct":2.578,"median_growth_per_bet_pct":0.013,"key":"adaptive_constant_profit","scale":1.6277,"scale_max":1.6277,"label":"выигрыш 0.5–3% банка по ROI"},{"median_profit_pct":14.039,"mean_profit_pct":15.786,"p5_profit_pct":-19.564,"p95_profit_pct":57.192,"p_loss_pct":26.08,"median_max_dd_pct":17.378,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.519,"roi_turnover_pct":2.83,"median_growth_per_bet_pct":0.013,"key":"kelly_half","scale":0.5879,"scale_max":0.5879,"label":"половина Келли: f = 0.5·EV/(k-1)"},{"median_profit_pct":13.765,"mean_profit_pct":16.715,"p5_profit_pct":-22.004,"p95_profit_pct":65.673,"p_loss_pct":27.84,"median_max_dd_pct":19.627,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.618,"roi_turnover_pct":2.502,"median_growth_per_bet_pct":0.013,"key":"constant_profit","scale":0.8687,"scale_max":0.8687,"label":"выигрыш = 1% банка"},{"median_profit_pct":13.24,"mean_profit_pct":15.916,"p5_profit_pct":-21.628,"p95_profit_pct":61.932,"p_loss_pct":27.76,"median_max_dd_pct":18.803,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.586,"roi_turnover_pct":2.527,"median_growth_per_bet_pct":0.012,"key":"log_formula","scale":0.3792,"scale_max":0.3792,"label":"f = -log10(1-p)/15 (backend)"},{"median_profit_pct":12.863,"mean_profit_pct":14.917,"p5_profit_pct":-19.009,"p95_profit_pct":55.708,"p_loss_pct":27.24,"median_max_dd_pct":17.23,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.491,"roi_turnover_pct":2.841,"median_growth_per_bet_pct":0.012,"key":"linear_roi_odds","scale":1.3137,"scale_max":1.3137,"label":"ROI со штрафом за высокий кэф"},{"median_profit_pct":11.888,"mean_profit_pct":13.889,"p5_profit_pct":-19.482,"p95_profit_pct":55.194,"p_loss_pct":28.6,"median_max_dd_pct":17.175,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.451,"roi_turnover_pct":2.89,"median_growth_per_bet_pct":0.011,"key":"linear_roi","scale":0.8992,"scale_max":0.8992,"label":"1% при ROI 5%, линейно"},{"median_profit_pct":11.53,"mean_profit_pct":13.528,"p5_profit_pct":-19.422,"p95_profit_pct":53.895,"p_loss_pct":28.52,"median_max_dd_pct":17.15,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.469,"roi_turnover_pct":2.716,"median_growth_per_bet_pct":0.011,"key":"sqrt_roi","scale":0.6707,"scale_max":0.6707,"label":"1% при ROI 5%, корень"},{"median_profit_pct":11.063,"mean_profit_pct":15.473,"p5_profit_pct":-23.166,"p95_profit_pct":70.393,"p_loss_pct":31.64,"median_max_dd_pct":20.726,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.562,"roi_turnover_pct":2.528,"median_growth_per_bet_pct":0.01,"key":"dynamic_percentage","scale":0.2747,"scale_max":0.2747,"label":"2% с поправкой на банк"},{"median_profit_pct":11.0,"mean_profit_pct":12.856,"p5_profit_pct":-19.36,"p95_profit_pct":51.042,"p_loss_pct":28.8,"median_max_dd_pct":16.931,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.482,"roi_turnover_pct":2.508,"median_growth_per_bet_pct":0.01,"key":"portfolio_theory","scale":0.2,"scale_max":0.2,"label":"веса по корзинам кэфов"},{"median_profit_pct":10.852,"mean_profit_pct":12.941,"p5_profit_pct":-20.103,"p95_profit_pct":53.007,"p_loss_pct":29.84,"median_max_dd_pct":17.485,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.48,"roi_turnover_pct":2.536,"median_growth_per_bet_pct":0.01,"key":"fixed","scale":0.24,"scale_max":0.24,"label":"f = 2% банка"},{"median_profit_pct":10.509,"mean_profit_pct":14.131,"p5_profit_pct":-20.822,"p95_profit_pct":62.495,"p_loss_pct":34.68,"median_max_dd_pct":19.981,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.517,"roi_turnover_pct":2.517,"median_growth_per_bet_pct":0.01,"key":"drawdown_guard","scale":0.2767,"scale_max":0.3953,"label":"2%, x0.5 на просадке > 20%"},{"median_profit_pct":10.384,"mean_profit_pct":10.306,"p5_profit_pct":-17.33,"p95_profit_pct":37.62,"p_loss_pct":26.36,"median_max_dd_pct":13.884,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.39,"roi_turnover_pct":2.549,"median_growth_per_bet_pct":0.01,"key":"flat","scale":0.2021,"scale_max":0.2021,"label":"ставка = 2% НАЧАЛЬНОГО банка (без компаундинга)"},{"median_profit_pct":9.678,"mean_profit_pct":13.259,"p5_profit_pct":-22.933,"p95_profit_pct":61.525,"p_loss_pct":34.28,"median_max_dd_pct":19.185,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.479,"roi_turnover_pct":2.583,"median_growth_per_bet_pct":0.009,"key":"anti_martingale","scale":0.3325,"scale_max":0.3325,"label":"x1.5 после выигрыша"}],"cautious":[{"median_profit_pct":21.791,"mean_profit_pct":27.965,"p5_profit_pct":-32.4,"p95_profit_pct":109.273,"p_loss_pct":28.32,"median_max_dd_pct":27.97,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.875,"roi_turnover_pct":2.823,"median_growth_per_bet_pct":0.02,"key":"kelly_half","scale":0.9907,"scale_max":0.9907,"label":"половина Келли: f = 0.5·EV/(k-1)"},{"median_profit_pct":20.204,"mean_profit_pct":27.185,"p5_profit_pct":-32.361,"p95_profit_pct":109.566,"p_loss_pct":29.32,"median_max_dd_pct":28.488,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.851,"roi_turnover_pct":2.834,"median_growth_per_bet_pct":0.018,"key":"linear_roi_odds","scale":2.2769,"scale_max":2.2769,"label":"ROI со штрафом за высокий кэф"},{"median_profit_pct":19.906,"mean_profit_pct":26.942,"p5_profit_pct":-32.836,"p95_profit_pct":109.049,"p_loss_pct":29.12,"median_max_dd_pct":28.362,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.927,"roi_turnover_pct":2.572,"median_growth_per_bet_pct":0.018,"key":"adaptive_constant_profit","scale":2.4775,"scale_max":2.4775,"label":"выигрыш 0.5–3% банка по ROI"},{"median_profit_pct":18.977,"mean_profit_pct":26.091,"p5_profit_pct":-33.336,"p95_profit_pct":108.906,"p_loss_pct":29.56,"median_max_dd_pct":28.404,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.922,"roi_turnover_pct":2.52,"median_growth_per_bet_pct":0.017,"key":"log_formula","scale":0.5967,"scale_max":0.5967,"label":"f = -log10(1-p)/15 (backend)"},{"median_profit_pct":18.919,"mean_profit_pct":26.077,"p5_profit_pct":-32.503,"p95_profit_pct":109.068,"p_loss_pct":29.52,"median_max_dd_pct":28.406,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.928,"roi_turnover_pct":2.495,"median_growth_per_bet_pct":0.017,"key":"constant_profit","scale":1.3049,"scale_max":1.3049,"label":"выигрыш = 1% банка"},{"median_profit_pct":18.483,"mean_profit_pct":35.295,"p5_profit_pct":-34.609,"p95_profit_pct":161.743,"p_loss_pct":35.56,"median_max_dd_pct":33.624,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":1.02,"roi_turnover_pct":2.819,"median_growth_per_bet_pct":0.017,"key":"floor_kelly","scale":1.5,"scale_max":1.5,"label":"Келли от подушки над полом 50% пика"},{"median_profit_pct":18.423,"mean_profit_pct":25.074,"p5_profit_pct":-32.691,"p95_profit_pct":107.915,"p_loss_pct":31.56,"median_max_dd_pct":28.276,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.778,"roi_turnover_pct":2.883,"median_growth_per_bet_pct":0.017,"key":"linear_roi","scale":1.5505,"scale_max":1.5505,"label":"1% при ROI 5%, линейно"},{"median_profit_pct":17.771,"mean_profit_pct":17.637,"p5_profit_pct":-29.658,"p95_profit_pct":64.38,"p_loss_pct":26.36,"median_max_dd_pct":22.219,"p_dd50_pct":3.48,"p_dd80_pct":0.08,"avg_stake_pct":0.662,"roi_turnover_pct":2.549,"median_growth_per_bet_pct":0.016,"key":"flat","scale":0.3459,"scale_max":0.3459,"label":"ставка = 2% НАЧАЛЬНОГО банка (без компаундинга)"},{"median_profit_pct":17.633,"mean_profit_pct":24.259,"p5_profit_pct":-32.543,"p95_profit_pct":104.255,"p_loss_pct":31.8,"median_max_dd_pct":28.087,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.805,"roi_turnover_pct":2.706,"median_growth_per_bet_pct":0.016,"key":"sqrt_roi","scale":1.1519,"scale_max":1.1519,"label":"1% при ROI 5%, корень"},{"median_profit_pct":17.289,"mean_profit_pct":23.898,"p5_profit_pct":-33.514,"p95_profit_pct":102.803,"p_loss_pct":31.28,"median_max_dd_pct":28.631,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.859,"roi_turnover_pct":2.495,"median_growth_per_bet_pct":0.016,"key":"portfolio_theory","scale":0.356,"scale_max":0.356,"label":"веса по корзинам кэфов"},{"median_profit_pct":16.318,"mean_profit_pct":22.896,"p5_profit_pct":-33.328,"p95_profit_pct":101.012,"p_loss_pct":32.32,"median_max_dd_pct":28.36,"p_dd50_pct":3.44,"p_dd80_pct":0.0,"avg_stake_pct":0.816,"roi_turnover_pct":2.526,"median_growth_per_bet_pct":0.015,"key":"fixed","scale":0.4082,"scale_max":0.4082,"label":"f = 2% банка"},{"median_profit_pct":13.193,"mean_profit_pct":25.891,"p5_profit_pct":-32.714,"p95_profit_pct":129.245,"p_loss_pct":36.28,"median_max_dd_pct":31.797,"p_dd50_pct":2.52,"p_dd80_pct":0.0,"avg_stake_pct":0.889,"roi_turnover_pct":2.507,"median_growth_per_bet_pct":0.012,"key":"dynamic_percentage","scale":0.4375,"scale_max":0.458,"label":"2% с поправкой на банк"},{"median_profit_pct":12.967,"mean_profit_pct":21.721,"p5_profit_pct":-35.168,"p95_profit_pct":107.64,"p_loss_pct":36.6,"median_max_dd_pct":29.155,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.76,"roi_turnover_pct":2.559,"median_growth_per_bet_pct":0.012,"key":"anti_martingale","scale":0.5276,"scale_max":0.5276,"label":"x1.5 после выигрыша"},{"median_profit_pct":10.685,"mean_profit_pct":29.098,"p5_profit_pct":-34.745,"p95_profit_pct":160.307,"p_loss_pct":41.36,"median_max_dd_pct":33.925,"p_dd50_pct":3.48,"p_dd80_pct":0.0,"avg_stake_pct":0.964,"roi_turnover_pct":2.498,"median_growth_per_bet_pct":0.01,"key":"drawdown_guard","scale":0.656,"scale_max":0.656,"label":"2%, x0.5 на просадке > 20%"}],"balanced":[{"median_profit_pct":25.629,"mean_profit_pct":36.059,"p5_profit_pct":-39.834,"p95_profit_pct":147.176,"p_loss_pct":29.96,"median_max_dd_pct":34.049,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":1.094,"roi_turnover_pct":2.818,"median_growth_per_bet_pct":0.023,"key":"kelly_half","scale":1.2385,"scale_max":1.2385,"label":"половина Келли: f = 0.5·EV/(k-1)"},{"median_profit_pct":23.251,"mean_profit_pct":34.206,"p5_profit_pct":-39.072,"p95_profit_pct":143.136,"p_loss_pct":30.88,"median_max_dd_pct":34.089,"p_dd50_pct":9.96,"p_dd80_pct":0.0,"avg_stake_pct":1.042,"roi_turnover_pct":2.83,"median_growth_per_bet_pct":0.021,"key":"linear_roi_odds","scale":2.7886,"scale_max":2.7886,"label":"ROI со штрафом за высокий кэф"},{"median_profit_pct":22.989,"mean_profit_pct":22.814,"p5_profit_pct":-38.365,"p95_profit_pct":83.281,"p_loss_pct":26.36,"median_max_dd_pct":27.444,"p_dd50_pct":10.0,"p_dd80_pct":0.84,"avg_stake_pct":0.863,"roi_turnover_pct":2.549,"median_growth_per_bet_pct":0.021,"key":"flat","scale":0.4475,"scale_max":0.4475,"label":"ставка = 2% НАЧАЛЬНОГО банка (без компаундинга)"},{"median_profit_pct":22.642,"mean_profit_pct":33.334,"p5_profit_pct":-39.137,"p95_profit_pct":139.918,"p_loss_pct":30.36,"median_max_dd_pct":33.527,"p_dd50_pct":9.96,"p_dd80_pct":0.0,"avg_stake_pct":1.119,"roi_turnover_pct":2.567,"median_growth_per_bet_pct":0.02,"key":"adaptive_constant_profit","scale":2.9917,"scale_max":2.9917,"label":"выигрыш 0.5–3% банка по ROI"},{"median_profit_pct":21.431,"mean_profit_pct":32.082,"p5_profit_pct":-39.444,"p95_profit_pct":138.894,"p_loss_pct":30.6,"median_max_dd_pct":33.372,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":1.109,"roi_turnover_pct":2.515,"median_growth_per_bet_pct":0.019,"key":"log_formula","scale":0.7173,"scale_max":0.7173,"label":"f = -log10(1-p)/15 (backend)"},{"median_profit_pct":21.358,"mean_profit_pct":32.054,"p5_profit_pct":-38.529,"p95_profit_pct":138.915,"p_loss_pct":30.72,"median_max_dd_pct":33.366,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":1.115,"roi_turnover_pct":2.491,"median_growth_per_bet_pct":0.019,"key":"constant_profit","scale":1.5679,"scale_max":1.5679,"label":"выигрыш = 1% банка"},{"median_profit_pct":21.082,"mean_profit_pct":31.622,"p5_profit_pct":-39.524,"p95_profit_pct":141.731,"p_loss_pct":32.6,"median_max_dd_pct":33.902,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":0.957,"roi_turnover_pct":2.878,"median_growth_per_bet_pct":0.019,"key":"linear_roi","scale":1.9065,"scale_max":1.9065,"label":"1% при ROI 5%, линейно"},{"median_profit_pct":19.979,"mean_profit_pct":30.309,"p5_profit_pct":-39.064,"p95_profit_pct":135.072,"p_loss_pct":32.96,"median_max_dd_pct":33.451,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":0.983,"roi_turnover_pct":2.7,"median_growth_per_bet_pct":0.018,"key":"sqrt_roi","scale":1.4065,"scale_max":1.4065,"label":"1% при ROI 5%, корень"},{"median_profit_pct":19.412,"mean_profit_pct":29.425,"p5_profit_pct":-39.751,"p95_profit_pct":131.104,"p_loss_pct":32.12,"median_max_dd_pct":33.749,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":1.036,"roi_turnover_pct":2.489,"median_growth_per_bet_pct":0.018,"key":"portfolio_theory","scale":0.4294,"scale_max":0.4294,"label":"веса по корзинам кэфов"},{"median_profit_pct":18.483,"mean_profit_pct":35.295,"p5_profit_pct":-34.609,"p95_profit_pct":161.743,"p_loss_pct":35.56,"median_max_dd_pct":33.624,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":1.02,"roi_turnover_pct":2.819,"median_growth_per_bet_pct":0.017,"key":"floor_kelly","scale":1.5,"scale_max":1.5,"label":"Келли от подушки над полом 50% пика"},{"median_profit_pct":18.428,"mean_profit_pct":28.595,"p5_profit_pct":-40.011,"p95_profit_pct":130.981,"p_loss_pct":34.28,"median_max_dd_pct":33.83,"p_dd50_pct":10.0,"p_dd80_pct":0.0,"avg_stake_pct":0.998,"roi_turnover_pct":2.52,"median_growth_per_bet_pct":0.017,"key":"fixed","scale":0.499,"scale_max":0.499,"label":"f = 2% банка"},{"median_profit_pct":13.961,"mean_profit_pct":26.901,"p5_profit_pct":-41.797,"p95_profit_pct":138.042,"p_loss_pct":37.96,"median_max_dd_pct":34.564,"p_dd50_pct":9.96,"p_dd80_pct":0.0,"avg_stake_pct":0.924,"roi_turnover_pct":2.544,"median_growth_per_bet_pct":0.013,"key":"anti_martingale","scale":0.6416,"scale_max":0.6416,"label":"x1.5 после выигрыша"},{"median_profit_pct":13.101,"mean_profit_pct":26.79,"p5_profit_pct":-33.436,"p95_profit_pct":134.841,"p_loss_pct":36.64,"median_max_dd_pct":32.586,"p_dd50_pct":3.12,"p_dd80_pct":0.0,"avg_stake_pct":0.915,"roi_turnover_pct":2.506,"median_growth_per_bet_pct":0.012,"key":"dynamic_percentage","scale":0.4509,"scale_max":0.5305,"label":"2% с поправкой на банк"},{"median_profit_pct":10.768,"mean_profit_pct":30.003,"p5_profit_pct":-35.572,"p95_profit_pct":163.874,"p_loss_pct":41.28,"median_max_dd_pct":34.419,"p_dd50_pct":4.12,"p_dd80_pct":0.0,"avg_stake_pct":0.983,"roi_turnover_pct":2.512,"median_growth_per_bet_pct":0.01,"key":"drawdown_guard","scale":0.674,"scale_max":0.793,"label":"2%, x0.5 на просадке > 20%"}],"risky":[{"median_profit_pct":32.646,"mean_profit_pct":32.184,"p5_profit_pct":-56.403,"p95_profit_pct":118.266,"p_loss_pct":26.36,"median_max_dd_pct":35.981,"p_dd50_pct":25.84,"p_dd80_pct":5.0,"avg_stake_pct":1.281,"roi_turnover_pct":2.544,"median_growth_per_bet_pct":0.028,"key":"flat","scale":0.6355,"scale_max":0.6355,"label":"ставка = 2% НАЧАЛЬНОГО банка (без компаундинга)"},{"median_profit_pct":31.747,"mean_profit_pct":64.137,"p5_profit_pct":-59.813,"p95_profit_pct":292.734,"p_loss_pct":35.12,"median_max_dd_pct":50.443,"p_dd50_pct":51.2,"p_dd80_pct":2.0,"avg_stake_pct":1.766,"roi_turnover_pct":2.798,"median_growth_per_bet_pct":0.028,"key":"kelly_half","scale":2.0,"scale_max":2.2983,"label":"половина Келли: f = 0.5·EV/(k-1)"},{"median_profit_pct":27.92,"mean_profit_pct":59.566,"p5_profit_pct":-58.298,"p95_profit_pct":276.325,"p_loss_pct":35.16,"median_max_dd_pct":49.898,"p_dd50_pct":49.76,"p_dd80_pct":1.84,"avg_stake_pct":1.66,"roi_turnover_pct":2.815,"median_growth_per_bet_pct":0.025,"key":"linear_roi_odds","scale":4.4426,"scale_max":5.2266,"label":"ROI со штрафом за высокий кэф"},{"median_profit_pct":27.286,"mean_profit_pct":61.312,"p5_profit_pct":-60.486,"p95_profit_pct":290.728,"p_loss_pct":35.76,"median_max_dd_pct":51.094,"p_dd50_pct":52.64,"p_dd80_pct":1.96,"avg_stake_pct":1.87,"roi_turnover_pct":2.546,"median_growth_per_bet_pct":0.024,"key":"adaptive_constant_profit","scale":5.0,"scale_max":5.6533,"label":"выигрыш 0.5–3% банка по ROI"},{"median_profit_pct":26.643,"mean_profit_pct":60.142,"p5_profit_pct":-54.325,"p95_profit_pct":281.73,"p_loss_pct":36.44,"median_max_dd_pct":48.167,"p_dd50_pct":44.4,"p_dd80_pct":0.0,"avg_stake_pct":1.625,"roi_turnover_pct":2.8,"median_growth_per_bet_pct":0.024,"key":"floor_kelly","scale":1.275,"scale_max":1.5,"label":"Келли от подушки над полом 20% пика"},{"median_profit_pct":25.575,"mean_profit_pct":56.339,"p5_profit_pct":-59.133,"p95_profit_pct":273.684,"p_loss_pct":35.24,"median_max_dd_pct":49.55,"p_dd50_pct":48.88,"p_dd80_pct":1.48,"avg_stake_pct":1.792,"roi_turnover_pct":2.493,"median_growth_per_bet_pct":0.023,"key":"log_formula","scale":1.1592,"scale_max":1.3638,"label":"f = -log10(1-p)/15 (backend)"},{"median_profit_pct":25.439,"mean_profit_pct":56.16,"p5_profit_pct":-58.048,"p95_profit_pct":273.567,"p_loss_pct":35.72,"median_max_dd_pct":49.583,"p_dd50_pct":48.52,"p_dd80_pct":1.44,"avg_stake_pct":1.797,"roi_turnover_pct":2.47,"median_growth_per_bet_pct":0.023,"key":"constant_profit","scale":2.5276,"scale_max":2.9736,"label":"выигрыш = 1% банка"},{"median_profit_pct":24.428,"mean_profit_pct":53.863,"p5_profit_pct":-58.171,"p95_profit_pct":269.001,"p_loss_pct":36.76,"median_max_dd_pct":49.32,"p_dd50_pct":47.8,"p_dd80_pct":1.68,"avg_stake_pct":1.506,"roi_turnover_pct":2.864,"median_growth_per_bet_pct":0.022,"key":"linear_roi","scale":3.0,"scale_max":3.5713,"label":"1% при ROI 5%, линейно"},{"median_profit_pct":22.891,"mean_profit_pct":52.944,"p5_profit_pct":-58.743,"p95_profit_pct":261.676,"p_loss_pct":37.64,"median_max_dd_pct":49.66,"p_dd50_pct":49.0,"p_dd80_pct":1.68,"avg_stake_pct":1.587,"roi_turnover_pct":2.679,"median_growth_per_bet_pct":0.021,"key":"sqrt_roi","scale":2.2711,"scale_max":2.6719,"label":"1% при ROI 5%, корень"},{"median_profit_pct":22.046,"mean_profit_pct":51.525,"p5_profit_pct":-59.652,"p95_profit_pct":256.335,"p_loss_pct":37.68,"median_max_dd_pct":50.222,"p_dd50_pct":50.84,"p_dd80_pct":1.6,"avg_stake_pct":1.684,"roi_turnover_pct":2.463,"median_growth_per_bet_pct":0.02,"key":"portfolio_theory","scale":0.6979,"scale_max":0.821,"label":"веса по корзинам кэфов"},{"median_profit_pct":20.724,"mean_profit_pct":45.599,"p5_profit_pct":-56.353,"p95_profit_pct":228.539,"p_loss_pct":37.92,"median_max_dd_pct":47.23,"p_dd50_pct":41.92,"p_dd80_pct":0.96,"avg_stake_pct":1.5,"roi_turnover_pct":2.502,"median_growth_per_bet_pct":0.019,"key":"fixed","scale":0.75,"scale_max":0.9392,"label":"f = 2% банка"},{"median_profit_pct":14.099,"mean_profit_pct":28.208,"p5_profit_pct":-43.372,"p95_profit_pct":145.935,"p_loss_pct":38.52,"median_max_dd_pct":35.837,"p_dd50_pct":12.4,"p_dd80_pct":0.0,"avg_stake_pct":0.965,"roi_turnover_pct":2.54,"median_growth_per_bet_pct":0.013,"key":"anti_martingale","scale":0.6698,"scale_max":1.2178,"label":"x1.5 после выигрыша"},{"median_profit_pct":13.132,"mean_profit_pct":28.016,"p5_profit_pct":-34.697,"p95_profit_pct":142.307,"p_loss_pct":37.52,"median_max_dd_pct":33.749,"p_dd50_pct":4.08,"p_dd80_pct":0.0,"avg_stake_pct":0.952,"roi_turnover_pct":2.501,"median_growth_per_bet_pct":0.012,"key":"dynamic_percentage","scale":0.4697,"scale_max":1.1743,"label":"2% с поправкой на банк"},{"median_profit_pct":10.327,"mean_profit_pct":29.943,"p5_profit_pct":-35.751,"p95_profit_pct":163.844,"p_loss_pct":41.72,"median_max_dd_pct":34.687,"p_dd50_pct":4.6,"p_dd80_pct":0.0,"avg_stake_pct":0.992,"roi_turnover_pct":2.483,"median_growth_per_bet_pct":0.01,"key":"drawdown_guard","scale":0.6838,"scale_max":1.7095,"label":"2%, x0.5 на просадке > 20%"}]}}},"kelly_model_error":{"calibrated":{"description":"EV из данных (кап 8%) x 0.49 -> средний ROI +2.50%, оценка откалибрована","rows":[{"median_profit_pct":5.07,"mean_profit_pct":5.12,"p5_profit_pct":-6.684,"p95_profit_pct":17.175,"p_loss_pct":24.04,"median_max_dd_pct":6.163,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.177,"roi_turnover_pct":2.835,"median_growth_per_bet_pct":0.005,"mult":0.1},{"median_profit_pct":12.13,"mean_profit_pct":13.281,"p5_profit_pct":-16.672,"p95_profit_pct":47.299,"p_loss_pct":25.52,"median_max_dd_pct":14.932,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.442,"roi_turnover_pct":2.831,"median_growth_per_bet_pct":0.011,"mult":0.25},{"median_profit_pct":18.351,"mean_profit_pct":22.052,"p5_profit_pct":-26.426,"p95_profit_pct":83.196,"p_loss_pct":27.12,"median_max_dd_pct":23.083,"p_dd50_pct":0.4,"p_dd80_pct":0.0,"avg_stake_pct":0.707,"roi_turnover_pct":2.826,"median_growth_per_bet_pct":0.017,"mult":0.4},{"median_profit_pct":21.948,"mean_profit_pct":28.259,"p5_profit_pct":-32.684,"p95_profit_pct":110.609,"p_loss_pct":28.32,"median_max_dd_pct":28.202,"p_dd50_pct":3.88,"p_dd80_pct":0.0,"avg_stake_pct":0.883,"roi_turnover_pct":2.823,"median_growth_per_bet_pct":0.02,"mult":0.5},{"median_profit_pct":26.444,"mean_profit_pct":38.142,"p5_profit_pct":-41.619,"p95_profit_pct":157.306,"p_loss_pct":30.24,"median_max_dd_pct":35.48,"p_dd50_pct":12.72,"p_dd80_pct":0.0,"avg_stake_pct":1.148,"roi_turnover_pct":2.816,"median_growth_per_bet_pct":0.023,"mult":0.65},{"median_profit_pct":29.628,"mean_profit_pct":48.756,"p5_profit_pct":-49.854,"p95_profit_pct":211.016,"p_loss_pct":32.04,"median_max_dd_pct":42.249,"p_dd50_pct":28.0,"p_dd80_pct":0.16,"avg_stake_pct":1.413,"roi_turnover_pct":2.809,"median_growth_per_bet_pct":0.026,"mult":0.8},{"median_profit_pct":31.747,"mean_profit_pct":64.137,"p5_profit_pct":-59.813,"p95_profit_pct":292.734,"p_loss_pct":35.12,"median_max_dd_pct":50.443,"p_dd50_pct":51.2,"p_dd80_pct":2.0,"avg_stake_pct":1.766,"roi_turnover_pct":2.798,"median_growth_per_bet_pct":0.028,"mult":1.0},{"median_profit_pct":30.724,"mean_profit_pct":85.54,"p5_profit_pct":-70.38,"p95_profit_pct":410.916,"p_loss_pct":37.92,"median_max_dd_pct":59.387,"p_dd50_pct":74.12,"p_dd80_pct":8.16,"avg_stake_pct":2.208,"roi_turnover_pct":2.783,"median_growth_per_bet_pct":0.027,"mult":1.25},{"median_profit_pct":25.969,"mean_profit_pct":109.645,"p5_profit_pct":-78.834,"p95_profit_pct":544.089,"p_loss_pct":41.16,"median_max_dd_pct":67.249,"p_dd50_pct":88.08,"p_dd80_pct":18.16,"avg_stake_pct":2.65,"roi_turnover_pct":2.765,"median_growth_per_bet_pct":0.023,"mult":1.5},{"median_profit_pct":6.775,"mean_profit_pct":167.195,"p5_profit_pct":-90.087,"p95_profit_pct":834.046,"p_loss_pct":48.12,"median_max_dd_pct":79.392,"p_dd50_pct":98.32,"p_dd80_pct":48.28,"avg_stake_pct":3.533,"roi_turnover_pct":2.717,"median_growth_per_bet_pct":0.007,"mult":2.0},{"median_profit_pct":-19.955,"mean_profit_pct":238.602,"p5_profit_pct":-96.054,"p95_profit_pct":1107.56,"p_loss_pct":55.88,"median_max_dd_pct":87.791,"p_dd50_pct":99.88,"p_dd80_pct":72.64,"avg_stake_pct":4.416,"roi_turnover_pct":2.634,"median_growth_per_bet_pct":-0.022,"mult":2.5},{"median_profit_pct":-46.933,"mean_profit_pct":322.981,"p5_profit_pct":-99.005,"p95_profit_pct":1285.563,"p_loss_pct":62.44,"median_max_dd_pct":93.155,"p_dd50_pct":100.0,"p_dd80_pct":88.0,"avg_stake_pct":5.299,"roi_turnover_pct":2.491,"median_growth_per_bet_pct":-0.063,"mult":3.0}]},"overstated":{"description":"EV из данных (кап 8%) x 0.49 -> средний ROI +2.50%, модель завышает EV в 2.06 раза","rows":[{"median_profit_pct":10.124,"mean_profit_pct":10.807,"p5_profit_pct":-13.735,"p95_profit_pct":37.819,"p_loss_pct":25.12,"median_max_dd_pct":12.39,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.363,"roi_turnover_pct":2.833,"median_growth_per_bet_pct":0.01,"mult":0.1},{"median_profit_pct":22.421,"mean_profit_pct":29.161,"p5_profit_pct":-33.545,"p95_profit_pct":114.718,"p_loss_pct":28.56,"median_max_dd_pct":28.932,"p_dd50_pct":4.36,"p_dd80_pct":0.0,"avg_stake_pct":0.908,"roi_turnover_pct":2.822,"median_growth_per_bet_pct":0.02,"mult":0.25},{"median_profit_pct":29.993,"mean_profit_pct":50.422,"p5_profit_pct":-51.035,"p95_profit_pct":219.687,"p_loss_pct":32.32,"median_max_dd_pct":43.21,"p_dd50_pct":30.56,"p_dd80_pct":0.16,"avg_stake_pct":1.453,"roi_turnover_pct":2.808,"median_growth_per_bet_pct":0.026,"mult":0.4},{"median_profit_pct":31.863,"mean_profit_pct":66.431,"p5_profit_pct":-61.114,"p95_profit_pct":305.229,"p_loss_pct":35.28,"median_max_dd_pct":51.541,"p_dd50_pct":54.24,"p_dd80_pct":2.64,"avg_stake_pct":1.816,"roi_turnover_pct":2.797,"median_growth_per_bet_pct":0.028,"mult":0.5},{"median_profit_pct":29.478,"mean_profit_pct":93.581,"p5_profit_pct":-73.548,"p95_profit_pct":455.647,"p_loss_pct":39.36,"median_max_dd_pct":62.211,"p_dd50_pct":79.8,"p_dd80_pct":10.76,"avg_stake_pct":2.361,"roi_turnover_pct":2.777,"median_growth_per_bet_pct":0.026,"mult":0.65},{"median_profit_pct":21.45,"mean_profit_pct":125.013,"p5_profit_pct":-82.822,"p95_profit_pct":626.303,"p_loss_pct":43.08,"median_max_dd_pct":71.259,"p_dd50_pct":93.04,"p_dd80_pct":26.56,"avg_stake_pct":2.906,"roi_turnover_pct":2.754,"median_growth_per_bet_pct":0.019,"mult":0.8},{"median_profit_pct":4.01,"mean_profit_pct":174.557,"p5_profit_pct":-90.982,"p95_profit_pct":868.129,"p_loss_pct":48.92,"median_max_dd_pct":80.498,"p_dd50_pct":98.72,"p_dd80_pct":51.6,"avg_stake_pct":3.633,"roi_turnover_pct":2.71,"median_growth_per_bet_pct":0.004,"mult":1.0},{"median_profit_pct":-23.835,"mean_profit_pct":249.82,"p5_profit_pct":-96.55,"p95_profit_pct":1140.233,"p_loss_pct":56.52,"median_max_dd_pct":88.697,"p_dd50_pct":99.92,"p_dd80_pct":75.72,"avg_stake_pct":4.541,"roi_turnover_pct":2.618,"median_growth_per_bet_pct":-0.027,"mult":1.25},{"median_profit_pct":-51.162,"mean_profit_pct":338.217,"p5_profit_pct":-99.01,"p95_profit_pct":1301.507,"p_loss_pct":63.72,"median_max_dd_pct":93.851,"p_dd50_pct":100.0,"p_dd80_pct":89.96,"avg_stake_pct":5.449,"roi_turnover_pct":2.459,"median_growth_per_bet_pct":-0.072,"mult":1.5},{"median_profit_pct":-86.569,"mean_profit_pct":512.466,"p5_profit_pct":-99.074,"p95_profit_pct":1114.425,"p_loss_pct":77.24,"median_max_dd_pct":98.546,"p_dd50_pct":100.0,"p_dd80_pct":98.76,"avg_stake_pct":7.266,"roi_turnover_pct":1.879,"median_growth_per_bet_pct":-0.201,"mult":2.0},{"median_profit_pct":-99.008,"mean_profit_pct":549.84,"p5_profit_pct":-99.129,"p95_profit_pct":496.812,"p_loss_pct":87.24,"median_max_dd_pct":99.328,"p_dd50_pct":100.0,"p_dd80_pct":99.92,"avg_stake_pct":9.086,"roi_turnover_pct":1.114,"median_growth_per_bet_pct":-0.461,"mult":2.5},{"median_profit_pct":-99.035,"mean_profit_pct":359.896,"p5_profit_pct":-99.172,"p95_profit_pct":65.808,"p_loss_pct":93.76,"median_max_dd_pct":99.525,"p_dd50_pct":100.0,"p_dd80_pct":100.0,"avg_stake_pct":10.904,"roi_turnover_pct":0.481,"median_growth_per_bet_pct":-0.464,"mult":3.0}]},"overstated_noise":{"description":"EV из данных (кап 8%) x 0.49 -> средний ROI +2.50%, модель завышает EV в 2.06 раза, шум модели σ=5.0%","rows":[{"median_profit_pct":9.444,"mean_profit_pct":10.787,"p5_profit_pct":-13.421,"p95_profit_pct":40.243,"p_loss_pct":25.92,"median_max_dd_pct":12.162,"p_dd50_pct":0.0,"p_dd80_pct":0.0,"avg_stake_pct":0.364,"roi_turnover_pct":2.822,"median_growth_per_bet_pct":0.009,"mult":0.1},{"median_profit_pct":20.492,"mean_profit_pct":29.314,"p5_profit_pct":-32.871,"p95_profit_pct":124.069,"p_loss_pct":30.28,"median_max_dd_pct":28.474,"p_dd50_pct":3.76,"p_dd80_pct":0.0,"avg_stake_pct":0.909,"roi_turnover_pct":2.83,"median_growth_per_bet_pct":0.019,"mult":0.25},{"median_profit_pct":26.756,"mean_profit_pct":51.071,"p5_profit_pct":-50.39,"p95_profit_pct":241.539,"p_loss_pct":34.12,"median_max_dd_pct":42.479,"p_dd50_pct":30.04,"p_dd80_pct":0.32,"avg_stake_pct":1.455,"roi_turnover_pct":2.834,"median_growth_per_bet_pct":0.024,"mult":0.4},{"median_profit_pct":27.775,"mean_profit_pct":67.601,"p5_profit_pct":-60.46,"p95_profit_pct":339.887,"p_loss_pct":37.32,"median_max_dd_pct":50.75,"p_dd50_pct":52.12,"p_dd80_pct":2.16,"avg_stake_pct":1.819,"roi_turnover_pct":2.835,"median_growth_per_bet_pct":0.025,"mult":0.5},{"median_profit_pct":24.779,"mean_profit_pct":95.74,"p5_profit_pct":-72.936,"p95_profit_pct":517.683,"p_loss_pct":40.8,"median_max_dd_pct":61.552,"p_dd50_pct":78.64,"p_dd80_pct":10.92,"avg_stake_pct":2.365,"roi_turnover_pct":2.83,"median_growth_per_bet_pct":0.022,"mult":0.65},{"median_profit_pct":16.158,"mean_profit_pct":128.123,"p5_profit_pct":-82.309,"p95_profit_pct":732.845,"p_loss_pct":45.04,"median_max_dd_pct":70.398,"p_dd50_pct":93.28,"p_dd80_pct":26.72,"avg_stake_pct":2.91,"roi_turnover_pct":2.814,"median_growth_per_bet_pct":0.015,"mult":0.8},{"median_profit_pct":-1.842,"mean_profit_pct":177.817,"p5_profit_pct":-90.64,"p95_profit_pct":1042.689,"p_loss_pct":50.8,"median_max_dd_pct":79.898,"p_dd50_pct":98.64,"p_dd80_pct":49.8,"avg_stake_pct":3.638,"roi_turnover_pct":2.77,"median_growth_per_bet_pct":-0.002,"mult":1.0},{"median_profit_pct":-29.242,"mean_profit_pct":248.159,"p5_profit_pct":-96.403,"p95_profit_pct":1420.166,"p_loss_pct":56.88,"median_max_dd_pct":88.369,"p_dd50_pct":99.8,"p_dd80_pct":73.56,"avg_stake_pct":4.547,"roi_turnover_pct":2.664,"median_growth_per_bet_pct":-0.035,"mult":1.25},{"median_profit_pct":-55.086,"mean_profit_pct":320.536,"p5_profit_pct":-99.013,"p95_profit_pct":1668.595,"p_loss_pct":64.24,"median_max_dd_pct":93.783,"p_dd50_pct":99.96,"p_dd80_pct":89.96,"avg_stake_pct":5.457,"roi_turnover_pct":2.491,"median_growth_per_bet_pct":-0.08,"mult":1.5},{"median_profit_pct":-88.286,"mean_profit_pct":417.147,"p5_profit_pct":-99.076,"p95_profit_pct":1544.51,"p_loss_pct":76.68,"median_max_dd_pct":98.607,"p_dd50_pct":100.0,"p_dd80_pct":98.8,"avg_stake_pct":7.276,"roi_turnover_pct":1.943,"median_growth_per_bet_pct":-0.214,"mult":2.0},{"median_profit_pct":-99.01,"mean_profit_pct":364.018,"p5_profit_pct":-99.133,"p95_profit_pct":785.3,"p_loss_pct":85.76,"median_max_dd_pct":99.3,"p_dd50_pct":100.0,"p_dd80_pct":99.88,"avg_stake_pct":9.102,"roi_turnover_pct":1.231,"median_growth_per_bet_pct":-0.461,"mult":2.5},{"median_profit_pct":-99.033,"mean_profit_pct":183.255,"p5_profit_pct":-99.183,"p95_profit_pct":165.989,"p_loss_pct":92.56,"median_max_dd_pct":99.485,"p_dd50_pct":100.0,"p_dd80_pct":100.0,"avg_stake_pct":10.925,"roi_turnover_pct":0.547,"median_growth_per_bet_pct":-0.464,"mult":3.0}]}}};
+const BEFORE_AFTER = [{"case":"dynamic_percentage 1.5%","old":{"mean_profit":235.54782775743882,"median_profit":140.9808705752202,"min_bank":392.58957895191656,"p_negative_bank":0.0,"p_dd50":21.825,"stake_pct_live_median":1.7999999999999998,"stake_pct_live_spread":0.75},"new":{"mean_profit":235.54782775743882,"median_profit":140.9808705752203,"min_bank":392.58957895191634,"p_negative_bank":0.0,"p_dd50":21.825,"stake_pct_live_median":1.7999999999999998,"stake_pct_live_spread":0.75}},{"case":"dynamic_percentage 1.5% + вариация","old":{"mean_profit":176.21558169526017,"median_profit":105.65392737631443,"min_bank":180.91133213017906,"p_negative_bank":0.0,"p_dd50":15.6,"stake_pct_live_median":1.3389056300290876,"stake_pct_live_spread":1.7776621287450036},"new":{"mean_profit":145.5774543583381,"median_profit":100.72058080454835,"min_bank":438.6028661229986,"p_negative_bank":0.0,"p_dd50":6.7250000000000005,"stake_pct_live_median":1.2599999999999998,"stake_pct_live_spread":1.38}},{"case":"dynamic_percentage 5% + вариация","old":{"mean_profit":4501.812053135119,"median_profit":68.91020726431617,"min_bank":-237006.52620477616,"p_negative_bank":21.875,"p_dd50":97.675,"stake_pct_live_median":3.6979841431417935,"stake_pct_live_spread":10.618990514017591},"new":{"mean_profit":1991.6248068988787,"median_profit":137.5237126891572,"min_bank":79.52541665562904,"p_negative_bank":0.0,"p_dd50":99.825,"stake_pct_live_median":3.599999999999999,"stake_pct_live_spread":5.224999999999999}},{"case":"kelly_criterion risk=2","old":{"mean_profit":173.75175984848377,"median_profit":176.97845212432685,"min_bank":0.038104061497107544,"p_negative_bank":0.0,"p_dd50":21.75,"stake_pct_live_median":1.4341921130000057,"stake_pct_live_spread":2.601834219903084},"new":{"mean_profit":471.2005301879949,"median_profit":278.27029091756344,"min_bank":117.90350970673693,"p_negative_bank":0.0,"p_dd50":50.625,"stake_pct_live_median":2.8000000000000003,"stake_pct_live_spread":4.440892098500626e-16}},{"case":"fixed_fraction 2%","old":{"mean_profit":141.01411499999975,"median_profit":139.0899999999997,"min_bank":-825.9999999999999,"p_negative_bank":0.975,"p_dd50":18.5,"stake_pct_live_median":1.1828720132481672,"stake_pct_live_spread":1.850869782262813},"new":{"mean_profit":313.25503868174303,"median_profit":179.45100912648257,"min_bank":125.72304950194528,"p_negative_bank":0.0,"p_dd50":41.425,"stake_pct_live_median":2.0,"stake_pct_live_spread":0.0}},{"case":"linear_roi (по умолчанию)","old":{"mean_profit":98.69708685065469,"median_profit":97.36300000000003,"min_bank":0.11616714112809635,"p_negative_bank":0.0,"p_dd50":7.199999999999999,"stake_pct_live_median":0.9442552376393376,"stake_pct_live_spread":1.0280194957565603},"new":{"mean_profit":169.41193602894577,"median_profit":121.32701434904034,"min_bank":248.25374056725045,"p_negative_bank":0.0,"p_dd50":11.35,"stake_pct_live_median":1.4000000000000001,"stake_pct_live_spread":2.220446049250313e-16}},{"case":"proportional_kelly","old":{"mean_profit":1.2265086030602803,"median_profit":1.2425513697006063,"min_bank":987.0164630360163,"p_negative_bank":0.0,"p_dd50":0.0,"stake_pct_live_median":0.019469995949310943,"stake_pct_live_spread":0.0003065200977473252},"new":{"mean_profit":239.3765979619568,"median_profit":178.81484040209557,"min_bank":237.9836294139592,"p_negative_bank":0.0,"p_dd50":14.424999999999999,"stake_pct_live_median":1.9600000000000002,"stake_pct_live_spread":0.0}},{"case":"dynamic_kelly","old":{"mean_profit":0.40883620102160684,"median_profit":0.4141837899017564,"min_bank":995.6721543453467,"p_negative_bank":0.0,"p_dd50":0.0,"stake_pct_live_median":0.006518824281137179,"stake_pct_live_spread":3.436087933462485e-05},"new":{"mean_profit":50.42322491755493,"median_profit":47.713154964942504,"min_bank":638.8943083606638,"p_negative_bank":0.0,"p_dd50":0.0,"stake_pct_live_median":0.6533333333333337,"stake_pct_live_spread":2.220446049250313e-16}},{"case":"target_based 3%→1%","old":{"mean_profit":211.52117250000018,"median_profit":208.6350000000003,"min_bank":-1739.0,"p_negative_bank":4.8500000000000005,"p_dd50":37.3,"stake_pct_live_median":1.4674950176619124,"stake_pct_live_spread":3.3625207802554886},"new":{"mean_profit":216.1250525738466,"median_profit":200.5548824028623,"min_bank":36.25986382041338,"p_negative_bank":0.0,"p_dd50":41.4,"stake_pct_live_median":1.0,"stake_pct_live_spread":2.0}},{"case":"volatility_adjusted","old":{"mean_profit":141.01411499999975,"median_profit":139.0899999999997,"min_bank":-825.9999999999999,"p_negative_bank":0.975,"p_dd50":18.5,"stake_pct_live_median":1.1828720132481672,"stake_pct_live_spread":1.850869782262813},"new":{"mean_profit":299.26337606892946,"median_profit":175.29424133716742,"min_bank":132.48555065072583,"p_negative_bank":0.0,"p_dd50":38.9,"stake_pct_live_median":1.9492612659933501,"stake_pct_live_spread":0.009798283757948667}}];
+
+// ================= справочники =================
+const STRATS = {
+  fixed: { label: 'Фиксированный %', desc: 'Всегда одна и та же доля текущего банка.',
+    params: [['pct', 'Доля банка', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.pct}%</b> × банк` },
+  flat: { label: 'Флэт от начального банка', desc: 'Сумма не меняется вместе с банком. Так фактически считались 22 из 25 стратегий в старом коде.',
+    params: [['pct', 'Доля начального банка', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.pct}%</b> × начальный банк` },
+  kelly_half: { label: 'Келли (доля)', desc: 'Доля от полного Келли. 0.5 — половина Келли.',
+    params: [['mult', 'Доля от полного Келли', 0.05, 3, 0.05, 0.5, '×']], formula: (p) => `ставка = <b>${p.mult}</b> × EV / (кэф − 1) × банк` },
+  floor_kelly: { label: 'Келли с полом просадки', desc: 'Grossman–Zhou: Келли от подушки над полом. Просадка от пика не глубже 1 − пол.',
+    params: [['mult', 'Доля Келли от подушки', 0.1, 1.5, 0.05, 1, '×'], ['floor', 'Пол, доля пика', 10, 90, 5, 50, '%']],
+    formula: (p) => `ставка = min(<b>${p.mult}</b> × EV/(кэф − 1), 1) × (банк − <b>${p.floor}%</b> × пик)` },
+  log_formula: { label: 'Лог-формула (backend)', desc: 'Формула из backend/calculator. Зависит от вероятности проигрыша, почти не от перевеса.',
+    params: [['risk', 'Параметр risk', 2, 40, 0.5, 15, ''], ['edgeCap', 'Кап EV', 1, 20, 1, 8, '%']],
+    formula: (p) => `ставка = −log₁₀(1 − (1 + min(EV, ${p.edgeCap}%)) / кэф) / <b>${p.risk}</b> × банк` },
+  linear_roi: { label: 'Линейно от ROI', desc: 'Процент растёт пропорционально EV ставки.',
+    params: [['basePct', 'Ставка при базовом ROI', 0.1, 5, 0.1, 1, '%'], ['baseRoi', 'Базовый ROI', 1, 10, 0.5, 5, '%'], ['maxPct', 'Потолок', 1, 10, 0.5, 10, '%']],
+    formula: (p) => `ставка = <b>${p.basePct}%</b> × ROI / <b>${p.baseRoi}%</b>, не больше ${p.maxPct}%` },
+  sqrt_roi: { label: 'Корень от ROI', desc: 'Процент растёт как корень из EV ставки.',
+    params: [['basePct', 'Ставка при базовом ROI', 0.1, 5, 0.1, 1, '%'], ['baseRoi', 'Базовый ROI', 1, 10, 0.5, 5, '%'], ['maxPct', 'Потолок', 1, 10, 0.5, 10, '%']],
+    formula: (p) => `ставка = <b>${p.basePct}%</b> × √(ROI / <b>${p.baseRoi}%</b>), не больше ${p.maxPct}%` },
+  constant_profit: { label: 'Постоянная прибыль', desc: 'Выигрыш всегда даёт одну и ту же долю банка. При одинаковом EV это Келли в другом масштабе.',
+    params: [['target', 'Выигрыш, доля банка', 0.1, 5, 0.1, 1, '%'], ['maxPct', 'Потолок', 1, 10, 0.5, 10, '%']],
+    formula: (p) => `ставка = <b>${p.target}%</b> × банк / (кэф − 1), не больше ${p.maxPct}%` },
+  adaptive_constant_profit: { label: 'Адаптивная пост. прибыль', desc: 'Целевой выигрыш растёт с EV ставки (ROI 3% → 20%).',
+    params: [['minT', 'Выигрыш при ROI 3%', 0.1, 3, 0.1, 0.5, '%'], ['maxT', 'Выигрыш при ROI 20%', 0.5, 8, 0.1, 3, '%']],
+    formula: (p) => `ставка = (${p.minT}% … ${p.maxT}% по ROI) × банк / (кэф − 1), не больше 15%` },
+  linear_roi_odds: { label: 'ROI со штрафом за кэф', desc: 'Линейно от EV, меньше на высоких кэфах.',
+    params: [['basePct', 'Ставка при ROI 5%', 0.1, 5, 0.1, 1, '%'], ['penalty', 'Штраф за кэф 5.0', 0, 1, 0.05, 0.7, '']],
+    formula: (p) => `ставка = <b>${p.basePct}%</b> × ROI/5% × (1 − <b>${p.penalty}</b> × (кэф − 1.5)/3.5)` },
+  dynamic_percentage: { label: 'Динамический %', desc: 'Больше при банке выше 120% старта, меньше ниже 80% и 60%.',
+    params: [['pct', 'Базовый процент', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.pct}%</b> × (1.2 | 1 | 0.7 | 0.5 по банку к старту) × банк` },
+  drawdown_guard: { label: 'Защита от просадки', desc: 'Фиксированный процент, урезанный на просадке.',
+    params: [['pct', 'Базовый процент', 0.1, 10, 0.1, 2, '%'], ['cut', 'Порог просадки', 5, 60, 5, 20, '%'], ['factor', 'Множитель на просадке', 0.1, 1, 0.05, 0.5, '×']],
+    formula: (p) => `ставка = <b>${p.pct}%</b> × банк, ×<b>${p.factor}</b> при просадке > ${p.cut}%` },
+  anti_martingale: { label: 'Анти-мартингейл', desc: 'Растёт после выигрыша, сбрасывается после проигрыша. Исходы независимы, поэтому серии ничего не предсказывают.',
+    params: [['basePct', 'База', 0.2, 5, 0.1, 1, '%'], ['mult', 'Множитель после выигрыша', 1, 3, 0.05, 1.5, '×'], ['maxStreak', 'Максимум шагов', 1, 10, 1, 5, '']],
+    formula: (p) => `ставка = <b>${p.basePct}%</b> × <b>${p.mult}</b>^(серия выигрышей, до ${p.maxStreak}) × банк, не больше 10%` },
+  portfolio_theory: { label: 'Корзины кэфов', desc: 'Вес 0.4 для кэфов до 3.5, 0.2 для остальных.',
+    params: [['basePct', 'База', 0.1, 5, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.basePct}%</b> × (0.4 | 0.2) / 0.3 × банк` },
+};
+const ORDER = ['kelly_half', 'fixed', 'flat', 'floor_kelly', 'log_formula', 'constant_profit', 'adaptive_constant_profit',
+  'linear_roi', 'sqrt_roi', 'linear_roi_odds', 'dynamic_percentage', 'drawdown_guard', 'anti_martingale', 'portfolio_theory'];
+const PROFILE_TEXT = {
+  conservative: ['P(DD ≥ 50%)', 0], cautious: ['P(DD ≥ 50%)', 3.5], balanced: ['P(DD ≥ 50%)', 10], risky: ['P(DD ≥ 80%)', 5], extreme: ['P(DD ≥ 80%)', 50],
+};
+const KELLY_CASES = [
+  ['calibrated', 'Знает истинный EV', 's1', 'точный EV'],
+  ['overstated', 'Модель завышает EV', 's2', 'завышенный'],
+  ['overstated_noise', 'Завышает + шум 5%', 's3', '+ шум'],
+];
+const DEFAULTS = { source: 'real', roi: 2.5, ev: 'flat', calib: true, noise: 0, bets: 1000, sims: 2000, cap: 10, recalc: 'live', variation: 'none', bank: 10000, seed: 2026, round: 0, min: 0 };
+
+// ================= утилиты =================
+const $ = (id) => document.getElementById(id);
+const nf = (d) => new Intl.NumberFormat('ru-RU', { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmt = { 0: nf(0), 1: nf(1), 2: nf(2) };
+const num = (x, d = 1) => fmt[d].format(x).replace('-', '−');
+const pct = (x, d = 1) => num(x, d) + '%';
+const spct = (x, d = 1) => (x > 0 ? '+' : '') + pct(x, d);
+function profitLabel(mult) {
+  const p = (mult - 1) * 100;
+  if (Math.abs(p) < 0.5) return '0%';
+  const d = Math.abs(p) >= 10 ? 0 : 1;
+  return spct(p, d);
+}
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const SVGNS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function h(tag, attrs = {}, text) {
+  const e = document.createElement(tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function niceTicks(lo, hi, count = 5) {
+  const span = hi - lo || 1;
+  const step0 = span / count, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const err = step0 / mag;
+  const step = (err >= 7.5 ? 10 : err >= 3.5 ? 5 : err >= 1.5 ? 2 : 1) * mag;
+  const out = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + step * 1e-9; v += step) out.push(+v.toFixed(10));
+  return out;
+}
+const LOG_TICKS = [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7, 1, 1.5, 2, 3, 5, 7, 10, 20, 50, 100, 200, 500, 1000];
+function logTicks(lo, hi, max = 7) {
+  let t = LOG_TICKS.filter((v) => v >= lo && v <= hi);
+  while (t.length > max) t = t.filter((_, i) => i % 2 === 0 || t[i] === 1);
+  return t;
+}
+function chartBox(container, height) {
+  container.textContent = '';
+  const w = Math.max(280, container.clientWidth || 600);
+  const svg = el('svg', { viewBox: `0 0 ${w} ${height}`, width: w, height, role: 'img' }, container);
+  return { svg, w };
+}
+function tooltip(container) {
+  let t = container.querySelector('.tip');
+  if (!t) { t = h('div', { class: 'tip', role: 'status' }); t.hidden = true; container.appendChild(t); }
+  return t;
+}
+function showTip(tipEl, container, x, y, head, rows) {
+  tipEl.textContent = '';
+  tipEl.appendChild(h('div', { class: 't-head' }, head));
+  for (const [key, label, value] of rows) {
+    const r = h('div', { class: 't-row' });
+    const k = h('span');
+    if (key) { k.className = key.startsWith('rect:') ? 'key-rect' : 'key-line'; k.style.background = key.replace('rect:', ''); }
+    r.append(k, h('span', {}, label), h('b', {}, value));
+    tipEl.appendChild(r);
+  }
+  tipEl.hidden = false;
+  const cw = container.clientWidth, tw = tipEl.offsetWidth;
+  tipEl.style.left = Math.min(Math.max(0, x + 14), cw - tw) + 'px';
+  if (x + 14 + tw > cw) tipEl.style.left = Math.max(0, x - tw - 14) + 'px';
+  tipEl.style.top = Math.max(0, y - 10) + 'px';
+}
+
+// ================= воркеры =================
+const ENGINE_URL = URL.createObjectURL(new Blob([$('engine-src').textContent], { type: 'text/javascript' }));
+function spawn() {
+  const w = new Worker(ENGINE_URL);
+  w.postMessage({ type: 'init', odds: BETS.odds, ev: BETS.ev });
+  return w;
+}
+let simWorker = spawn();
+let heavyWorker = null;
+let jobId = 0;
+
+// ================= условия =================
+const state = { ...DEFAULTS, key: 'kelly_half', params: {} };
+function loadParams(key) {
+  const p = {};
+  for (const [id, , , , , def] of STRATS[key].params) p[id] = def;
+  return p;
+}
+state.params = loadParams(state.key);
+
+function readConditions() {
+  state.roi = +$('c-roi').value;
+  state.ev = $('c-ev').value;
+  state.calib = $('c-calib').checked;
+  state.noise = +$('c-noise').value;
+  state.bets = +$('c-bets').value;
+  state.sims = +$('c-sims').value;
+  state.cap = +$('c-cap').value;
+  state.recalc = $('c-recalc').value;
+  state.variation = $('c-var').value;
+  state.bank = Math.max(100, +$('c-bank').value || 10000);
+  state.seed = Math.max(0, Math.floor(+$('c-seed').value || 0));
+  state.round = Math.max(0, +$('c-round').value || 0);
+  state.min = Math.max(0, +$('c-min').value || 0);
+}
+function writeConditions(c) {
+  $('c-roi').value = c.roi; $('c-ev').value = c.ev; $('c-calib').checked = c.calib; $('c-noise').value = c.noise;
+  $('c-bets').value = c.bets; $('c-sims').value = c.sims; $('c-cap').value = c.cap; $('c-recalc').value = c.recalc;
+  $('c-var').value = c.variation; $('c-bank').value = c.bank; $('c-seed').value = c.seed; $('c-round').value = c.round; $('c-min').value = c.min;
+  setSource(c.source, false);
+}
+function marketCfg() {
+  return { source: state.source, evModel: state.ev, calibrated: state.calib, roi: state.roi / 100, estCap: 0.08, noise: state.noise / 100 };
+}
+function simCfg(nSims) {
+  return { nSims: nSims || state.sims, nBets: state.bets, bank0: state.bank, cap: state.cap / 100, recalc: state.recalc,
+    variation: state.variation, roundTo: state.round, minStake: state.min, seed: state.seed };
+}
+function syncOutputs() {
+  $('o-roi').textContent = pct(state.roi, 1);
+  $('o-noise').textContent = state.noise ? pct(state.noise, 1) : 'нет';
+  $('o-bets').textContent = num(state.bets, 0);
+  $('o-cap').textContent = pct(state.cap, 0) + ' банка';
+  const scaled = state.ev === 'scaled';
+  $('c-calib').disabled = !scaled;
+  $('calib-wrap').setAttribute('aria-disabled', String(!scaled));
+  $('ev-hint').textContent = scaled
+    ? 'Оценки EV из данных (кап 8%) пропорционально уменьшены, чтобы средний истинный ROI был равен заданному.'
+    : 'Как в simulation-current: у каждой ставки истинный EV равен среднему ROI.';
+}
+function setSource(src, fire = true) {
+  state.source = src;
+  $('src-real').setAttribute('aria-pressed', String(src === 'real'));
+  $('src-syn').setAttribute('aria-pressed', String(src === 'synthetic'));
+  if (fire) onConditions();
+}
+
+// предрасчёт из Python верен только для условий по умолчанию
+function preMatches(kind) {
+  const base = state.source === 'real' && Math.abs(state.roi - 2.5) < 1e-9 && state.bets === 1000 && state.recalc === 'live'
+    && state.variation === 'none' && state.round === 0 && state.min === 0;
+  if (kind === 'kelly') return base;
+  return base && state.cap === 10 && state.noise === 0 && (state.ev === 'flat' || state.calib);
+}
+
+// ================= симулятор =================
+function buildStrategyUI() {
+  const sel = $('s-key');
+  for (const k of ORDER) sel.appendChild(h('option', { value: k }, STRATS[k].label));
+  sel.value = state.key;
+  sel.addEventListener('change', () => { state.key = sel.value; state.params = loadParams(state.key); renderParams(); runSim(); });
+  renderParams();
+}
+function renderParams() {
+  const s = STRATS[state.key];
+  $('s-desc').textContent = s.desc;
+  const box = $('s-params');
+  box.textContent = '';
+  for (const [id, label, min, max, step, , unit] of s.params) {
+    const f = h('div', { class: 'field' });
+    const inputId = 'p-' + state.key + '-' + id;
+    const lab = h('label', { for: inputId }, label + ' ');
+    const out = h('output');
+    lab.appendChild(out);
+    const inp = h('input', { type: 'range', id: inputId, min, max, step, value: state.params[id] });
+    const show = () => { out.textContent = num(state.params[id], step < 0.1 ? 2 : step < 1 ? 1 : 0) + (unit ? (unit === '×' ? '×' : unit) : ''); };
+    inp.addEventListener('input', () => { state.params[id] = +inp.value; show(); renderFormula(); debouncedSim(); });
+    show();
+    f.append(lab, inp);
+    box.appendChild(f);
+  }
+  renderFormula();
+}
+function renderFormula() {
+  // формулы собираются только из чисел ползунков и фиксированного текста
+  $('s-formula').innerHTML = STRATS[state.key].formula(state.params);
+}
+let simTimer = 0;
+function debouncedSim() { clearTimeout(simTimer); simTimer = setTimeout(runSim, 140); }
+let lastSim = null;
+function runSim() {
+  const id = ++jobId;
+  $('fan-panel').classList.add('busy');
+  $('sim-status').textContent = 'Считаю…';
+  simWorker.onmessage = (e) => {
+    const m = e.data;
+    if (m.id !== id) return;
+    $('fan-panel').classList.remove('busy');
+    if (m.type === 'error') { $('sim-status').textContent = 'Ошибка: ' + m.message; return; }
+    lastSim = m.out;
+    renderSim();
+  };
+  simWorker.postMessage({ type: 'simulate', id, key: state.key, params: { ...state.params }, market: marketCfg(), cfg: simCfg() });
+}
+function tone(v, warnAt, critAt) { return v >= critAt ? 'crit' : v >= warnAt ? 'warn' : 'good'; }
+const TONE_TEXT = { good: 'приемлемо', warn: 'внимание', crit: 'опасно' };
+function renderSim() {
+  const o = lastSim, s = o.summary;
+  $('sim-status').textContent = `${num(state.sims, 0)} × ${num(state.bets, 0)} ставок · ${num(o.ms / 1000, 2)} с`;
+  const k = $('kpis');
+  k.textContent = '';
+  const tiles = [
+    ['Медианная прибыль', spct(s.median), `среднее ${spct(s.mean, 0)}`, s.median >= 0 ? null : 'crit'],
+    ['Закончить в минусе', pct(s.pLoss), 'доля симуляций', tone(s.pLoss, 25, 45)],
+    ['Просадка ≥ 50% от пика', pct(s.pDD50), `≥ 80%: ${pct(s.pDD80)}`, tone(s.pDD50, 5, 20)],
+    ['Медианная макс. просадка', pct(s.medianDD), `у 5% хуже ${pct(s.p95DD, 0)}`, tone(s.medianDD, 30, 50)],
+  ];
+  for (const [label, value, note, t] of tiles) {
+    const d = h('div', { class: 'kpi' });
+    if (t) d.dataset.tone = t;
+    const n = h('div', { class: 'k-note' });
+    if (t) { const c = h('span', { class: 'tone-chip' }, TONE_TEXT[t]); c.dataset.tone = t; n.appendChild(c); }
+    n.appendChild(h('span', {}, note));
+    d.append(h('div', { class: 'k-label' }, label), h('div', { class: 'k-value' }, value), n);
+    k.appendChild(d);
+  }
+  const minor = $('minor');
+  minor.textContent = '';
+  const items = [
+    ['5% худших хуже', spct(s.p5, 0)], ['5% лучших лучше', spct(s.p95, 0)], ['ROI с оборота', spct(s.roiTurnover, 2)],
+    ['средняя ставка', pct(s.avgStake, 2) + ' банка'], ['банк ниже половины старта', pct(s.pHalf)],
+    ['банкротство (< 1% старта)', pct(s.pRuin)], ['серия проигрышей, медиана / худшая', num(s.medianLossStreak, 0) + ' / ' + num(s.maxLossStreak, 0)],
+  ];
+  for (const [a, b] of items) { const sp = h('span', {}, a + ': '); sp.appendChild(h('b', {}, b)); minor.appendChild(sp); }
+  drawFan();
+  drawHistFinal();
+  drawHistDD();
+  renderFanTable();
+}
+
+function drawFan() {
+  const o = lastSim, box = $('fan');
+  const H = box.clientWidth < 520 ? 260 : 340;
+  const { svg, w } = chartBox(box, H);
+  const m = { l: 52, r: 16, t: 10, b: 30 };
+  const iw = w - m.l - m.r, ih = H - m.t - m.b;
+  let lo = Infinity, hi = -Infinity;
+  for (const v of o.q[0]) lo = Math.min(lo, v);
+  for (const v of o.q[4]) hi = Math.max(hi, v);
+  for (const v of o.mean) hi = Math.max(hi, v);
+  lo = Math.max(Math.min(lo, 0.9), 0.01); hi = Math.max(hi, 1.1);
+  const ly0 = Math.log(lo) - 0.05, ly1 = Math.log(hi) + 0.05;
+  const T = o.steps[o.steps.length - 1];
+  const X = (t) => m.l + (t / T) * iw;
+  const Y = (v) => m.t + ih - ((Math.log(Math.max(v, lo * 0.5)) - ly0) / (ly1 - ly0)) * ih;
+  const g = el('g', { class: 'grid' }, svg);
+  for (const v of logTicks(Math.exp(ly0), Math.exp(ly1))) {
+    el('line', { x1: m.l, x2: w - m.r, y1: Y(v), y2: Y(v) }, g);
+    el('text', { x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end' }, svg).textContent = profitLabel(v);
+  }
+  for (const t of niceTicks(0, T, Math.max(3, Math.floor(iw / 110)))) {
+    el('text', { x: X(t), y: H - 8, 'text-anchor': 'middle' }, svg).textContent = num(t, 0);
+  }
+  const area = (a, b) => {
+    let d = '';
+    o.steps.forEach((t, i) => { d += (i ? 'L' : 'M') + X(t).toFixed(1) + ',' + Y(a[i]).toFixed(1); });
+    for (let i = o.steps.length - 1; i >= 0; i--) d += 'L' + X(o.steps[i]).toFixed(1) + ',' + Y(b[i]).toFixed(1);
+    return d + 'Z';
+  };
+  const line = (a) => o.steps.map((t, i) => (i ? 'L' : 'M') + X(t).toFixed(1) + ',' + Y(a[i]).toFixed(1)).join('');
+  el('path', { d: area(o.q[4], o.q[0]), fill: css('--band-1') }, svg);
+  el('path', { d: area(o.q[3], o.q[1]), fill: css('--band-2') }, svg);
+  for (const p of o.paths) el('path', { d: line(p), fill: 'none', stroke: css('--path'), 'stroke-width': 1 }, svg);
+  el('line', { x1: m.l, x2: w - m.r, y1: Y(1), y2: Y(1), class: 'base' }, svg);
+  el('path', { d: line(o.mean), fill: 'none', stroke: css('--s2'), 'stroke-width': 1.75, 'stroke-linejoin': 'round' }, svg);
+  el('path', { d: line(o.q[2]), fill: 'none', stroke: css('--s1'), 'stroke-width': 2.25, 'stroke-linejoin': 'round' }, svg);
+  const last = o.steps.length - 1;
+  el('circle', { cx: X(T), cy: Y(o.q[2][last]), r: 4, fill: css('--s1'), stroke: css('--surface'), 'stroke-width': 2 }, svg);
+
+  const lg = $('fan-legend');
+  lg.textContent = '';
+  for (const [k, label] of [[css('--s1'), 'Медиана'], [css('--s2'), 'Среднее'], ['rect:' + css('--band-2'), '25–75% симуляций'], ['rect:' + css('--band-1'), '5–95%'], [css('--path'), 'Отдельные симуляции']]) {
+    const sp = h('span'), key = h('span', { class: k.startsWith('rect:') ? 'key-rect' : 'key-line' });
+    key.style.background = k.replace('rect:', '');
+    sp.append(key, document.createTextNode(label));
+    lg.appendChild(sp);
+  }
+  const hl = el('line', { y1: m.t, y2: m.t + ih, class: 'hover-line', visibility: 'hidden' }, svg);
+  const hit = el('rect', { x: m.l, y: m.t, width: iw, height: ih, fill: 'transparent', tabindex: 0, 'aria-label': 'Траектории банка: наведите, чтобы увидеть квантили' }, svg);
+  const tip = tooltip(box);
+  const at = (px) => {
+    const t = ((px - m.l) / iw) * T;
+    let i = 0, best = Infinity;
+    o.steps.forEach((s, j) => { const dd = Math.abs(s - t); if (dd < best) { best = dd; i = j; } });
+    hl.setAttribute('x1', X(o.steps[i])); hl.setAttribute('x2', X(o.steps[i])); hl.setAttribute('visibility', 'visible');
+    showTip(tip, box, X(o.steps[i]), m.t, `После ${num(o.steps[i], 0)} ставок`, [
+      ['rect:' + css('--band-1'), '95-й перцентиль', profitLabel(o.q[4][i])],
+      ['rect:' + css('--band-2'), '75-й', profitLabel(o.q[3][i])],
+      [css('--s1'), 'Медиана', profitLabel(o.q[2][i])],
+      ['rect:' + css('--band-2'), '25-й', profitLabel(o.q[1][i])],
+      ['rect:' + css('--band-1'), '5-й', profitLabel(o.q[0][i])],
+      [css('--s2'), 'Среднее', profitLabel(o.mean[i])],
+    ]);
+  };
+  hit.addEventListener('pointermove', (e) => { const r = svg.getBoundingClientRect(); at((e.clientX - r.left) * (w / r.width)); });
+  hit.addEventListener('pointerleave', () => { tip.hidden = true; hl.setAttribute('visibility', 'hidden'); });
+  hit.addEventListener('focus', () => at(m.l + iw));
+  hit.addEventListener('blur', () => { tip.hidden = true; hl.setAttribute('visibility', 'hidden'); });
+}
+
+function histogram(values, lo, hi, bins) {
+  const c = new Array(bins).fill(0), wd = (hi - lo) / bins;
+  for (const v of values) { let i = Math.floor((v - lo) / wd); if (i < 0) i = 0; if (i >= bins) i = bins - 1; c[i]++; }
+  return c;
+}
+function drawBars(box, counts, lo, hi, N, xLabel, ticks, refs, tipHead, shadeTo) {
+  const H = 200 + 14 * refs.length;
+  const { svg, w } = chartBox(box, H);
+  const m = { l: 40, r: 12, t: 12 + 14 * refs.length, b: 30 };
+  const iw = w - m.l - m.r, ih = H - m.t - m.b;
+  const X = (v) => m.l + ((v - lo) / (hi - lo)) * iw;
+  const maxC = Math.max(...counts, 1), maxShare = maxC / N * 100;
+  const Y = (share) => m.t + ih - (share / maxShare) * ih;
+  if (shadeTo !== undefined && shadeTo > lo) el('rect', { x: m.l, y: m.t, width: Math.max(0, X(Math.min(shadeTo, hi)) - m.l), height: ih, fill: css('--loss-wash') }, svg);
+  const g = el('g', { class: 'grid' }, svg);
+  for (const t of niceTicks(0, maxShare, 3)) {
+    el('line', { x1: m.l, x2: w - m.r, y1: Y(t), y2: Y(t) }, g);
+    el('text', { x: m.l - 6, y: Y(t) + 4, 'text-anchor': 'end' }, svg).textContent = num(t, t < 10 && t % 1 ? 1 : 0) + '%';
+  }
+  const bw = iw / counts.length;
+  const tip = tooltip(box);
+  counts.forEach((c, i) => {
+    const share = c / N * 100;
+    const x = m.l + i * bw + 1, width = Math.max(1, bw - 2), y = Y(share);
+    const hgt = m.t + ih - y;
+    if (hgt > 0.5) {
+      const r = Math.min(4, width / 2, hgt);
+      el('path', { d: `M${x},${m.t + ih}V${y + r}Q${x},${y} ${x + r},${y}H${x + width - r}Q${x + width},${y} ${x + width},${y + r}V${m.t + ih}Z`, fill: css('--s1') }, svg);
+    }
+    const hit = el('rect', { x: m.l + i * bw, y: m.t, width: bw, height: ih, fill: 'transparent' }, svg);
+    hit.addEventListener('pointermove', () => {
+      showTip(tip, box, m.l + (i + 0.5) * bw, m.t, tipHead(lo + i * (hi - lo) / counts.length, lo + (i + 1) * (hi - lo) / counts.length), [['rect:' + css('--s1'), 'симуляций', pct(share)]]);
+    });
+    hit.addEventListener('pointerleave', () => { tip.hidden = true; });
+  });
+  el('line', { x1: m.l, x2: w - m.r, y1: m.t + ih, y2: m.t + ih, class: 'base' }, svg);
+  for (const [v, label] of ticks) el('text', { x: X(v), y: H - 8, 'text-anchor': 'middle' }, svg).textContent = label;
+  refs.forEach(([v, label], j) => {
+    if (v < lo || v > hi) return;
+    // подписи порогов живут в отдельной полосе над графиком и не налезают на столбики
+    const ly = 11 + j * 14;
+    el('line', { x1: X(v), x2: X(v), y1: ly + 3, y2: m.t + ih, class: 'ref' }, svg);
+    const anchor = X(v) > w - 120 ? 'end' : 'start';
+    el('text', { x: X(v) + (anchor === 'end' ? -5 : 5), y: ly + 4, 'text-anchor': anchor, class: 'ref-label' }, svg).textContent = label;
+  });
+}
+function drawHistFinal() {
+  const o = lastSim, N = o.final.length;
+  const logs = Array.from(o.final, (v) => Math.log10(Math.max(v, 1e-4)));
+  const sorted = Float64Array.from(logs).sort();
+  let lo = sorted[Math.floor(N * 0.005)], hi = sorted[Math.min(N - 1, Math.ceil(N * 0.995))];
+  lo = Math.min(lo, -0.05); hi = Math.max(hi, 0.05);
+  const counts = histogram(logs, lo, hi, 36);
+  const ticks = logTicks(Math.pow(10, lo), Math.pow(10, hi), 6).map((v) => [Math.log10(v), profitLabel(v)]);
+  const loss = lastSim.summary.pLoss;
+  drawBars($('hist-final'), counts, lo, hi, N, '', ticks, [[0, `в минусе ${pct(loss, 0)}`]],
+    (a, b) => `${profitLabel(Math.pow(10, a))} … ${profitLabel(Math.pow(10, b))}`, 0);
+}
+function drawHistDD() {
+  const o = lastSim, N = o.maxDD.length, s = o.summary;
+  const vals = Array.from(o.maxDD, (v) => v * 100);
+  const counts = histogram(vals, 0, 100, 40);
+  const ticks = [0, 20, 40, 60, 80, 100].map((v) => [v, v + '%']);
+  drawBars($('hist-dd'), counts, 0, 100, N, '', ticks, [[50, `≥ 50%: ${pct(s.pDD50, 0)}`], [80, `≥ 80%: ${pct(s.pDD80, 0)}`]],
+    (a, b) => `просадка ${num(a, 1)}–${num(b, 1)}%`);
+}
+function renderFanTable() {
+  const o = lastSim;
+  const idxs = [...new Set([0.1, 0.25, 0.5, 0.75, 1].map((f) => Math.round((o.steps.length - 1) * f)))];
+  const t = h('table');
+  const hr = h('tr');
+  for (const c of ['После ставок', '5-й перцентиль', '25-й', 'Медиана', '75-й', '95-й', 'Среднее']) hr.appendChild(h('th', {}, c));
+  t.appendChild(hr);
+  for (const i of idxs) {
+    const r = h('tr');
+    r.appendChild(h('td', {}, num(o.steps[i], 0)));
+    for (const v of [o.q[0][i], o.q[1][i], o.q[2][i], o.q[3][i], o.q[4][i], o.mean[i]]) r.appendChild(h('td', {}, profitLabel(v)));
+    t.appendChild(r);
+  }
+  const box = $('fan-table');
+  box.textContent = '';
+  box.appendChild(t);
+}
+
+// ================= равный риск =================
+let riskRows = null, riskSource = null;
+function preRiskRows(profile) {
+  const block = state.ev === 'scaled' ? PRE.risk_matched.scaled_calibrated : PRE.risk_matched.flat;
+  const rows = block && block.profiles[profile];
+  if (!rows) return null;
+  return rows.map((r) => ({ key: r.key, scale: r.scale, scaleMax: r.scale_max, median: r.median_profit_pct, mean: r.mean_profit_pct, p5: r.p5_profit_pct,
+    pLoss: r.p_loss_pct, medianDD: r.median_max_dd_pct, pDD50: r.p_dd50_pct, pDD80: r.p_dd80_pct, avgStake: r.avg_stake_pct }));
+}
+function showRisk() {
+  const profile = $('r-profile').value;
+  const live = riskSource && riskSource.profile === profile && riskSource.sig === condSig() ? riskSource : null;
+  if (live) { riskRows = live.rows; }
+  else {
+    const pre = preRiskRows(profile);
+    riskRows = pre;
+    const src = $('r-source');
+    if (pre && preMatches('risk')) {
+      src.dataset.stale = 'false';
+      src.textContent = `Предрасчёт в Python: ${num(PRE.settings.n_sims, 0)} симуляций × ${num(PRE.settings.n_bets, 0)} ставок, ROI ${pct(PRE.settings.roi * 100, 1)}`;
+    } else {
+      src.dataset.stale = 'true';
+      src.textContent = 'Условия слева отличаются от предрасчёта. Нажмите «Пересчитать в браузере».';
+    }
+  }
+  if (live) {
+    const src = $('r-source');
+    src.dataset.stale = 'false';
+    src.textContent = `Посчитано в браузере: ${num(live.nSims, 0)} симуляций на шаг · ${num(live.ms / 1000, 1)} с`;
+  }
+  $('risk-panel').classList.toggle('busy', !live && !preMatches('risk'));
+  const [label, limit] = PROFILE_TEXT[profile];
+  $('r-sub').textContent = `лимит: ${label} ≤ ${pct(limit, 1)}`;
+  if (riskRows) { drawRisk(); renderRiskTable(); }
+  $('r-note').hidden = state.ev !== 'flat';
+}
+function condSig() { return JSON.stringify([marketCfg(), simCfg(1)]); }
+function runRisk() {
+  if (heavyWorker) heavyWorker.terminate();
+  heavyWorker = spawn();
+  const id = ++jobId, profile = $('r-profile').value, nSims = +$('r-sims').value, sig = condSig();
+  $('r-run').disabled = true;
+  $('r-prog').style.width = '2%';
+  const items = ORDER.map((k) => ({ key: k, params: loadParams(k) }));
+  heavyWorker.onmessage = (e) => {
+    const m = e.data;
+    if (m.id !== id) return;
+    if (m.type === 'progress') { $('r-prog').style.width = (m.done / m.total * 100) + '%'; $('r-source').textContent = `Калибрую стратегии: ${m.done} из ${m.total}`; return; }
+    $('r-run').disabled = false;
+    if (m.type === 'error') { $('r-source').textContent = 'Ошибка: ' + m.message; return; }
+    riskSource = { profile, sig, rows: m.rows, nSims, ms: m.ms };
+    showRisk();
+  };
+  heavyWorker.postMessage({ type: 'compare', id, items, profile, market: marketCfg(), cfg: simCfg(nSims) });
+}
+function drawRisk() {
+  const rows = riskRows, box = $('risk-chart');
+  const rowH = 30, m = { l: 0, r: 64, t: 6, b: 26 };
+  const narrow = box.clientWidth < 560;
+  m.l = narrow ? 150 : 210;
+  const H = m.t + m.b + rows.length * rowH;
+  const { svg, w } = chartBox(box, H);
+  const iw = w - m.l - m.r;
+  const vals = rows.map((r) => r.median);
+  const lo = Math.min(0, ...vals), hi = Math.max(0, ...vals) * 1.05 || 1;
+  const X = (v) => m.l + ((v - lo) / (hi - lo)) * iw;
+  const g = el('g', { class: 'grid' }, svg);
+  for (const t of niceTicks(lo, hi, narrow ? 3 : 5)) {
+    el('line', { x1: X(t), x2: X(t), y1: m.t, y2: H - m.b }, g);
+    el('text', { x: X(t), y: H - 8, 'text-anchor': 'middle' }, svg).textContent = spct(t, 0);
+  }
+  const tip = tooltip(box);
+  rows.forEach((r, i) => {
+    const y = m.t + i * rowH + 7, bh = rowH - 14;
+    const name = STRATS[r.key] ? STRATS[r.key].label : r.key;
+    const tl = el('text', { x: m.l - 10, y: y + bh / 2 + 4, 'text-anchor': 'end' }, svg);
+    tl.textContent = name;
+    tl.style.fill = css('--ink-2');
+    const x0 = X(0), x1 = X(r.median), xa = Math.min(x0, x1), wd = Math.max(1, Math.abs(x1 - x0));
+    const rad = Math.min(4, wd / 2, bh / 2);
+    const fill = i === 0 ? css('--s1') : css('--bar-muted');
+    const d = r.median >= 0
+      ? `M${xa},${y}H${xa + wd - rad}Q${xa + wd},${y} ${xa + wd},${y + rad}V${y + bh - rad}Q${xa + wd},${y + bh} ${xa + wd - rad},${y + bh}H${xa}Z`
+      : `M${xa + wd},${y}H${xa + rad}Q${xa},${y} ${xa},${y + rad}V${y + bh - rad}Q${xa},${y + bh} ${xa + rad},${y + bh}H${xa + wd}Z`;
+    el('path', { d, fill }, svg);
+    const vl = el('text', { x: r.median >= 0 ? x1 + 6 : x1 - 6, y: y + bh / 2 + 4, 'text-anchor': r.median >= 0 ? 'start' : 'end' }, svg);
+    vl.textContent = spct(r.median);
+    vl.style.fill = css('--ink');
+    vl.style.fontWeight = i === 0 ? '600' : '400';
+    const hit = el('rect', { x: 0, y: m.t + i * rowH, width: w, height: rowH, fill: 'transparent', tabindex: 0 }, svg);
+    const show = () => showTip(tip, box, Math.max(x1, x0), m.t + i * rowH, name, [
+      [null, 'медиана', spct(r.median)], [null, 'среднее', spct(r.mean, 0)], [null, '5% худших хуже', spct(r.p5, 0)],
+      [null, 'в минусе', pct(r.pLoss)], [null, 'просадка ≥ 50%', pct(r.pDD50)], [null, 'просадка ≥ 80%', pct(r.pDD80)],
+      [null, 'средняя ставка', pct(r.avgStake, 2)], [null, 'множитель размера', num(r.scale, 2) + '×'],
+    ]);
+    hit.addEventListener('pointermove', show);
+    hit.addEventListener('focus', show);
+    hit.addEventListener('pointerleave', () => { tip.hidden = true; });
+    hit.addEventListener('blur', () => { tip.hidden = true; });
+  });
+  el('line', { x1: X(0), x2: X(0), y1: m.t, y2: H - m.b, class: 'base' }, svg);
+}
+function renderRiskTable() {
+  const t = h('table');
+  const hr = h('tr');
+  for (const c of ['Стратегия', 'Медиана', 'Среднее', '5% худших', 'В минусе', 'Медиана DD', 'DD ≥ 50%', 'DD ≥ 80%', 'Ср. ставка', 'Размер ×']) hr.appendChild(h('th', {}, c));
+  t.appendChild(hr);
+  riskRows.forEach((r, i) => {
+    const tr = h('tr');
+    if (i === 0) tr.className = 'best';
+    const td = h('td', {}, STRATS[r.key] ? STRATS[r.key].label : r.key);
+    td.appendChild(h('span', { class: 'k' }, r.key));
+    tr.appendChild(td);
+    for (const v of [spct(r.median), spct(r.mean, 0), spct(r.p5, 0), pct(r.pLoss), pct(r.medianDD), pct(r.pDD50), pct(r.pDD80), pct(r.avgStake, 2), num(r.scale, 2)]) tr.appendChild(h('td', {}, v));
+    t.appendChild(tr);
+  });
+  const box = $('risk-table');
+  box.textContent = '';
+  box.appendChild(t);
+}
+
+// ================= Келли =================
+let kellyData = null, kellySource = null;
+function preKelly() {
+  const out = {};
+  for (const [k] of KELLY_CASES) {
+    out[k] = PRE.kelly_model_error[k].rows.map((r) => ({ mult: r.mult, median: r.median_profit_pct, pDD50: r.p_dd50_pct, pLoss: r.p_loss_pct, mean: r.mean_profit_pct, medianDD: r.median_max_dd_pct }));
+  }
+  return out;
+}
+function showKelly() {
+  const live = kellySource && kellySource.sig === condSig() ? kellySource : null;
+  const src = $('k-source');
+  if (live) {
+    kellyData = live.data;
+    src.dataset.stale = 'false';
+    src.textContent = `Посчитано в браузере: ${num(live.nSims, 0)} симуляций на точку · ${num(live.ms / 1000, 1)} с`;
+  } else {
+    kellyData = preKelly();
+    const ok = preMatches('kelly');
+    src.dataset.stale = String(!ok);
+    src.textContent = ok ? `Предрасчёт в Python: ${num(PRE.settings.n_sims, 0)} симуляций на точку, ROI ${pct(PRE.settings.roi * 100, 1)}`
+      : 'Условия слева отличаются от предрасчёта. Нажмите «Пересчитать в браузере».';
+  }
+  $('kelly-panel').classList.toggle('busy', !live && !preMatches('kelly'));
+  drawKelly();
+}
+function runKelly() {
+  if (heavyWorker) heavyWorker.terminate();
+  heavyWorker = spawn();
+  const id = ++jobId, sig = condSig(), nSims = Math.min(state.sims, 2000);
+  const mults = [0.1, 0.25, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.5, 2, 2.5, 3];
+  $('k-run').disabled = true;
+  heavyWorker.onmessage = (e) => {
+    const m = e.data;
+    if (m.id !== id) return;
+    if (m.type === 'progress') { $('k-prog').style.width = (m.done / m.total * 100) + '%'; return; }
+    $('k-run').disabled = false;
+    if (m.type === 'error') { $('k-source').textContent = 'Ошибка: ' + m.message; return; }
+    kellySource = { sig, data: m.out, nSims, ms: m.ms };
+    showKelly();
+  };
+  heavyWorker.postMessage({ type: 'kelly', id, mults, market: { ...marketCfg(), source: state.source }, cfg: simCfg(nSims) });
+}
+function drawLines(box, getY, yLabel, refY) {
+  const H = 260;
+  const { svg, w } = chartBox(box, H);
+  const m = { l: 46, r: 92, t: 12, b: 30 };
+  if (w < 420) m.r = 16;
+  const iw = w - m.l - m.r, ih = H - m.t - m.b;
+  const series = KELLY_CASES.map(([k, label, c, short]) => ({ k, label, short, color: css('--' + c), pts: kellyData[k].map((r) => [r.mult, getY(r)]) }));
+  const xs = series[0].pts.map((p) => p[0]);
+  const xMax = Math.max(...xs);
+  let lo = Math.min(0, ...series.flatMap((s) => s.pts.map((p) => p[1])));
+  let hi = Math.max(...series.flatMap((s) => s.pts.map((p) => p[1])));
+  hi = hi + (hi - lo) * 0.08;
+  const X = (v) => m.l + (v / xMax) * iw;
+  const Y = (v) => m.t + ih - ((v - lo) / (hi - lo)) * ih;
+  const g = el('g', { class: 'grid' }, svg);
+  for (const t of niceTicks(lo, hi, 4)) {
+    el('line', { x1: m.l, x2: w - m.r, y1: Y(t), y2: Y(t) }, g);
+    el('text', { x: m.l - 6, y: Y(t) + 4, 'text-anchor': 'end' }, svg).textContent = yLabel(t);
+  }
+  for (const t of [0, 0.5, 1, 1.5, 2, 2.5, 3].filter((v) => v <= xMax)) el('text', { x: X(t), y: H - 8, 'text-anchor': 'middle' }, svg).textContent = num(t, t % 1 ? 1 : 0) + '×';
+  el('line', { x1: m.l, x2: w - m.r, y1: Y(Math.max(lo, 0)), y2: Y(Math.max(lo, 0)), class: 'base' }, svg);
+  el('line', { x1: X(1), x2: X(1), y1: m.t, y2: m.t + ih, class: 'ref' }, svg);
+  el('text', { x: X(1) + 5, y: m.t + 10, class: 'ref-label' }, svg).textContent = 'полный Келли';
+  if (refY !== undefined) el('line', { x1: m.l, x2: w - m.r, y1: Y(refY), y2: Y(refY), class: 'ref' }, svg);
+  const labels = [];
+  for (const s of series) {
+    el('path', { d: s.pts.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(''), fill: 'none', stroke: s.color, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+    let bi = 0;
+    s.pts.forEach((p, i) => { if (p[1] > s.pts[bi][1]) bi = i; });
+    for (const p of s.pts) el('circle', { cx: X(p[0]), cy: Y(p[1]), r: 3, fill: s.color, stroke: css('--surface'), 'stroke-width': 1.5 }, svg);
+    const lp = s.pts[s.pts.length - 1];
+    labels.push({ y: Y(lp[1]), x: X(lp[0]), s });
+  }
+  if (m.r > 40) {
+    // подписываем конец линии, только если он не сливается с соседними; иначе хватает легенды и подсказки
+    const free = labels.filter((L) => labels.every((o) => o === L || Math.abs(o.y - L.y) >= 14));
+    for (const L of free) {
+      const t = el('text', { x: L.x + 8, y: L.y + 4 }, svg);
+      t.textContent = L.s.short;
+      t.style.fill = css('--ink-2');
+    }
+  }
+  const hl = el('line', { y1: m.t, y2: m.t + ih, class: 'hover-line', visibility: 'hidden' }, svg);
+  const hit = el('rect', { x: m.l, y: m.t, width: iw, height: ih, fill: 'transparent', tabindex: 0 }, svg);
+  const tip = tooltip(box);
+  const at = (px) => {
+    const v = ((px - m.l) / iw) * xMax;
+    let i = 0;
+    xs.forEach((x, j) => { if (Math.abs(x - v) < Math.abs(xs[i] - v)) i = j; });
+    hl.setAttribute('x1', X(xs[i])); hl.setAttribute('x2', X(xs[i])); hl.setAttribute('visibility', 'visible');
+    showTip(tip, box, X(xs[i]), m.t, `${num(xs[i], 2)} × полного Келли`, series.map((s) => [s.color, s.label, yLabel(s.pts[i][1])]));
+  };
+  hit.addEventListener('pointermove', (e) => { const r = svg.getBoundingClientRect(); at((e.clientX - r.left) * (w / r.width)); });
+  hit.addEventListener('pointerleave', () => { tip.hidden = true; hl.setAttribute('visibility', 'hidden'); });
+  hit.addEventListener('focus', () => at(X(1)));
+  hit.addEventListener('blur', () => { tip.hidden = true; hl.setAttribute('visibility', 'hidden'); });
+}
+function drawKelly() {
+  const lg = $('k-legend');
+  lg.textContent = '';
+  for (const [, label, c] of KELLY_CASES) { const sp = h('span'), k = h('span', { class: 'key-line' }); k.style.background = css('--' + c); sp.append(k, document.createTextNode(label)); lg.appendChild(sp); }
+  drawLines($('k-growth'), (r) => r.median, (v) => spct(v, 0));
+  drawLines($('k-dd'), (r) => r.pDD50, (v) => pct(v, 0));
+  const best = (k) => kellyData[k].reduce((a, b) => (b.median > a.median ? b : a));
+  const bc = best('calibrated'), bo = best('overstated');
+  const full = kellyData.calibrated.find((r) => r.mult === 1);
+  $('k-callout').innerHTML = '';
+  const c = $('k-callout');
+  c.append('Если EV известен точно, лучшая медиана у ', h('b', {}, `${num(bc.mult, 2)}× Келли`), ` (${spct(bc.median)}), но шанс просадки ≥ 50% там ${pct(bc.pDD50, 0)}. Если модель завышает EV, оптимум сдвигается к `,
+    h('b', {}, `${num(bo.mult, 2)}× Келли по модели`), '. Половина Келли по завышенной модели означает полный Келли по факту.');
+  if (full) c.append(` Полный Келли при точном EV: медиана ${spct(full.median)}, в минусе ${pct(full.pLoss, 0)} серий.`);
+  const t = h('table'), hr = h('tr');
+  hr.appendChild(h('th', {}, 'Доля Келли'));
+  for (const [, label] of KELLY_CASES) { hr.appendChild(h('th', {}, label + ': медиана')); hr.appendChild(h('th', {}, 'DD ≥ 50%')); }
+  t.appendChild(hr);
+  kellyData.calibrated.forEach((r, i) => {
+    const tr = h('tr');
+    tr.appendChild(h('td', {}, num(r.mult, 2) + '×'));
+    for (const [k] of KELLY_CASES) { tr.appendChild(h('td', {}, spct(kellyData[k][i].median))); tr.appendChild(h('td', {}, pct(kellyData[k][i].pDD50))); }
+    t.appendChild(tr);
+  });
+  $('k-table').textContent = '';
+  $('k-table').appendChild(t);
+}
+
+// ================= аудит =================
+const FINDINGS = [
+  ['crit', '«Процент от банка» на деле был флэтом от начального банка', 'В 22 из 25 стратегий размер ставки считался в первом проходе от массива банка, который не обновлялся и всегда был равен 1000. Компаундинга не было, а «avg_bet_% от текущего банка» в отчётах ничего не значил. Пример: fixed 2% на 500-й ставке ставил 1.18% ± 1.85 п.п. живого банка.', 'simulation-current/run_strategies_real_odds.py', 'Стратегии переведены на однопроходный движок brm, формулы сохранены.'],
+  ['crit', 'Банк уходил в минус', 'Второй проход разыгрывал суммы из другого пути без проверки банка. dynamic_percentage 5% с вариацией опускал банк до −237 006 при старте 1000 (22% симуляций в минусе), fixed_fraction 2% — до −826, target_based — до −1 739. Среднее «+4502%» было артефактом.', 'run_strategies_real_odds.py, dispersion_sim.py, kelly30_report.py, sim.html', 'Ставка никогда не больше живого банка.'],
+  ['crit', 'Ставки в 100 раз меньше задуманного', 'В dynamic_kelly, proportional_kelly, bayesian_kelly и test_kelly_realistic доля Келли делилась на 100 второй раз. proportional_kelly давал +1.2% вместо +239%, dynamic_kelly +0.4% вместо +50%.', 'run_strategies_real_odds.py, test_all_strategies_realistic.py:72', 'Единицы исправлены.'],
+  ['crit', '«Келли не работает» — следствие p = 1/кэф', 'В test_all_strategies_realistic.py вероятность выигрыша бралась как 1/кэф, то есть с нулевым перевесом. Ставка Келли поэтому всегда была 0. Вывод в BEST_STRATEGIES.md об этом.', 'test_all_strategies_realistic.py:62, BEST_STRATEGIES.md', 'p = (1 + ROI) / кэф. Документы помечены как устаревшие.'],
+  ['crit', 'Фиксированный ROI перестановкой не измерял риск', 'honest_engine и honest_sim переставляли один набор (кэф, исход). Итоговый банк — произведение множителей и от порядка не зависит, поэтому у флэт-% и Келли он одинаков во всех симуляциях: 5-й перцентиль = медиана = +15.6%. С независимыми исходами 5-й перцентиль −70%.', 'simulation-current/honest_engine.py, honest_sim.py', 'По умолчанию исходы независимые, старый режим — флагом fixed_roi с предупреждением.'],
+  ['crit', 'Рейтинги по среднему награждали перебор ставки', 'combat_*, massive_experiments и оптимизатор сортировали по средней прибыли. Её делают несколько сверхудачных симуляций: Келли ×3 даёт среднее +5070% при медиане +115% и 37.5% серий в минусе.', 'combat_final.py, combat_parallel.py, combat_resumable.py, massive_experiments.py, strategy_optimizer.py', 'Ранжирование по медиане.'],
+  ['crit', 'Оптимизатор выбирал удачу, а не параметры', '100 случайных наборов, каждый оценён один раз на своём случайном потоке, лучший без перепроверки. Extreme adaptive_bet: заявлено 16 173%, при перепрогоне 3 591%. Скоринг рискованных профилей поощрял сливы, лимиты допускали превышение на 10%, кэш старого прогона подхватывался молча.', 'simulation-original/strategy_optimizer.py', 'Общий seed, перепроверка top-5 на независимом seed, медиана, строгие лимиты, кэш с подписью настроек.'],
+  ['crit', 'Адаптивные стратегии не адаптировались', 'volatility_adjusted, sharpe_optimized и multi_objective считали волатильность по плоскому банку, и она всегда была 0: результат volatility_adjusted совпадал с fixed_fraction до цифры. В original adaptive_bet получал статичный max_bank.', 'run_strategies_real_odds.py, simulation-original/bet_simulator.py', 'Стратегии видят живой банк и его историю.'],
+  ['major', 'Вариация суммы уменьшала ставку на 25%', 'Множители 0.35–1.15 в среднем дают 0.75. Вывод «вариация снижает риск и прибыль» объясняется меньшей средней ставкой, а не разбросом.', 'run_strategies_real_odds.py, README', 'В симуляторе есть вариант ×0.8–1.2 со средним 1. Описание исправлено.'],
+  ['major', 'Слитые симуляции считались как «0% прибыли»', 'После банкротства хвост истории оставался равен начальному банку, и финальный банк был 1000 вместо ~0.', 'logarithmic_kelly.py, kelly_correct.py, test_all_strategies_realistic.py', 'Хвост заполняется фактическим банком.'],
+  ['major', 'ROI с оборота занижался', 'Среднее отношений прибыль/оборот по симуляциям при компаундинге смещено вниз: 7% показывались как ~5.2%.', 'run_strategies_real_odds.py', 'Суммарная прибыль / суммарный оборот.'],
+  ['major', 'Генератор из ТЗ давал средний кэф 2.45', 'Beta(2, 2.2) на [1.5, 3.5] имеет среднее 2.45 при требуемых 2.8.', 'simulation-original/distribution_generator.py', 'Параметры Beta выводятся из нужного среднего.'],
+  ['major', 'У каждой ставки свой EV, но в расчёт шёл один ROI', 'В matching_teams_clean.csv есть EV каждой ставки (от −3% до +293%), а симуляции давали всем ставкам один ROI. ROI-зависимые стратегии вырождались в фиксированный процент.', 'run_strategies_real_odds.py, config.py', 'Модель «EV каждой ставки из данных» в brm и в симуляторе.'],
+  ['major', 'Лог-формула ставит без перевеса', '−log₁₀(1 − p) / risk зависит от вероятности проигрыша, а не от перевеса: при нулевом EV на кэфе 1.5 и risk 15 ставка 3.2% банка. Это не Келли.', 'logarithmic_kelly.py, backend/calculator', 'Оставлена как есть и показана при равном риске рядом с Келли.'],
+  ['minor', 'Просадка в HTML-симуляторах проверялась раз в 50 ставок', 'Провалы между проверками пропускались, а «период перерасчёта банкролла» на ставку не влиял.', 'sim.html, simulation.html, supersim.html', 'Просадка после каждой ставки, период задаёт базу ставки.'],
+  ['minor', 'Склейка при возобновлении и выброшенные убыточные варианты', 'combat_final узнавал готовые задачи только по параметрам, и linear_roi/sqrt_roi с одинаковыми параметрами склеивались. Фильтр profit > 0 выкидывал честные убыточные варианты.', 'combat_final.py', 'Ключ (стратегия, параметры), фильтр убран.'],
+  ['minor', 'Неравные условия в combat-сравнениях', 'kelly_correct всегда применяет вариацию 0.35–1.15, а у части соперников её нет. «Келли 1.0» там на деле около 0.75 Келли с шумом.', 'kelly_correct.py, combat_final.py', null],
+];
+function renderAudit() {
+  const crit = FINDINGS.filter((f) => f[0] === 'crit').length;
+  $('audit-count').textContent = FINDINGS.length;
+  $('fact-bugs').textContent = FINDINGS.filter((f) => f[4]).length;
+  $('audit-lede').textContent = `Короткий ответ: прежние симуляции некорректны. ${crit} ошибок меняли выводы, ещё ${FINDINGS.length - crit} искажали метрики. Все, кроме одной, исправлены в коде; документы с выводами на старом коде помечены. Ниже сравнение до и после на одних и тех же исходах и полный список.`;
+  const box = $('findings');
+  box.textContent = '';
+  const SEV = { crit: 'Критично', major: 'Значимо', minor: 'Мелочь' };
+  for (const [sev, title, what, where, fix] of FINDINGS) {
+    const d = h('article', { class: 'finding' });
+    d.dataset.sev = sev;
+    const body = h('div');
+    body.append(h('h3', {}, title), h('p', {}, what), h('div', { class: 'where' }, where));
+    body.appendChild(h('div', { class: 'fix' + (fix ? '' : ' open') }, fix ? '✓ Исправлено: ' + fix : 'Не исправлено, учитывайте при чтении старых сравнений.'));
+    d.append(h('div', { class: 'sev' }, SEV[sev]), body);
+    box.appendChild(d);
+  }
+  const t = h('table', { class: 'cmp' }), hr = h('tr');
+  for (const c of ['Стратегия', 'Было: среднее', 'Было: медиана', 'Было: мин. банк', 'Стало: среднее', 'Стало: медиана', 'Стало: мин. банк', 'Ставка на 500-й, % живого банка: было → стало']) hr.appendChild(h('th', {}, c));
+  t.appendChild(hr);
+  for (const r of BEFORE_AFTER) {
+    const tr = h('tr');
+    tr.appendChild(h('td', {}, r.case));
+    const o = r.old, n = r.new;
+    const bad = o.min_bank < 0;
+    tr.append(h('td', {}, spct(o.mean_profit)), h('td', {}, spct(o.median_profit)));
+    const mb = h('td', {}, num(o.min_bank, 0));
+    if (bad) mb.className = 'old';
+    tr.append(mb, h('td', {}, spct(n.mean_profit)), h('td', {}, spct(n.median_profit)), h('td', {}, num(n.min_bank, 0)),
+      h('td', {}, `${num(o.stake_pct_live_median, 2)}% ± ${num(o.stake_pct_live_spread / 2, 2)} → ${num(n.stake_pct_live_median, 2)}%`));
+    t.appendChild(tr);
+  }
+  $('before-after').textContent = '';
+  $('before-after').appendChild(t);
+}
+
+// ================= вкладки и связка =================
+const TABS = ['sim', 'risk', 'kelly', 'audit'];
+let current = 'sim';
+function openTab(name, push = true) {
+  if (!TABS.includes(name)) name = 'sim';
+  current = name;
+  for (const t of TABS) {
+    $('tab-' + t).setAttribute('aria-selected', String(t === name));
+    $('tab-' + t).tabIndex = t === name ? 0 : -1;
+    $('view-' + t).hidden = t !== name;
+  }
+  $('conditions').hidden = name === 'audit';
+  document.querySelector('.bench').style.gridTemplateColumns = name === 'audit' ? 'minmax(0, 1fr)' : '';
+  if (push) { try { history.replaceState(null, '', '#' + name); } catch (e) { /* в песочнице может быть запрещено */ } }
+  if (name === 'sim' && lastSim) renderSim();
+  if (name === 'risk') showRisk();
+  if (name === 'kelly') showKelly();
+}
+for (const t of TABS) {
+  $('tab-' + t).addEventListener('click', () => openTab(t));
+  $('tab-' + t).addEventListener('keydown', (e) => {
+    const i = TABS.indexOf(t);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      const n = TABS[(i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length];
+      openTab(n); $('tab-' + n).focus();
+    }
+  });
+}
+function onConditions() {
+  readConditions();
+  syncOutputs();
+  debouncedSim();
+  if (current === 'risk') showRisk();
+  if (current === 'kelly') showKelly();
+}
+for (const id of ['c-roi', 'c-noise', 'c-bets', 'c-cap']) $(id).addEventListener('input', onConditions);
+for (const id of ['c-ev', 'c-calib', 'c-sims', 'c-recalc', 'c-var', 'c-bank', 'c-seed', 'c-round', 'c-min']) $(id).addEventListener('change', onConditions);
+$('src-real').addEventListener('click', () => setSource('real'));
+$('src-syn').addEventListener('click', () => setSource('synthetic'));
+$('reset').addEventListener('click', () => { writeConditions(DEFAULTS); onConditions(); });
+$('r-run').addEventListener('click', runRisk);
+$('r-profile').addEventListener('change', showRisk);
+$('k-run').addEventListener('click', runKelly);
+window.addEventListener('hashchange', () => { const t = location.hash.replace('#', ''); if (TABS.includes(t) && t !== current) openTab(t, false); });
+
+let rsTimer = 0;
+new ResizeObserver(() => { clearTimeout(rsTimer); rsTimer = setTimeout(() => openTab(current, false), 120); }).observe(document.querySelector('.pane'));
+if (window.matchMedia) {
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  if (mq.addEventListener) mq.addEventListener('change', () => openTab(current, false));
+}
+new MutationObserver(() => openTab(current, false)).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+// ================= старт =================
+(function init() {
+  const avgOdds = BETS.odds.reduce((a, b) => a + b, 0) / BETS.odds.length;
+  $('fact-bets').textContent = num(BETS.odds.length, 0);
+  $('fact-odds').textContent = num(avgOdds, 2);
+  $('foot-note').textContent = `Данные: ${BETS.odds.length} ставок из matching_teams_clean.csv (только кэф и EV). Предрасчёт: ${num(PRE.settings.n_sims, 0)} симуляций, seed ${PRE.settings.seed}.`;
+  // на широком экране панель условий всегда раскрыта, на узком — свёрнута до нажатия
+  const narrowMq = window.matchMedia ? window.matchMedia('(max-width: 1040px)') : null;
+  const fitConditions = () => { $('conditions').open = !(narrowMq && narrowMq.matches); };
+  fitConditions();
+  if (narrowMq && narrowMq.addEventListener) narrowMq.addEventListener('change', fitConditions);
+  $('conditions').querySelector('summary').addEventListener('click', (e) => { if (!(narrowMq && narrowMq.matches)) e.preventDefault(); });
+  writeConditions(DEFAULTS);
+  readConditions();
+  syncOutputs();
+  buildStrategyUI();
+  renderAudit();
+  const hash = (location.hash || '').replace('#', '');
+  openTab(TABS.includes(hash) ? hash : 'sim', false);
+  runSim();
+})();
+</script>
+
+</body>
+</html>

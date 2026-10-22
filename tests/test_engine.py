@@ -145,7 +145,8 @@ def test_calibration_hits_profile_boundary():
     pool = brm.load_real_bets()
     market = brm.make_market(pool, roi=0.025)
     cfg = brm.SimConfig(n_sims=600, n_bets=600, seed=5)
-    scale, m = calibrate(lambda: S.FixedFraction(1.0), market, cfg, 'p_dd50_pct', 5.0, iters=10)
-    assert m['p_dd50_pct'] <= 5.0
+    build = lambda s: S.Scaled(S.FixedFraction(1.0), s)  # noqa: E731
+    scale, m = calibrate(build, market, cfg, 'p_dd50_pct', 5.0, iters=10, refine=())
+    assert m['p_dd50_pct'] <= 5.0 and scale == m['scale_max']
     from brm.optimize import evaluate
-    assert evaluate(lambda: S.FixedFraction(1.0), scale * 1.15, market, cfg)['p_dd50_pct'] > 5.0
+    assert evaluate(build(scale * 1.15), market, cfg)['p_dd50_pct'] > 5.0
