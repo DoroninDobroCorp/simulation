@@ -16,6 +16,14 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 
+
+def _metric_value(metrics, name):
+    """Метрика по имени; 'bank_growth_pct' у оптимизатора называется 'avg_bank_growth_pct'
+    (раньше графики сравнения по умолчанию падали с KeyError)."""
+    if name in metrics:
+        return metrics[name]
+    return metrics[f'avg_{name}']
+
 class Visualizer:
     """
     Класс для визуализации результатов симуляций и оптимизации.
@@ -298,7 +306,7 @@ class Visualizer:
             for risk_profile, result in risk_profile_results.items():
                 strategies.append(strategy_name)
                 risk_profiles.append(risk_profile)
-                metrics.append(result['metrics'][metric])
+                metrics.append(_metric_value(result['metrics'], metric))
         
         # Создаем DataFrame для удобства построения графика
         df = pd.DataFrame({
@@ -394,7 +402,7 @@ class Visualizer:
                         data.append({
                             'Стратегия': strategy_name,
                             'Профиль риска': risk_profile,
-                            'Метрика': result['metrics'][metric]
+                            'Метрика': _metric_value(result['metrics'], metric)
                         })
             
             # Создаем DataFrame для удобства построения графика

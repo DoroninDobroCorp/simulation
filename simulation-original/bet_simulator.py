@@ -8,6 +8,7 @@
 - Максимальная просадка от максимума и от начального банка
 """
 
+import inspect
 import numpy as np
 from distribution_generator import DistributionGenerator
 import importlib
@@ -110,13 +111,28 @@ class BetSimulator:
             **self.strategy_params
         }
         
+        # ИСПРАВЛЕНО: стратегии, которым нужно состояние банка (calculate_adaptive_bet),
+        # раньше получали статичные initial_bank/max_bank из параметров, и адаптация
+        # к просадке никогда не срабатывала. Теперь передаём живые значения.
+        accepted = self._strategy_args()
+        if 'initial_bank' in accepted:
+            params['initial_bank'] = self.initial_bank
+        if 'max_bank' in accepted:
+            params['max_bank'] = self.max_bank
+        
         # Вызываем функцию стратегии с распакованными параметрами
         bet_size = self.strategy_func(**params)
         
-        # Ограничиваем размер ставки банком
-        bet_size = min(bet_size, self.bank)
+        # Ограничиваем размер ставки банком (и не даём ставке стать отрицательной)
+        bet_size = max(0.0, min(bet_size, self.bank))
         
         return bet_size
+    
+    def _strategy_args(self):
+        if getattr(self, '_args_for', None) is not self.strategy_func:
+            self._args_for = self.strategy_func
+            self._args = set(inspect.signature(self.strategy_func).parameters)
+        return self._args
     
     def simulate_bet(self, odds=None, roi=None):
         """

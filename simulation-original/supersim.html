@@ -285,10 +285,13 @@
       let betSizes = [];
       let drawdowns = [];
       
+      let baseBank = bank; // ИСПРАВЛЕНО: «период перерасчёта банкролла» теперь действительно задаёт базу ставки
       for (let i = 0; i < params.betsPerSim; i++) {
+        if (i % params.bankrollRecalc === 0) baseBank = bank;
         const odds = generateOdds(params.oddsMin, params.oddsMax, params.oddsAvg);
         const roi = generateROI();
-        const betSize = calcBetSize(roi, odds, bank, params.minROI, params.maxROI, params.minProfitPercent, params.maxProfitPercent, fFunc);
+        // ИСПРАВЛЕНО: ставка не может быть больше живого банка (раньше банк уходил в минус)
+        const betSize = Math.max(0, Math.min(calcBetSize(roi, odds, baseBank, params.minROI, params.maxROI, params.minProfitPercent, params.maxProfitPercent, fFunc), bank));
         betSizes.push(betSize);
         let pWin = (1/odds) * (1 + roi/100);
         if (pWin > 1) pWin = 1;
@@ -299,10 +302,8 @@
         }
         bankrollHistory.push(bank);
         if (bank > maxBank) { maxBank = bank; }
-        if ((i+1) % params.bankrollRecalc === 0) {
-          const ddPct = ((maxBank - bank) / maxBank) * 100;
-          drawdowns.push(ddPct);
-        }
+        // ИСПРАВЛЕНО: просадка считается после каждой ставки (раньше раз в N ставок и пропускала провалы)
+        drawdowns.push(((maxBank - bank) / maxBank) * 100);
       }
       return { finalBank: bank, bankrollHistory: bankrollHistory, avgBetSize: betSizes.reduce((a,b)=>a+b,0)/betSizes.length, drawdowns: drawdowns, betSizes: betSizes };
     }

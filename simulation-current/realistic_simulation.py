@@ -182,6 +182,9 @@ def calculate_metrics_realistic(bankroll_history, bet_history, odds_array):
         'drawdown_50_pct': threshold_50_count / num_sims * 100,
         'drawdown_80_pct': threshold_80_count / num_sims * 100,
         'avg_profit_pct': np.mean(profit_pcts),
+        # ИСПРАВЛЕНО: рейтинги строились по среднему, которое делают несколько сверхудачных
+        # симуляций и которое растёт с перебором ставки. Сравнивать нужно по медиане.
+        'median_profit_pct': np.median(profit_pcts),
         'min_profit_pct': np.min(profit_pcts),
         'max_profit_pct': np.max(profit_pcts),
         'avg_max_drawdown_pct': np.mean(max_drawdown_per_sim),

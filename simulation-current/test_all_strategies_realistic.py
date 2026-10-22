@@ -59,7 +59,8 @@ def test_kelly_realistic(outcomes, odds_array, risk=2.0, kelly_fraction=1.0,
                     break
                 
                 odds = odds_array[i]
-                win_prob = 1.0 / odds  # Упрощение
+                # ИСПРАВЛЕНО: было 1/odds — вероятность без перевеса, Келли всегда 0 («Келли не работает»)
+                win_prob = (1.0 + TARGET_ROI) / odds
                 
                 # Kelly formula: f = (b*p - q) / b, где b=odds-1, p=win_prob, q=1-p
                 b = odds - 1
@@ -68,7 +69,7 @@ def test_kelly_realistic(outcomes, odds_array, risk=2.0, kelly_fraction=1.0,
                 kelly_f = (b * p - q) / b if b > 0 else 0
                 kelly_f = max(0, kelly_f)
                 
-                bet_pct = kelly_f * kelly_fraction * risk
+                bet_pct = kelly_f * 100 * kelly_fraction * risk  # ИСПРАВЛЕНО: доля -> проценты (было в 100 раз меньше)
                 bet_pct = min(bet_pct, 10.0)  # Max 10%
                 
                 bet_size = base_bank * bet_pct / 100
@@ -82,6 +83,7 @@ def test_kelly_realistic(outcomes, odds_array, risk=2.0, kelly_fraction=1.0,
                 bankroll_history[sim_idx, i + 1] = current_bank
             
             if current_bank < 1:
+                bankroll_history[sim_idx, i + 1:] = current_bank  # ИСПРАВЛЕНО: хвост оставался = INITIAL
                 break
             
             base_bank = current_bank
@@ -130,6 +132,7 @@ def test_sqrt_roi_realistic(outcomes, odds_array, base_roi=5.0, base_percent=1.0
                 bankroll_history[sim_idx, i + 1] = current_bank
             
             if current_bank < 1:
+                bankroll_history[sim_idx, i + 1:] = current_bank  # ИСПРАВЛЕНО: хвост оставался = INITIAL
                 break
             
             base_bank = current_bank
@@ -178,6 +181,7 @@ def test_exponential_roi_realistic(outcomes, odds_array, base_roi=5.0, base_perc
                 bankroll_history[sim_idx, i + 1] = current_bank
             
             if current_bank < 1:
+                bankroll_history[sim_idx, i + 1:] = current_bank  # ИСПРАВЛЕНО: хвост оставался = INITIAL
                 break
             
             base_bank = current_bank
@@ -229,6 +233,7 @@ def test_anti_martingale_realistic(outcomes, odds_array, base_percent=1.0, multi
                 bankroll_history[sim_idx, i + 1] = current_bank
             
             if current_bank < 1:
+                bankroll_history[sim_idx, i + 1:] = current_bank  # ИСПРАВЛЕНО: хвост оставался = INITIAL
                 break
             
             base_bank = current_bank
@@ -275,6 +280,7 @@ def test_linear_roi_realistic(outcomes, odds_array, base_roi=5.0, base_percent=1
                 bankroll_history[sim_idx, i + 1] = current_bank
             
             if current_bank < 1:
+                bankroll_history[sim_idx, i + 1:] = current_bank  # ИСПРАВЛЕНО: хвост оставался = INITIAL
                 break
             
             base_bank = current_bank
@@ -315,6 +321,7 @@ def test_fixed_fraction_realistic(outcomes, odds_array, fixed_percent=2.0,
                 bankroll_history[sim_idx, i + 1] = current_bank
             
             if current_bank < 1:
+                bankroll_history[sim_idx, i + 1:] = current_bank  # ИСПРАВЛЕНО: хвост оставался = INITIAL
                 break
             
             base_bank = current_bank

@@ -42,7 +42,7 @@ def run_kelly_test(args):
             'strategy': 'kelly_correct',
             'params': f'frac={fraction}',
             'params_json': json.dumps({'fraction': fraction}),
-            'profit': m['avg_profit_pct'],
+            'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
             'bankrupt': m['bankrupt_pct'],
             'dd50': m['drawdown_50_pct'],
             'dd80': m['drawdown_80_pct'],

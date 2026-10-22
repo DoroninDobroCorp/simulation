@@ -68,7 +68,7 @@ for k in k_values:
             'params': f'k={k:.2f}',
             'variation': 'Yes' if var else 'No',
             'k': k,
-            'profit': m['avg_profit_pct'],
+            'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
             'bankrupt': m['bankrupt_pct'],
             'dd50': m['drawdown_50_pct'],
             'dd80': m['drawdown_80_pct'],
@@ -108,7 +108,7 @@ for base in base_values:
             'params': f'base={base}%,m={mult}',
             'variation': 'No',
             'k': None,
-            'profit': m['avg_profit_pct'],
+            'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
             'bankrupt': m['bankrupt_pct'],
             'dd50': m['drawdown_50_pct'],
             'dd80': m['drawdown_80_pct'],
@@ -146,7 +146,7 @@ for base in base_values_linear:
         'params': f'base={base}%',
         'variation': 'No',
         'k': None,
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
@@ -187,7 +187,7 @@ for base in base_values_exp:
             'params': f'base={base}%,e={exp}',
             'variation': 'No',
             'k': None,
-            'profit': m['avg_profit_pct'],
+            'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
             'bankrupt': m['bankrupt_pct'],
             'dd50': m['drawdown_50_pct'],
             'dd80': m['drawdown_80_pct'],
@@ -223,7 +223,7 @@ for base in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]:
         'params': f'base={base}%',
         'variation': 'No',
         'k': None,
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
@@ -257,7 +257,7 @@ for pct in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 7.0, 8.0
         'params': f'{pct}%',
         'variation': 'No',
         'k': None,
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],

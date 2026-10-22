@@ -50,9 +50,15 @@ class DistributionGenerator:
         # Настройка распределения для коэффициентов
         # Используем бета-распределение для создания смещенного распределения
         odds_range = odds_max - odds_min
-        # Параметры для бета-распределения, которые дают смещение вправо
-        self.alpha = 2.0
-        self.beta = 2.2
+        # ИСПРАВЛЕНО: Beta(2, 2.2) давала средний кэф 2.45 вместо 2.8. Параметры
+        # выводятся из нужного среднего: mean(Beta(a, b)) = a / (a + b).
+        # При [1.5, 3.5] и среднем 2.8 это Beta(2.6, 1.4) — масса смещена вправо.
+        target = (odds_mean - odds_min) / odds_range
+        if not 0 < target < 1:
+            raise ValueError("odds_mean должен лежать строго между odds_min и odds_max")
+        concentration = 4.0
+        self.alpha = target * concentration
+        self.beta = (1 - target) * concentration
         # Коэффициент масштабирования для достижения среднего значения 2.8
         self.scale_factor = odds_range
         self.location = odds_min

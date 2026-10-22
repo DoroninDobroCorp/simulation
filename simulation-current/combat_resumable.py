@@ -57,7 +57,7 @@ def test_adaptive_cp(params):
         'strategy': 'adaptive_constant_profit',
         'params': f'k={k:.2f}_var',
         'k': k,
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
@@ -84,7 +84,7 @@ def test_anti_mart(params):
         'task_id': task_id,
         'strategy': 'anti_martingale',
         'params': f'base={base}%_m={mult}',
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
@@ -109,7 +109,7 @@ def test_linear(params):
     return {
         'strategy': 'linear_roi',
         'params': f'base={base}%',
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
@@ -135,7 +135,7 @@ def test_exponential(params):
     return {
         'strategy': 'exponential_roi',
         'params': f'base={base}%_e={exp}',
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
@@ -160,7 +160,7 @@ def test_sqrt(params):
     return {
         'strategy': 'sqrt_roi',
         'params': f'base={base}%',
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
@@ -183,7 +183,7 @@ def test_fixed(params):
     return {
         'strategy': 'fixed_fraction',
         'params': f'{pct}%',
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],

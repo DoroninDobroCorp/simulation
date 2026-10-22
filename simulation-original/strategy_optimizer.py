@@ -40,7 +40,9 @@ class StrategyOptimizer:
                  initial_bank=10000, 
                  num_bets=1500, 
                  num_simulations=500,
-                 distribution_generator=None):
+                 distribution_generator=None,
+                 seed=12345,
+                 top_k_recheck=5):
         """
         Инициализация оптимизатора стратегий.
         
@@ -49,10 +51,16 @@ class StrategyOptimizer:
             num_bets: Количество ставок в каждой симуляции
             num_simulations: Количество симуляций для оценки метрик
             distribution_generator: Генератор распределений для коэффициентов и ROI
+            seed: Общий seed: все кандидаты оцениваются на одних и тех же случайных
+                  ставках (common random numbers), иначе сравнение тонет в шуме
+            top_k_recheck: Сколько лучших кандидатов перепроверять на НЕЗАВИСИМОМ
+                  seed перед выбором (защита от отбора «везучего» прогона)
         """
         self.initial_bank = initial_bank
         self.num_bets = num_bets
         self.num_simulations = num_simulations
+        self.seed = seed
+        self.top_k_recheck = top_k_recheck
         self.distribution_generator = distribution_generator or DistributionGenerator()
         
         # Копируем глобальную переменную RISK_PROFILES в атрибут класса
@@ -266,6 +274,11 @@ class StrategyOptimizer:
             try:
                 with open(intermediate_save_path, 'r', encoding='utf-8') as f:
                     saved_results = json.load(f)
+                
+                # ИСПРАВЛЕНО: раньше молча подхватывались результаты прогона с другими
+                # настройками (банк, число ставок, профили). Теперь — только при совпадении.
+                if saved_results.get('config') != self._config_signature(risk_profiles_to_optimize):
+                    raise ValueError('промежуточные результаты получены с другими настройками')
                     
                 # Загружаем ранее сохраненные результаты
                 optimization_results = saved_results.get('optimization_results', {})
@@ -361,60 +374,29 @@ class StrategyOptimizer:
                 max_pct_drawdowns_over_50 = risk_profile.get('pct_drawdowns_over_50', float('inf'))
                 max_pct_drawdowns_over_80 = risk_profile.get('pct_drawdowns_over_80', float('inf'))
                 
-                # Отбираем симуляции, соответствующие профилю риска
-                valid_simulations = []
-                for sim in strategy_results:
-                    metrics = sim['metrics']
-                    
-                    # Проверяем соответствие ограничениям профиля риска
-                    # Conservative и Cautious строго требуют соблюдения ограничений
-                    is_strict_profile = risk_profile_name in ['Conservative', 'Cautious']
-                    
-                    # Для Conservative и Cautious требуем точного соответствия
-                    if is_strict_profile:
-                        if metrics['pct_drawdowns_over_50'] > max_pct_drawdowns_over_50:
-                            continue
-                        if metrics['pct_drawdowns_over_80'] > max_pct_drawdowns_over_80:
-                            continue
-                    else:
-                        # Для остальных профилей допускаем небольшое отклонение
-                        # Но сильно штрафуем за несоответствие целевым значениям
-                        if metrics['pct_drawdowns_over_50'] > max_pct_drawdowns_over_50 * 1.1 and max_pct_drawdowns_over_50 < float('inf'):
-                            continue
-                        if metrics['pct_drawdowns_over_80'] > max_pct_drawdowns_over_80 * 1.1 and max_pct_drawdowns_over_80 < float('inf'):
-                            continue
-                    
-                    # Расчет балла качества для профиля риска
-                    score = 0
-                    
-                    # Учитываем ROI (чем выше, тем лучше)
-                    score += metrics['roi']
-                    
-                    # Штрафуем за отклонение от целевых значений просадок
-                    # Для профилей Risky, Crazy и Extreme хотим приблизиться к целевому значению просадок
-                    if risk_profile_name in ['Risky', 'Crazy', 'Extreme']:
-                        if max_pct_drawdowns_over_80 < float('inf'):
-                            target_diff = abs(metrics['pct_drawdowns_over_80'] - max_pct_drawdowns_over_80)
-                            score -= target_diff * 5  # Штраф за отклонение
-                    
-                    # Для Conservative, Cautious и Balanced хотим минимизировать просадки
-                    else:
-                        score -= metrics['pct_drawdowns_over_50'] * 2
-                        score -= metrics['pct_drawdowns_over_80'] * 5
-                    
-                    # Штрафуем за досрочные остановки
-                    score -= metrics['pct_early_stops'] * 2
-                    
-                    # Добавляем симуляцию с рассчитанным баллом
-                    valid_simulations.append((sim, score))
+                # ИСПРАВЛЕНО (см. ../AUDIT.md):
+                # - ограничения профиля строгие для всех профилей (раньше допуск x1.1);
+                # - цель — МЕДИАННЫЙ рост банка, а не средний (средний делают 2-3
+                #   сверхудачные симуляции) и без «приближения к целевой доле
+                #   просадок», которое поощряло сливы;
+                # - top-K кандидатов перепроверяются на независимом seed, выбирается
+                #   лучший по перепроверке, в отчёт идут метрики перепроверки.
+                def fits(metrics):
+                    return (metrics['pct_drawdowns_over_50'] <= max_pct_drawdowns_over_50 and
+                            metrics['pct_drawdowns_over_80'] <= max_pct_drawdowns_over_80)
                 
-                # Если нашли хотя бы одну подходящую симуляцию
-                if valid_simulations:
-                    # Сортируем по баллу (от большего к меньшему)
-                    valid_simulations.sort(key=lambda x: x[1], reverse=True)
-                    
-                    # Берем лучший результат
-                    best_sim, best_score = valid_simulations[0]
+                candidates = [sim for sim in strategy_results if fits(sim['metrics'])]
+                candidates.sort(key=lambda sim: sim['metrics']['median_growth'], reverse=True)
+                
+                rechecked = []
+                for sim in candidates[:self.top_k_recheck]:
+                    fresh = self.simulate_with_params(strategy_func, sim['params'], seed=self.seed + 1)
+                    if fresh and fits(fresh):
+                        rechecked.append({**sim, 'metrics': fresh, 'in_sample_metrics': sim['metrics']})
+                rechecked.sort(key=lambda sim: sim['metrics']['median_growth'], reverse=True)
+                
+                if rechecked:
+                    best_sim = rechecked[0]
                     
                     # Формируем результат
                     optimization_results[strategy_name][risk_profile_name] = {
@@ -427,7 +409,8 @@ class StrategyOptimizer:
                     if log_callback:
                         log_callback(f"Для стратегии {strategy_name}, профиль {risk_profile_name}:")
                         log_callback(f"  Найдены оптимальные параметры: {best_sim['params']}")
-                        log_callback(f"  ROI: {best_sim['metrics']['roi']:.2f}%")
+                        log_callback(f"  Медианный рост: {best_sim['metrics']['median_growth']:.2f}% "
+                                     f"(средний {best_sim['metrics']['roi']:.2f}%)")
                         log_callback(f"  Макс. просадка: {best_sim['metrics']['avg_max_drawdown_from_peak']:.2f}%")
                         log_callback(f"  Просадки >50%: {best_sim['metrics']['pct_drawdowns_over_50']:.1f}%")
                         log_callback(f"  Просадки >80%: {best_sim['metrics']['pct_drawdowns_over_80']:.1f}%")
@@ -441,6 +424,7 @@ class StrategyOptimizer:
             
             # Создаем словарь для сохранения
             save_data = {
+                'config': self._config_signature(risk_profiles_to_optimize),
                 'optimization_results': optimization_results,
                 'completed_strategies': list(previously_completed_strategies)
             }
@@ -498,7 +482,7 @@ class StrategyOptimizer:
             
             # Сортируем по ROI (приросту банка)
             if profile_results:
-                profile_results.sort(key=lambda x: x['metrics']['roi'], reverse=True)
+                profile_results.sort(key=lambda x: x['metrics'].get('median_growth', x['metrics']['roi']), reverse=True)
                 
                 # Выводим топ-3 стратегии или все, если их меньше 3
                 report += "Лучшие стратегии:\n"
@@ -518,7 +502,8 @@ class StrategyOptimizer:
                     
                     report += f"{i}. {strategy}\n"
                     report += f"   Параметры: {readable_params}\n"
-                    report += f"   ROI: {metrics['roi']:.2f}%\n"
+                    report += f"   Медианный рост банка: {metrics.get('median_growth', float('nan')):.2f}%\n"
+                    report += f"   Средний рост банка: {metrics['roi']:.2f}%\n"
                     report += f"   Средний итоговый банк: {metrics['avg_final_bank']:.2f}\n"
                     report += f"   Средняя макс. просадка от пика: {metrics['avg_max_drawdown_from_peak']:.2f}%\n"
                     report += f"   % симуляций с просадкой >50%: {metrics['pct_drawdowns_over_50']:.2f}%\n"
@@ -565,7 +550,7 @@ class StrategyOptimizer:
             
             # Сортируем по ROI (от большего к меньшему)
             if profile_results:
-                profile_results.sort(key=lambda x: x['metrics']['roi'], reverse=True)
+                profile_results.sort(key=lambda x: x['metrics'].get('median_growth', x['metrics']['roi']), reverse=True)
                 
                 # Выводим все стратегии
                 for i, result in enumerate(profile_results, 1):
@@ -588,17 +573,9 @@ class StrategyOptimizer:
                     meets_drawdown_50 = True
                     meets_drawdown_80 = True
                     
-                    if risk_limits.get('pct_drawdowns_over_50', float('inf')) < float('inf'):
-                        meets_drawdown_50 = metrics['pct_drawdowns_over_50'] <= risk_limits['pct_drawdowns_over_50'] * 1.1
-                    
-                    if risk_limits.get('pct_drawdowns_over_80', float('inf')) < float('inf'):
-                        if profile_name in ['Risky', 'Crazy', 'Extreme']:
-                            # Для этих профилей мы хотим приблизиться к целевому значению, а не быть ниже него
-                            target = risk_limits['pct_drawdowns_over_80']
-                            actual = metrics['pct_drawdowns_over_80']
-                            meets_drawdown_80 = abs(actual - target) <= target * 0.2  # В пределах 20% от целевого
-                        else:
-                            meets_drawdown_80 = metrics['pct_drawdowns_over_80'] <= risk_limits['pct_drawdowns_over_80'] * 1.1
+                    # ИСПРАВЛЕНО: лимиты профиля — строгие «не более», без допусков x1.1 / ±20%
+                    meets_drawdown_50 = metrics['pct_drawdowns_over_50'] <= risk_limits.get('pct_drawdowns_over_50', float('inf'))
+                    meets_drawdown_80 = metrics['pct_drawdowns_over_80'] <= risk_limits.get('pct_drawdowns_over_80', float('inf'))
                     
                     # Добавляем индикаторы соответствия целевым значениям
                     indicators = []
@@ -613,7 +590,8 @@ class StrategyOptimizer:
                         report += f" ✅\n"
                     
                     report += f"   Параметры: {readable_params}\n"
-                    report += f"   ROI: {metrics['roi']:.2f}%\n"
+                    report += f"   Медианный рост банка: {metrics.get('median_growth', float('nan')):.2f}%\n"
+                    report += f"   Средний рост банка: {metrics['roi']:.2f}%\n"
                     report += f"   Средний итоговый банк: {metrics['avg_final_bank']:.2f}\n"
                     report += f"   Средняя макс. просадка от пика: {metrics['avg_max_drawdown_from_peak']:.2f}%\n"
                     report += f"   % симуляций с просадкой >50%: {metrics['pct_drawdowns_over_50']:.2f}%\n"
@@ -646,7 +624,12 @@ class StrategyOptimizer:
         # В будущем можно добавить поддержку JSON, CSV, HTML и т.д.
         return report
 
-    def simulate_with_params(self, strategy_func, params):
+    def _config_signature(self, risk_profiles):
+        return {'initial_bank': self.initial_bank, 'num_bets': self.num_bets,
+                'num_simulations': self.num_simulations, 'seed': self.seed,
+                'risk_profiles': sorted(risk_profiles)}
+
+    def simulate_with_params(self, strategy_func, params, seed=None):
         """
         Выполняет симуляцию с заданными параметрами.
         
@@ -680,11 +663,17 @@ class StrategyOptimizer:
                 distribution_generator=self.distribution_generator
             )
             
+            # Общие случайные числа: каждый кандидат играет те же ставки
+            np.random.seed(self.seed if seed is None else seed)
+            
             # Запускаем множественные симуляции
             results = simulator.run_multiple_simulations(
                 num_bets=self.num_bets,
                 num_simulations=self.num_simulations
             )
+            # Полные истории всех симуляций оптимизатору не нужны (~10 MB на 50 прогонов)
+            if results:
+                results.pop('all_results', None)
             
             # Дополнительная проверка и обработка результатов
             if results:
@@ -693,7 +682,8 @@ class StrategyOptimizer:
                 initial_investment = 100  # Представляем первоначальную инвестицию как 100%
                 final_value = initial_investment + bank_growth_pct
                 roi = ((final_value / initial_investment) - 1) * 100
-                results['roi'] = roi
+                results['roi'] = roi  # это СРЕДНИЙ рост банка, а не ROI с оборота
+                results['median_growth'] = results.get('median_bank_growth_pct', 0)
                 
                 # Дополнительные проверки для выявления недопустимых результатов
                 if results.get('pct_early_stops', 0) > 95:  # Если более 95% симуляций завершились досрочно

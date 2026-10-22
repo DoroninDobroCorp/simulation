@@ -113,7 +113,7 @@ def run_single_test(args):
             'strategy': strategy,
             'params': param_str,
             'params_json': json.dumps(params),  # Для точного сравнения
-            'profit': m['avg_profit_pct'],
+            'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
             'bankrupt': m['bankrupt_pct'],
             'dd50': m['drawdown_50_pct'],
             'dd80': m['drawdown_80_pct'],
@@ -201,11 +201,11 @@ if __name__ == '__main__':
         df_prev = pd.read_csv(progress_file)
         results = df_prev.to_dict('records')
         for r in results:
-            completed.add(r['params_json'])
+            completed.add((r['strategy'], r['params_json']))  # ИСПРАВЛЕНО: linear/sqrt с одинаковыми params склеивались
         print(f"\n📂 Загружено результатов: {len(results)}")
     
     # Фильтруем выполненные
-    tasks_to_do = [(s, p) for s, p in tasks if json.dumps(p) not in completed]
+    tasks_to_do = [(s, p) for s, p in tasks if (s, json.dumps(p)) not in completed]
     print(f"🚀 Осталось выполнить: {len(tasks_to_do)}")
     
     if len(tasks_to_do) == 0:
@@ -237,8 +237,7 @@ if __name__ == '__main__':
     print("📊 АНАЛИЗ РЕЗУЛЬТАТОВ")
     print("="*100)
     
-    # Фильтруем ошибки
-    df = df[df['profit'] > 0]
+    # ИСПРАВЛЕНО: раньше здесь выкидывались все убыточные варианты (profit <= 0) как «ошибки»
     
     zero = df[df['bankrupt'] == 0.0].sort_values('profit', ascending=False)
     agg = df[(df['bankrupt'] > 0) & (df['bankrupt'] <= 5.0)].sort_values('profit', ascending=False)

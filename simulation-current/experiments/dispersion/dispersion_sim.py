@@ -40,6 +40,9 @@ def simulate(risk, store_every=RECALC_EVERY):
         f = np.minimum(f, MAX_BET_PCT)
         stake = np.round(f * snapshot / 5.0) * 5.0
         stake[stake < MIN_BET] = 0.0
+        # ИСПРАВЛЕНО: ставка от снимка банка 30-ставочной давности могла превышать
+        # живой банк, и банк уходил в минус
+        stake = np.minimum(stake, np.maximum(bank, 0.0))
 
         win = rng.random(N_RUNS) < (1.0 + ROI) / odds
         bank += np.where(win, stake * (odds - 1.0), -stake)

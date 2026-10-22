@@ -92,6 +92,9 @@ def kelly_correct_realistic(outcomes, odds_array, kelly_fraction=1.0,
                 bankroll_history[sim_idx, i + 1] = current_bank
             
             if current_bank < 1:
+                # ИСПРАВЛЕНО: хвост истории после банкротства оставался = INITIAL_BANKROLL,
+                # и слитые симуляции считались как «0% прибыли» вместо -100%
+                bankroll_history[sim_idx, i + 1:] = current_bank
                 break
             
             # Обновляем базовый банк для следующего периода

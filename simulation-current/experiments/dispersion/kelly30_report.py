@@ -15,6 +15,9 @@ for t in range(NB):
     odds = np.clip(rng.lognormal(MU, SIG, N), LO, HI)
     f = np.minimum(np.log10(1 - (1 + EDGE) / odds) / (-RISK), MAXP)
     stake = np.round(f * snap / 5) * 5; stake[stake < MINBET] = 0
+    # ИСПРАВЛЕНО: ставка от снимка банка 30-ставочной давности могла превышать
+    # живой банк, и банк уходил в минус
+    stake = np.minimum(stake, np.maximum(bank, 0.0))
     win = rng.random(N) < (1 + ROI) / odds
     bank += np.where(win, stake * (odds - 1), -stake)
     np.maximum(peak, bank, out=peak); np.maximum(maxdd, 1 - bank / peak, out=maxdd)
