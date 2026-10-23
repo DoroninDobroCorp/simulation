@@ -492,7 +492,7 @@ footer code { color: var(--ink-2); }
           <div class="panel-head"><h2>Медианная прибыль за серию при равном риске</h2><span class="sub" id="r-sub"></span></div>
           <div class="chart" id="risk-chart"></div>
           <div class="table-wrap" id="risk-table" style="margin-top:12px"></div>
-          <p class="sub" id="r-note" style="margin-top:10px">При одинаковом EV у всех ставок Келли, постоянная прибыль и адаптивная постоянная прибыль ставят одно и то же с точностью до множителя (∝ 1 / (кэф − 1)), а фиксированный %, линейно и корень от ROI — постоянный процент. После калибровки под один риск они совпадают, когда лимит профиля достигается; в «Рискованном» и «Экстремальном» он часто не достигается, и медианы немного расходятся. Различия появляются в модели «EV каждой ставки из данных».</p>
+          <p class="sub" id="r-note" style="margin-top:10px">При одинаковом EV у всех ставок Келли, постоянная прибыль и адаптивная постоянная прибыль ставят одно и то же с точностью до множителя (∝ 1 / (кэф − 1)), а фиксированный %, линейно и корень от ROI — постоянный процент. После калибровки под один риск они совпадают во всех профилях: разный только множитель калибровки, а медианы равны с точностью до сотых процента. Различия появляются в модели «EV каждой ставки из данных».</p>
         </div>
       </section>
 
@@ -708,14 +708,22 @@ function readConditions() {
   state.cap = +$('c-cap').value;
   state.recalc = $('c-recalc').value;
   state.variation = $('c-var').value;
-  state.bank = Math.max(100, +$('c-bank').value || 10000);
-  state.seed = Math.max(0, Math.floor(+$('c-seed').value || 0));
-  state.round = Math.max(0, +$('c-round').value || 0);
-  state.min = Math.max(0, +$('c-min').value || 0);
-  state.omin = Math.max(1.01, +$('c-omin').value || 1.5);
-  if (+$('c-omin').value !== state.omin) $('c-omin').value = state.omin;   // кэф не может быть ≤ 1
-  state.omax = +$('c-omax').value || 3.5;
-  state.omean = +$('c-omean').value || 2.8;
+  state.bank = readNum('c-bank', 10000, 100);
+  state.seed = readNum('c-seed', 0, 0, true);
+  state.round = readNum('c-round', 0, 0);
+  state.min = readNum('c-min', 0, 0);
+  state.omin = readNum('c-omin', 1.5, 1.01);   // кэф не может быть ≤ 1
+  state.omax = readNum('c-omax', 3.5, 1.1);
+  state.omean = readNum('c-omean', 2.8, 1.05);
+}
+// число из поля: пустое — значение по умолчанию, ниже минимума — минимум. Поправленное число
+// пишется обратно в поле, чтобы расчёт не шёл молча не с тем значением, что на экране
+function readNum(id, def, lo, int = false) {
+  const el = $(id), raw = el.value.trim();
+  let v = raw === '' || !Number.isFinite(+raw) ? def : Math.max(lo, +raw);
+  if (int) v = Math.floor(v);
+  if (String(v) !== raw) el.value = v;
+  return v;
 }
 function writeConditions(c) {
   $('c-roi').value = c.roi; $('c-ev').value = c.ev; $('c-calib').checked = c.calib; $('c-noise').value = c.noise;

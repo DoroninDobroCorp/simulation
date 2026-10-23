@@ -247,7 +247,7 @@ if __name__ == '__main__':
     if len(df) > 0:
         max_profit = df['profit'].max()
         min_profit = df['profit'].min()
-        if 0 < min_profit < max_profit < 20000:
+        if -100 <= min_profit <= max_profit < 20000:   # ИСПРАВЛЕНО: profit — медиана, она бывает отрицательной
             checks.append(f"✅ Прибыль реалистична ({min_profit:.0f}% - {max_profit:.0f}%)")
         else:
             checks.append(f"⚠️  Прибыль странная ({min_profit:.0f}% - {max_profit:.0f}%)")

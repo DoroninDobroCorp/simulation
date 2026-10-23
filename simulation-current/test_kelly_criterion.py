@@ -33,7 +33,7 @@ for i, params in enumerate(kelly_params, 1):
     print(f"{i}. risk={params['risk']}, kelly_fraction={params['kelly_fraction']}")
 print("\nКаждый набор тестируется:")
 print("  - БЕЗ вариации (идеальные условия)")
-print("  - С вариацией (реалистичные условия, 30%-115%)")
+print("  - С вариацией (реалистичные условия, 35%-115%)")
 print("="*70)
 
 results = []
