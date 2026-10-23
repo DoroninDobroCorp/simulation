@@ -191,6 +191,15 @@ def test_fixed(params):
     }
 
 
+def run_task(task):
+    """Воркер пула: (task_id, функция, параметры) -> результат с task_id.
+    ИСПРАВЛЕНО: раньше в pool.imap передавалась lambda, и скрипт падал с PicklingError."""
+    task_id, func, params = task
+    result = func(params)
+    result['task_id'] = task_id
+    return result
+
+
 def create_task_id(task_type, params):
     """Создает уникальный ID задания"""
     if task_type == 'adaptive':
@@ -287,17 +296,17 @@ if __name__ == '__main__':
     completed_ids = set()
     results = []
     
-    if os.path.exists(progress_file) and 'mean_profit' not in pd.read_csv(progress_file, nrows=1).columns:
-        print(f"\n⚠️  {progress_file} в старом формате (ранжирование по среднему) — считаю заново")
+    old_format = os.path.exists(progress_file) and not {'mean_profit', 'task_id'} <= set(pd.read_csv(progress_file, nrows=1).columns)
+    if old_format:
+        print(f"\n⚠️  {progress_file} в старом или чужом формате (без mean_profit/task_id) — считаю заново")
     elif os.path.exists(progress_file):
         print(f"\n📂 Найден файл прогресса: {progress_file}")
         df_prev = pd.read_csv(progress_file)
         results = df_prev.to_dict('records')
         
-        # Восстанавливаем task_id из params
+        # ИСПРАВЛЕНО: раньше сравнивались task_id с колонкой params (разный формат), и всё пересчитывалось заново
         for r in results:
-            # Создаем примерный ID (не идеально, но для большинства случаев работает)
-            completed_ids.add(r['params'])
+            completed_ids.add(r['task_id'])
         
         print(f"   Загружено результатов: {len(results)}")
         print(f"   Осталось тестов: {total_tasks - len(results)}")
@@ -319,11 +328,8 @@ if __name__ == '__main__':
         # ПАРАЛЛЕЛЬНОЕ ВЫПОЛНЕНИЕ
         # =============================================================================
         with Pool(processes=8, initializer=init_worker, initargs=(outcomes, odds_array)) as pool:
-            task_functions = [task[2] for task in tasks_to_do]
-            task_params = [task[3] for task in tasks_to_do]
-            
             for i, result in enumerate(tqdm(
-                pool.imap(lambda args: args[0](args[1]), zip(task_functions, task_params)),
+                pool.imap(run_task, [(tid, tfunc, tparams) for tid, _, tfunc, tparams in tasks_to_do]),
                 total=len(tasks_to_do),
                 desc="Прогресс",
                 unit="тест"

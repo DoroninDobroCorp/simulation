@@ -58,7 +58,8 @@ function gamma(r, k) {
 function syntheticPool(lo = 1.5, hi = 3.5, mean = 2.8, conc = 4, size = 20000, seed = 7) {
   const r = makeRng(seed, 9);
   if (!(lo > 1)) throw new Error('Минимальный кэф должен быть больше 1');
-  if (!(hi > lo) || !(mean > lo && mean < hi)) throw new Error('Средний кэф должен лежать строго между минимальным и максимальным');
+  if (!(hi > lo)) throw new Error('Максимальный кэф должен быть больше минимального');
+  if (!(mean > lo && mean < hi)) throw new Error('Средний кэф должен лежать строго между минимальным и максимальным');
   const m = (mean - lo) / (hi - lo);
   const odds = new Float64Array(size), ev = new Float64Array(size);
   const ranges = [[0.03, 0.06], [0.06, 0.12], [0.12, 0.20]];

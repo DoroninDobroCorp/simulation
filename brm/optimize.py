@@ -116,9 +116,8 @@ def calibrate_floor_kelly(market: Market, cfg: SimConfig, metric, limit, floors=
 
 
 def risk_builders(profile: str) -> Dict[str, Tuple[Build, float, str]]:
-    """Ручка агрессивности для каждой стратегии каталога: key -> (build(scale), scale_hi, описание)."""
-    metric, _ = RISK_PROFILES[profile]
-    floor = 1.0 - int(metric[len('p_dd'):-len('_pct')]) / 100.0
+    """Ручка агрессивности для каждой стратегии каталога: key -> (build(scale), scale_hi, описание).
+    Профиль на ручки не влияет (оставлен в сигнатуре для совместимости)."""
     out = {}
     for key, (make, desc) in S.catalog().items():
         if key == 'floor_kelly':

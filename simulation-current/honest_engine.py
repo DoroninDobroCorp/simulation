@@ -20,6 +20,8 @@
 шаге. Реализованы честно и прозрачно (без багов исходного кода).
 """
 
+import warnings
+
 import numpy as np
 
 INITIAL_BANKROLL = 1000.0
@@ -86,6 +88,9 @@ def simulate(frac_func, odds, base_wins, num_sims, seed=0, cap=CAP, fixed_roi=Fa
     perm = np.argsort(rng.random((num_sims, num_bets)), axis=1)
     O = odds[perm]            # кэфы в порядке каждой симуляции
     if fixed_roi:
+        warnings.warn('fixed_roi=True: итоговый банк не зависит от порядка ставок, поэтому у стратегий, '
+                      'зависящих только от кэфа, он одинаков во всех симуляциях — риск по прибыли не измеряется',
+                      stacklevel=2)
         W = base_wins[perm]   # исходы в порядке каждой симуляции
     else:
         W = rng.random((num_sims, num_bets)) < np.clip((1.0 + ROI) / O, 0, 1)

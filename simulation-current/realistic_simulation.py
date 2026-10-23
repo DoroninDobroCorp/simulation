@@ -189,7 +189,8 @@ def calculate_metrics_realistic(bankroll_history, bet_history, odds_array):
         'max_profit_pct': np.max(profit_pcts),
         'avg_max_drawdown_pct': np.mean(max_drawdown_per_sim),
         'worst_drawdown_pct': np.min(max_drawdown_per_sim),
-        'avg_roi_from_turnover': np.mean(roi_from_turnover),
+        # ИСПРАВЛЕНО: суммарная прибыль / суммарный оборот; среднее отношений по симуляциям при компаундинге занижено
+        'avg_roi_from_turnover': np.sum(final_profits) / max(np.sum(total_bets), 1e-12) * 100,
         'min_roi_from_turnover': np.min(roi_from_turnover),
         'max_roi_from_turnover': np.max(roi_from_turnover),
     }

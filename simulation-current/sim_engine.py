@@ -107,7 +107,8 @@ def compute_metrics(bankroll_history, bet_history):
         'avg_maxdd_pct': float(np.mean(max_dd_per_sim)),
         'worst_dd_pct': float(np.min(max_dd_per_sim)),
         'p95_maxdd_pct': float(np.percentile(max_dd_per_sim, 5)),   # 5-й перцентиль = глубокая просадка
-        'avg_roi_turnover_pct': float(np.mean(roi_turnover)),
+        # ИСПРАВЛЕНО: суммарная прибыль / суммарный оборот; среднее отношений по симуляциям при компаундинге занижено
+        'avg_roi_turnover_pct': float((final - INITIAL_BANKROLL).sum() / max(turnover.sum(), 1e-12) * 100),
     }
     # Распределения (лёгкие массивы для графиков/пересчёта)
     dist = {
