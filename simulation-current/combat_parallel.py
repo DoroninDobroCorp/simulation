@@ -32,6 +32,13 @@ def init_worker(outcomes, odds_array):
     odds_array_global = odds_array
 
 
+def run_task(task):
+    """Воркер пула: (функция, параметры) -> результат.
+    ИСПРАВЛЕНО: раньше в pool.imap передавалась lambda, и скрипт падал с PicklingError."""
+    func, params = task
+    return func(params)
+
+
 def test_adaptive_cp(params):
     """Тест adaptive_constant_profit"""
     k = params['k']
@@ -261,7 +268,7 @@ if __name__ == '__main__':
         task_params = [task[2] for task in tasks]
         
         for i, result in enumerate(tqdm(
-            pool.imap(lambda args: args[0](args[1]), zip(task_functions, task_params)),
+            pool.imap(run_task, zip(task_functions, task_params)),
             total=total_tasks,
             desc="Прогресс",
             unit="тест"

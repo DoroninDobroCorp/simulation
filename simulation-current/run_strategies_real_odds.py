@@ -21,7 +21,7 @@
 4. ПРИМЕР:
    Стратегия рассчитала: 100 единиц
    - БЕЗ вариации: ставим ровно 100
-   - С вариацией: ставим случайно от 30 до 115 (например, 85 или 105)
+   - С вариацией: ставим случайно от 35 до 115 (например, 85 или 105)
 
 5. КАК ПРОГОНЯТЬ СТРАТЕГИИ:
    
@@ -437,7 +437,7 @@ def run_strategy_with_real_odds(strategy_name, outcomes, odds_array, apply_varia
     
     print(f"\n{'='*70}")
     print(f"СТРАТЕГИЯ: {unique_name}")
-    print(f"Параметры: {param_desc}, Вариация: {'Да (30%-115%)' if apply_variation else 'Нет'}")
+    print(f"Параметры: {param_desc}, Вариация: {'Да (35%-115%)' if apply_variation else 'Нет'}")
     print(f"{'='*70}")
     
     if strategy_name == 'dynamic_percentage':
@@ -572,39 +572,39 @@ def run_strategy_with_real_odds(strategy_name, outcomes, odds_array, apply_varia
         description = (f"Kelly Criterion: risk={risk}, fraction={kelly_fraction}. "
                       f"Формула: f = (b×p - q) / b / risk × fraction, где p из ROI={TARGET_ROI*100:.1f}%. "
                       f"Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией размера ставки 30%-115% от расчетного.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией размера ставки 35%-115% от расчетного.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'dynamic_percentage':
         bet_size_pct = strategy_params.get('bet_size_pct', 1.5)
         description = (f"Dynamic Percentage: {bet_size_pct}% от текущего банка. "
                       f"Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией размера ставки 30%-115% от расчетного.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией размера ставки 35%-115% от расчетного.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'linear_roi':
         base_roi = strategy_params.get('base_roi', 5.0)
         base_percent = strategy_params.get('base_percent', 1.0)
         max_percent = strategy_params.get('max_percent', 10.0)
         description = (f"Linear ROI: bet% = {base_percent} × (ROI/{base_roi}), max {max_percent}%. "
                       f"ROI={TARGET_ROI*100:.1f}%. Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'sqrt_roi':
         base_roi = strategy_params.get('base_roi', 5.0)
         base_percent = strategy_params.get('base_percent', 1.0)
         max_percent = strategy_params.get('max_percent', 10.0)
         description = (f"Square Root ROI: bet% = {base_percent} × √(ROI/{base_roi}), max {max_percent}%. "
                       f"ROI={TARGET_ROI*100:.1f}%. Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'log_roi':
         base_roi = strategy_params.get('base_roi', 5.0)
         base_percent = strategy_params.get('base_percent', 1.0)
         max_percent = strategy_params.get('max_percent', 10.0)
         description = (f"Logarithmic ROI: bet% = {base_percent} × log(ROI/{base_roi} + 1), max {max_percent}%. "
                       f"ROI={TARGET_ROI*100:.1f}%. Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'constant_profit':
         target_profit_pct = strategy_params.get('target_profit_pct', 1.0)
         max_percent = strategy_params.get('max_percent', 10.0)
         description = (f"Constant Profit: ставка = {target_profit_pct}% / (odds-1), max {max_percent}%. "
                       f"Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'combined_roi_odds':
         base_percent = strategy_params.get('base_percent', 1.0)
         max_percent = strategy_params.get('max_percent', 10.0)
@@ -612,14 +612,14 @@ def run_strategy_with_real_odds(strategy_name, outcomes, odds_array, apply_varia
         max_roi = strategy_params.get('max_roi', 15.0)
         description = (f"Combined ROI-Odds: bet% = {base_percent} × √(norm_ROI) × (1-0.5×norm_odds), max {max_percent}%. "
                       f"ROI range [{min_roi}-{max_roi}]. Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'adaptive':
         base_percent = strategy_params.get('base_percent', 1.0)
         max_percent = strategy_params.get('max_percent', 10.0)
         description = (f"Adaptive: Combined с адаптивными модификаторами при просадках. "
                       f"Base {base_percent}%, max {max_percent}%. DD>20%: ×0.75, DD>40%: ×0.5. "
                       f"Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'dynamic_kelly':
         risk = strategy_params.get('risk', 2.0)
         min_fraction = strategy_params.get('min_fraction', 0.1)
@@ -629,7 +629,7 @@ def run_strategy_with_real_odds(strategy_name, outcomes, odds_array, apply_varia
         description = (f"Dynamic Kelly: Kelly с динамической фракцией [{min_fraction}-{max_fraction}] по ROI[{min_roi}-{max_roi}]. "
                       f"Risk={risk}. При высоком ROI агрессивнее. "
                       f"Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'exponential_roi':
         base_roi = strategy_params.get('base_roi', 5.0)
         base_percent = strategy_params.get('base_percent', 1.0)
@@ -638,7 +638,7 @@ def run_strategy_with_real_odds(strategy_name, outcomes, odds_array, apply_varia
         description = (f"Exponential ROI: bet% = {base_percent} × exp({factor} × (ROI-{base_roi})), max {max_percent}%. "
                       f"Очень агрессивная при высоких ROI. "
                       f"Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'hybrid':
         base_percent = strategy_params.get('base_percent', 1.0)
         max_percent = strategy_params.get('max_percent', 10.0)
@@ -647,7 +647,7 @@ def run_strategy_with_real_odds(strategy_name, outcomes, odds_array, apply_varia
         description = (f"Hybrid: взвешенная комбинация norm_ROI и norm_odds, веса {roi_weight}/{odds_weight}. "
                       f"Base {base_percent}%, max {max_percent}%. "
                       f"Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'linear_scaled':
         min_roi = strategy_params.get('min_roi', 3.0)
         max_roi = strategy_params.get('max_roi', 20.0)
@@ -656,7 +656,7 @@ def run_strategy_with_real_odds(strategy_name, outcomes, odds_array, apply_varia
         description = (f"Linear Scaled: прямая интерполяция ROI[{min_roi}-{max_roi}] → bet[{min_percent}-{max_percent}]%. "
                       f"Простейший линейный mapping. ROI={TARGET_ROI*100:.1f}%. "
                       f"Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'linear_roi_odds':
         base_roi = strategy_params.get('base_roi', 5.0)
         base_percent = strategy_params.get('base_percent', 1.0)
@@ -665,7 +665,7 @@ def run_strategy_with_real_odds(strategy_name, outcomes, odds_array, apply_varia
         description = (f"Linear ROI-Odds: bet = {base_percent} × (ROI/{base_roi}) × (1 - {odds_penalty_factor}×norm_odds), max {max_percent}%. "
                       f"Линейная по ROI с коррекцией на odds. "
                       f"Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     elif strategy_name == 'adaptive_constant_profit':
         min_roi = strategy_params.get('min_roi', 3.0)
         max_roi = strategy_params.get('max_roi', 20.0)
@@ -675,7 +675,7 @@ def run_strategy_with_real_odds(strategy_name, outcomes, odds_array, apply_varia
         description = (f"Adaptive Constant Profit: целевая прибыль [{min_target_pct}-{max_target_pct}]% по ROI[{min_roi}-{max_roi}], max_bet {max_bet_percent}%. "
                       f"bet = target / (odds-1). "
                       f"Реальные коэффициенты (avg {odds_array.mean():.2f}). "
-                      f"{'С вариацией 30%-115%.' if apply_variation else 'Без вариации.'}")
+                      f"{'С вариацией 35%-115%.' if apply_variation else 'Без вариации.'}")
     else:
         description = f"{strategy_name} with params {strategy_params}"
     
@@ -752,7 +752,7 @@ if __name__ == '__main__':
     ]
     
     for strategy_name, bet_size, apply_variation in strategies_to_test:
-        result = run_strategy_with_real_odds(strategy_name, outcomes, odds_array, bet_size, apply_variation)
+        result = run_strategy_with_real_odds(strategy_name, outcomes, odds_array, apply_variation, bet_size_pct=bet_size)
         save_results_to_csv(result)
     
-    print("\n✅ Готово! Результаты в results_real_odds.csv")
+    print("\n✅ Готово! Результаты в results.csv")

@@ -58,11 +58,11 @@ def build_base(num_bets, roi=ROI, seed=42):
     return odds, wins, profit(wins) / num_bets * 100
 
 
-def simulate(frac_func, odds, base_wins, num_sims, seed=0, cap=CAP, fixed_roi=False):
+def simulate(frac_func, odds, base_wins, num_sims, seed=0, cap=CAP, fixed_roi=False, roi=ROI):
     """Прогон. Каждая симуляция = случайная перестановка кэфов.
 
     fixed_roi=False (по умолчанию, ИСПРАВЛЕНО): исходы разыгрываются заново в каждой
-      симуляции с p = (1 + ROI) / кэф, поэтому фактический ROI симуляций разный,
+      симуляции с p = (1 + roi) / кэф, поэтому фактический ROI симуляций разный,
       как в жизни (на 1000 ставках разброс ROI около ±4 п.п.).
     fixed_roi=True: старый режим — перестановка одного набора (кэф, исход).
       ВНИМАНИЕ: итоговый банк — произведение множителей (1 + f*r) и не зависит от
@@ -79,7 +79,7 @@ def simulate(frac_func, odds, base_wins, num_sims, seed=0, cap=CAP, fixed_roi=Fa
                       stacklevel=2)
         W = base_wins[perm]
     else:
-        W = rng.random((num_sims, nb)) < np.clip((1.0 + ROI) / O, 0, 1)
+        W = rng.random((num_sims, nb)) < np.clip((1.0 + roi) / O, 0, 1)
 
     bank = np.full(num_sims, INIT)
     hist = np.empty((num_sims, nb + 1))

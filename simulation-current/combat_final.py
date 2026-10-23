@@ -197,8 +197,9 @@ if __name__ == '__main__':
     results = []
     completed = set()
     
-    if os.path.exists(progress_file) and 'mean_profit' not in pd.read_csv(progress_file, nrows=1).columns:
-        print(f"\n⚠️  {progress_file} в старом формате (ранжирование по среднему) — считаю заново")
+    # тот же файл пишет combat_resumable.py, но без params_json
+    if os.path.exists(progress_file) and not {'mean_profit', 'params_json'} <= set(pd.read_csv(progress_file, nrows=1).columns):
+        print(f"\n⚠️  {progress_file} в старом или чужом формате (без mean_profit/params_json) — считаю заново")
     elif os.path.exists(progress_file):
         df_prev = pd.read_csv(progress_file)
         results = df_prev.to_dict('records')

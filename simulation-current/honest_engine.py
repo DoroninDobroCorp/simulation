@@ -67,14 +67,14 @@ def build_fixed_roi_base(num_bets, roi=ROI, seed=42):
     return odds, wins
 
 
-def simulate(frac_func, odds, base_wins, num_sims, seed=0, cap=CAP, fixed_roi=False):
+def simulate(frac_func, odds, base_wins, num_sims, seed=0, cap=CAP, fixed_roi=False, roi=ROI):
     """
     Прогоняет num_sims симуляций. Каждая = случайная перестановка (odds,win).
     frac_func(state) -> доля ставки на текущем шаге (вектор по симуляциям).
     Возвращает bankroll_history (num_sims, num_bets+1).
 
     fixed_roi=False (по умолчанию, ИСПРАВЛЕНО): исходы разыгрываются заново в каждой
-      симуляции с p = (1 + ROI) / кэф, поэтому фактический ROI симуляций разный,
+      симуляции с p = (1 + roi) / кэф, поэтому фактический ROI симуляций разный,
       как в жизни (на 1000 ставках разброс ROI около ±4 п.п.).
     fixed_roi=True: старый режим — перестановка одного набора (кэф, исход).
       ВНИМАНИЕ: итоговый банк — произведение множителей (1 + f*r) и не зависит от
@@ -93,7 +93,7 @@ def simulate(frac_func, odds, base_wins, num_sims, seed=0, cap=CAP, fixed_roi=Fa
                       stacklevel=2)
         W = base_wins[perm]   # исходы в порядке каждой симуляции
     else:
-        W = rng.random((num_sims, num_bets)) < np.clip((1.0 + ROI) / O, 0, 1)
+        W = rng.random((num_sims, num_bets)) < np.clip((1.0 + roi) / O, 0, 1)
 
     bank = np.full(num_sims, INITIAL_BANKROLL)
     hist = np.empty((num_sims, num_bets + 1), dtype=np.float64)
