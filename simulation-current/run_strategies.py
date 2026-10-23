@@ -34,8 +34,12 @@ def calculate_metrics(bankroll_history, bet_history):
     final_profits = final_bankrolls - INITIAL_BANKROLL
     final_profits_pct = final_profits / INITIAL_BANKROLL * 100
     
+    # ИСПРАВЛЕНО: средний ROI с оборота = суммарная прибыль / суммарный оборот; среднее отношений
+    # по симуляциям при компаундинге смещено вниз (7% -> ~5%)
     total_turnover = np.sum(bet_history, axis=1)
-    roi_from_turnover = (final_profits / total_turnover) * 100
+    with np.errstate(divide='ignore', invalid='ignore'):
+        roi_from_turnover = np.where(total_turnover > 0, final_profits / total_turnover * 100, 0.0)
+    pooled_roi = np.sum(final_profits) / max(np.sum(total_turnover), 1e-12) * 100
     
     return {
         'bankrupt_pct': bankrupt_pct,
@@ -47,7 +51,7 @@ def calculate_metrics(bankroll_history, bet_history):
         'max_profit_pct': np.max(final_profits_pct),
         'avg_max_drawdown_pct': np.mean(max_drawdown_per_sim),
         'worst_drawdown_pct': np.min(max_drawdown_per_sim),
-        'avg_roi_from_turnover': np.mean(roi_from_turnover),
+        'avg_roi_from_turnover': pooled_roi,
         'min_roi_from_turnover': np.min(roi_from_turnover),
         'max_roi_from_turnover': np.max(roi_from_turnover)
     }

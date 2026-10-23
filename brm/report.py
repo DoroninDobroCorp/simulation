@@ -45,6 +45,15 @@ def unit_return_std(pool, roi):
     return math.sqrt(second - roi ** 2)
 
 
+def fixed_two_pct(pool, cfg, roi):
+    """2% текущего банка — больше полного Келли для среднего кэфа — в обеих моделях EV."""
+    out = {'kelly_avg_odds_pct': roi / (float(pool.odds.mean()) - 1) * 100}
+    for name, mk in (('flat', make_market(pool, roi=roi, ev_model='flat')),
+                     ('scaled_calibrated', make_market(pool, roi=roi, ev_model='scaled', calibrated=True))):
+        out[name] = slim(summarize(run(S.FixedFraction(2.0), mk, cfg)))
+    return out
+
+
 def horizon_study(pool, cfg, roi):
     sd = unit_return_std(pool, roi)
     rows = []
@@ -117,6 +126,12 @@ def write_markdown(res, path):
     for r in h['rows']:
         a(f"| {r['n_bets']} | {r['roi_sd_pp']:.1f} | {r['p_roi_negative_analytic_pct']:.1f}% | {r['p_loss_flat_mc_pct']:.1f}% |")
     a('')
+    t = res['fixed_two_pct']
+    a(f"Для сравнения, 2% текущего банка — уже больше полного Келли для среднего кэфа ({t['kelly_avg_odds_pct']:.1f}% банка): "
+      f"медиана {t['flat']['median_profit_pct']:+.1f}%, просадка ≥ 50% от пика у {t['flat']['p_dd50_pct']:.1f}% серий, "
+      f"в минусе {t['flat']['p_loss_pct']:.1f}% (одинаковый EV у всех ставок; при EV каждой ставки из данных — "
+      f"{t['scaled_calibrated']['median_profit_pct']:+.1f}%, {t['scaled_calibrated']['p_dd50_pct']:.1f}% и "
+      f"{t['scaled_calibrated']['p_loss_pct']:.1f}%), {s['n_sims']} симуляций.\n")
 
     a('## 2. Сравнение стратегий при равном риске\n')
     a('Размер ставки каждой стратегии умножен на коэффициент `scale`: сначала бисекцией найдена граница, где '
@@ -172,6 +187,7 @@ def main():
                         'seed': cfg.seed, 'pool_size': len(pool), 'avg_odds': float(pool.odds.mean())}}
     print('1. Горизонт')
     res['horizon'] = horizon_study(pool, replace(cfg, n_sims=min(n_sims * 4, 20000)), args.roi)
+    res['fixed_two_pct'] = fixed_two_pct(pool, cfg, args.roi)
     print('\n2. Сравнение при равном риске')
     res['risk_matched'] = risk_matched(pool, cfg, args.roi, ('conservative', 'cautious', 'balanced', 'risky', 'extreme'))
     print('\n3. Келли и ошибка модели')

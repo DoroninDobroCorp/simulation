@@ -12,9 +12,10 @@ print("🏆 ТОП-10 СТРАТЕГИЙ ПО РАЗНЫМ КАТЕГОРИЯМ"
 print("="*120)
 
 df = pd.read_csv('combat_results_final.csv')
-if 'mean_profit' not in df.columns:
-    # ИСПРАВЛЕНО: в старом файле profit — среднее; рейтинг по нему вводит в заблуждение
-    raise SystemExit("⚠️  combat_results_final.csv в старом формате (profit = среднее) — "
+if not {'mean_profit', 'params_json'} <= set(df.columns):
+    # ИСПРАВЛЕНО: в старом файле profit — среднее, рейтинг по нему вводит в заблуждение;
+    # combat_parallel.py и combat_resumable.py пишут этот же файл без params_json
+    raise SystemExit("⚠️  combat_results_final.csv не из combat_final.py или в старом формате (profit = среднее) — "
                      "пересчитайте его через combat_final.py")
 
 # Добавляем k для adaptive

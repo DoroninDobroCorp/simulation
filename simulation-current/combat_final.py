@@ -233,7 +233,14 @@ if __name__ == '__main__':
         print(f"\n✅ Завершено за {elapsed/60:.1f} мин ({elapsed/len(tasks_to_do):.1f} сек/тест)")
     
     # Финальное сохранение
-    df = pd.DataFrame(results).sort_values('profit', ascending=False)
+    df = pd.DataFrame(results)
+    if 'error' in df.columns:
+        # ИСПРАВЛЕНО: упавшие задачи (profit 0, bankrupt 100) раньше отсекал фильтр profit > 0
+        n_err = int(df['error'].notna().sum())
+        if n_err:
+            print(f"\n❌ Задач с ошибкой: {n_err} — в рейтинг не входят")
+        df = df[df['error'].isna()].drop(columns='error')
+    df = df.sort_values('profit', ascending=False)
     df.to_csv('combat_results_final.csv', index=False)
     
     print("\n" + "="*100)

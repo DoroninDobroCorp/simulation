@@ -7,7 +7,7 @@
   "seed": 2026,
   "pool_size": 1013,
   "avg_odds": 2.7572754195459033,
-  "seconds": 1099.8
+  "seconds": 1228.7
  },
  "horizon": {
   "unit_return_sd": 1.3325,
@@ -49,6 +49,35 @@
     "roi_sd_pp": 1.33
    }
   ]
+ },
+ "fixed_two_pct": {
+  "kelly_avg_odds_pct": 1.4226568995348627,
+  "flat": {
+   "median_profit_pct": 18.309,
+   "mean_profit_pct": 64.002,
+   "p5_profit_pct": -69.656,
+   "p95_profit_pct": 346.213,
+   "p_loss_pct": 41.84,
+   "median_max_dd_pct": 58.77,
+   "p_dd50_pct": 71.4,
+   "p_dd80_pct": 7.04,
+   "avg_stake_pct": 2.0,
+   "roi_turnover_pct": 2.461,
+   "median_growth_per_bet_pct": 0.017
+  },
+  "scaled_calibrated": {
+   "median_profit_pct": 17.752,
+   "mean_profit_pct": 64.52,
+   "p5_profit_pct": -69.589,
+   "p95_profit_pct": 346.708,
+   "p_loss_pct": 41.52,
+   "median_max_dd_pct": 58.578,
+   "p_dd50_pct": 71.0,
+   "p_dd80_pct": 7.2,
+   "avg_stake_pct": 2.0,
+   "roi_turnover_pct": 2.482,
+   "median_growth_per_bet_pct": 0.016
+  }
  },
  "risk_matched": {
   "flat": {
