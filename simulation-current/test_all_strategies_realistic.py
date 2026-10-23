@@ -29,7 +29,9 @@ def calculate_metrics_quick(bankroll_history):
     profit_pcts = (final_bankrolls - INITIAL_BANKROLL) / INITIAL_BANKROLL * 100
     
     return {
-        'profit': np.mean(profit_pcts),
+        # ИСПРАВЛЕНО: рейтинги строились по среднему, которое растёт с перебором ставки; profit — медиана
+        'profit': np.median(profit_pcts),
+        'mean_profit': np.mean(profit_pcts),
         'bankrupt': bankrupt_pct,
         'dd50': dd50_count / num_sims * 100,
         'dd80': dd80_count / num_sims * 100,
@@ -69,7 +71,9 @@ def test_kelly_realistic(outcomes, odds_array, risk=2.0, kelly_fraction=1.0,
                 kelly_f = (b * p - q) / b if b > 0 else 0
                 kelly_f = max(0, kelly_f)
                 
-                bet_pct = kelly_f * 100 * kelly_fraction * risk  # ИСПРАВЛЕНО: доля -> проценты (было в 100 раз меньше)
+                # ИСПРАВЛЕНО: доля -> проценты (было в 100 раз меньше); risk — делитель, как в
+                # kelly_criterion_strategy_with_real_odds (раньше умножал, и risk=2 давал двойного Келли)
+                bet_pct = kelly_f * 100 * kelly_fraction / risk
                 bet_pct = min(bet_pct, 10.0)  # Max 10%
                 
                 bet_size = base_bank * bet_pct / 100

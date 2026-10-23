@@ -166,6 +166,7 @@ class SimConfig:
     recalc_every: Union[int, Sequence[int]] = 1   # 1 = живой банк; K или (min, max) = снимок банка
     variation: Optional[tuple] = None  # ('uniform', lo, hi) | ('choice', values) — множитель к ставке
     round_to: float = 0.0             # округление ставки (например, до 5)
+    live_cap: Optional[float] = None  # жёсткий лимит доли ЖИВОГО банка после вариации и округления
     min_stake: float = 0.0            # ставки меньше не делаются
     ruin_level: float = 0.01          # банк < ruin_level * bank0 -> игра окончена
     seed: int = 0
@@ -290,6 +291,8 @@ def simulate(strategy, scenario, cfg: SimConfig) -> SimResult:
         if cfg.round_to:
             stake = np.round(stake / cfg.round_to) * cfg.round_to
         # сначала не больше живого банка, потом минимум: если банк меньше минимальной ставки, ставки нет
+        if cfg.live_cap is not None:
+            stake = np.minimum(stake, cfg.live_cap * bank)
         stake = np.minimum(stake, bank)
         if cfg.min_stake:
             stake = np.where(stake < cfg.min_stake, 0.0, stake)

@@ -124,7 +124,9 @@ def calculate_metrics_quick(bankroll_history):
     profit_pcts = (final_bankrolls - INITIAL_BANKROLL) / INITIAL_BANKROLL * 100
     
     return {
-        'profit': np.mean(profit_pcts),
+        # ИСПРАВЛЕНО: рейтинги строились по среднему, которое растёт с перебором ставки; profit — медиана
+        'profit': np.median(profit_pcts),
+        'mean_profit': np.mean(profit_pcts),
         'bankrupt': bankrupt_pct,
         'dd50': dd50_count / num_sims * 100,
         'dd80': dd80_count / num_sims * 100,

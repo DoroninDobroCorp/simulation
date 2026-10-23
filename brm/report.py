@@ -108,6 +108,7 @@ def write_markdown(res, path):
 
     h = res['horizon']
     a('## 1. Горизонт: ROI 2.5% — это много шума\n')
+    a(f"Флэт-ставка 0.1% начального банка, {min(s['n_sims'] * 4, 20000)} симуляций на каждую дистанцию.\n")
     a(f"Стандартное отклонение дохода одной единичной ставки ≈ {h['unit_return_sd']:.2f}, поэтому "
       'фактический ROI на коротких дистанциях пляшет сильнее, чем сам перевес. '
       'Никакой банкролл-менеджмент это не исправит: при флэт-ставке вероятность закончить в минусе — это просто P(ROI < 0).\n')
@@ -160,7 +161,7 @@ def main():
     ap.add_argument('--roi', type=float, default=0.025)
     ap.add_argument('--sims', type=int, default=None)
     args = ap.parse_args()
-    n_sims = args.sims or (600 if args.quick else 3000)
+    n_sims = args.sims or (600 if args.quick else 2500)
     cfg = SimConfig(n_sims=n_sims, n_bets=1000, cap=0.10, seed=2026, quantile_every=1000)
     pool = load_real_bets()
     os.makedirs(OUT_DIR, exist_ok=True)

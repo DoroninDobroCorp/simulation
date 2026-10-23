@@ -58,14 +58,14 @@ for k in k_values:
     results.append({
         'strategy': 'adaptive_constant_profit',
         'params': f'k={k:.2f}_var',
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
         'worst_dd': m['worst_drawdown_pct']
     })
     
-    print(f"+{m['avg_profit_pct']:.0f}%, B:{m['bankrupt_pct']:.2f}%")
+    print(f"med +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), B:{m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 2. ANTI-MARTINGALE - КЛЮЧЕВЫЕ КОМБИНАЦИИ
@@ -91,14 +91,14 @@ for base, mult in combinations:
     results.append({
         'strategy': 'anti_martingale',
         'params': f'base={base}%_m={mult}',
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
         'worst_dd': m['worst_drawdown_pct']
     })
     
-    print(f"+{m['avg_profit_pct']:.0f}%, B:{m['bankrupt_pct']:.2f}%")
+    print(f"med +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), B:{m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 3. LINEAR ROI
@@ -114,14 +114,14 @@ for base in [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]:
     results.append({
         'strategy': 'linear_roi',
         'params': f'base={base}%',
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
         'worst_dd': m['worst_drawdown_pct']
     })
     
-    print(f"+{m['avg_profit_pct']:.0f}%, B:{m['bankrupt_pct']:.2f}%")
+    print(f"med +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), B:{m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 4. EXPONENTIAL ROI - КЛЮЧЕВЫЕ КОМБИНАЦИИ
@@ -145,14 +145,14 @@ for base, exp in exp_combinations:
     results.append({
         'strategy': 'exponential_roi',
         'params': f'base={base}%_e={exp}',
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
         'worst_dd': m['worst_drawdown_pct']
     })
     
-    print(f"+{m['avg_profit_pct']:.0f}%, B:{m['bankrupt_pct']:.2f}%")
+    print(f"med +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), B:{m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # АНАЛИЗ

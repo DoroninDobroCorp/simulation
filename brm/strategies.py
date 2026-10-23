@@ -59,7 +59,7 @@ class FixedFraction(Strategy):
 
 class FlatStake(Strategy):
     """Фиксированная сумма = pct% от НАЧАЛЬНОГО банка (без компаундинга).
-    Именно так фактически считались 22 из 25 стратегий в legacy-коде."""
+    Именно так фактически считались 23 из 25 стратегий в legacy-коде."""
     label = 'Флэт (от начального банка)'
 
     def __init__(self, pct=2.0):
@@ -108,7 +108,10 @@ class FloorKelly(Strategy):
     банка, а от подушки над полом floor * пик:
         stake = min(mult * f_kelly, 1) * (bank - floor * peak).
     Это оптимальная по росту политика при ограничении на максимальную просадку:
-    просадка от пика никогда не превышает 1 - floor (с точностью до округлений).
+    при ставке от живого банка просадка от пика не превышает 1 - floor (с точностью
+    до округлений). Подушка считается от базы ставки и пика этих баз: если банк
+    пересчитывается раз в K ставок, стратегия, как и остальные, знает банк только на
+    момент снимка, и гарантия по просадке тогда не действует.
     """
     label = 'Келли с полом просадки'
 
@@ -116,10 +119,16 @@ class FloorKelly(Strategy):
         self.mult = mult
         self.floor = floor
 
+    def reset(self, n_sims, bank0):
+        super().reset(n_sims, bank0)
+        self._peak_base = np.full(n_sims, float(bank0))
+
     def fraction(self, c):
-        cushion = np.maximum(c.bank - self.floor * c.peak, 0.0)
+        base = np.asarray(c.base, dtype=float)
+        self._peak_base = np.maximum(self._peak_base, base)
+        cushion = np.maximum(base - self.floor * self._peak_base, 0.0)
         f = np.minimum(self.mult * kelly_fraction(c.odds, c.edge), 1.0)
-        return f * cushion / np.maximum(c.base, 1e-12)
+        return f * cushion / np.maximum(base, 1e-12)
 
 
 class DrawdownGuard(Strategy):

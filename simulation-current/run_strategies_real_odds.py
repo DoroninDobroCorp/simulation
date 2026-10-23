@@ -146,7 +146,7 @@ def calculate_metrics_with_odds(bankroll_history, bet_history, odds_array):
 # СТРАТЕГИИ — адаптеры на корректный движок brm (../brm)
 # =============================================================================
 #
-# Раньше здесь было 25 копий одного двухпроходного шаблона, и в 22 из них
+# Раньше здесь было 25 копий одного двухпроходного шаблона, и в 23 из них
 # размер ставки считался от НЕОБНОВЛЯЕМОГО массива банка (всегда 1000), то есть
 # фактически были флэт-ставки, а не % от текущего банка; во втором проходе у
 # части функций не было защиты от ухода банка в минус. Подробности: ../AUDIT.md.
@@ -161,6 +161,7 @@ def _run_legacy(strategy, outcomes, odds_array, apply_variation, cap):
     cfg = SimConfig(
         n_sims=num_sims, n_bets=num_bets, bank0=INITIAL_BANKROLL, cap=cap,
         variation=('choice', STAKE_VARIATIONS) if apply_variation else None,
+        live_cap=cap if cap < 1.0 else None,    # как в legacy: 10% текущего банка и после вариации
         ruin_level=1.0 / INITIAL_BANKROLL,      # банк < 1 = банкрот (как в calculate_metrics_with_odds)
         seed=RANDOM_SEED, quantile_every=num_bets, record_full=True)
     # TARGET_ROI читается в момент вызова: sim_engine.set_roi подменяет его в этом модуле

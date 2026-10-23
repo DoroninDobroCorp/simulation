@@ -57,6 +57,7 @@ function gamma(r, k) {
 // По умолчанию — генератор из ТЗ: [1.5, 3.5], среднее 2.8.
 function syntheticPool(lo = 1.5, hi = 3.5, mean = 2.8, conc = 4, size = 20000, seed = 7) {
   const r = makeRng(seed, 9);
+  if (!(lo > 1)) throw new Error('Минимальный кэф должен быть больше 1');
   if (!(hi > lo) || !(mean > lo && mean < hi)) throw new Error('Средний кэф должен лежать строго между минимальным и максимальным');
   const m = (mean - lo) / (hi - lo);
   const odds = new Float64Array(size), ev = new Float64Array(size);
@@ -82,7 +83,7 @@ function buildMarket(c) {
   }
   const n = pool.odds.length;
   const est = new Float64Array(n), tru = new Float64Array(n);
-  let k = 1;
+  let k = 1, meanEst = c.roi;
   if (c.evModel === 'flat') {
     est.fill(c.roi);
     tru.fill(c.roi);
@@ -90,6 +91,7 @@ function buildMarket(c) {
     let sum = 0;
     for (let i = 0; i < n; i++) { est[i] = Math.min(pool.ev[i], c.estCap); sum += est[i]; }
     const mean = sum / n;
+    meanEst = mean;
     if (!(mean > 0)) throw new Error('Средняя оценка EV в данных не положительна');
     k = c.roi / mean;
     for (let i = 0; i < n; i++) tru[i] = est[i] * k;
@@ -97,7 +99,7 @@ function buildMarket(c) {
   }
   let so = 0;
   for (let i = 0; i < n; i++) so += pool.odds[i];
-  return { odds: pool.odds, est, tru, n, k, noise: c.noise, avgOdds: so / n };
+  return { odds: pool.odds, est, tru, n, k, meanEst, noise: c.noise, avgOdds: so / n };
 }
 
 // ---------- стратегии: доля базы на ставку ----------
@@ -118,8 +120,15 @@ function makeStrategy(key, p, nSims) {
         },
       };
     case 'floor_kelly': {
-      const fl = p.floor / 100;
-      return { frac: (o, e, b, pk, base) => Math.min(p.mult * kellyF(o, e), 1) * Math.max(b - fl * pk, 0) / Math.max(base, 1e-12) };
+      // подушка от базы ставки и пика баз (как в brm.strategies.FloorKelly): при снимке банка раз в K
+      // ставок стратегия знает банк только на момент снимка
+      const fl = p.floor / 100, pkb = new Float64Array(nSims);
+      return {
+        frac: (o, e, b, pk, base, b0, s) => {
+          if (base > pkb[s]) pkb[s] = base;
+          return Math.min(p.mult * kellyF(o, e), 1) * Math.max(base - fl * pkb[s], 0) / Math.max(base, 1e-12);
+        },
+      };
     }
     case 'log_formula': {
       const cap = p.edgeCap / 100;
@@ -418,7 +427,8 @@ self.onmessage = (ev) => {
         });
       }
       // k — во сколько раз истинный EV меньше оценки модели (k < 1 — модель завышает)
-      self.postMessage({ type: 'kelly', id: m.id, out, k: buildMarket(cases.overstated).k, ms: performance.now() - t0 });
+      const over = buildMarket(cases.overstated);
+      self.postMessage({ type: 'kelly', id: m.id, out, k: over.k, meanEst: over.meanEst, ms: performance.now() - t0 });
     }
   } catch (err) {
     self.postMessage({ type: 'error', id: m.id, message: String((err && err.message) || err) });

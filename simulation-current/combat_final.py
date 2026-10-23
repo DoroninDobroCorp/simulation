@@ -197,7 +197,9 @@ if __name__ == '__main__':
     results = []
     completed = set()
     
-    if os.path.exists(progress_file):
+    if os.path.exists(progress_file) and 'mean_profit' not in pd.read_csv(progress_file, nrows=1).columns:
+        print(f"\n⚠️  {progress_file} в старом формате (ранжирование по среднему) — считаю заново")
+    elif os.path.exists(progress_file):
         df_prev = pd.read_csv(progress_file)
         results = df_prev.to_dict('records')
         for r in results:

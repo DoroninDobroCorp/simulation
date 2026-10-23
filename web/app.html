@@ -291,13 +291,13 @@ footer code { color: var(--ink-2); }
     </div>
     <div class="facts" aria-label="Коротко">
       <div class="fact"><b id="fact-bets">1013</b><span>реальных ставок в данных</span></div>
-      <div class="fact"><b id="fact-odds">2.76</b><span>средний кэф</span></div>
+      <div class="fact"><b id="fact-odds">2,76</b><span>средний кэф</span></div>
       <div class="fact"><b id="fact-bugs">—</b><span>ошибок найдено и исправлено</span></div>
     </div>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Разделы">
-    <button role="tab" id="tab-month" aria-controls="view-month" aria-selected="true">Месяц: ROI 5%, кэф 1.5–4</button>
+    <button role="tab" id="tab-month" aria-controls="view-month" aria-selected="true">Месяц: ROI 5%, кэф 1,5–4</button>
     <button role="tab" id="tab-sim" aria-controls="view-sim" aria-selected="false">Симулятор</button>
     <button role="tab" id="tab-risk" aria-controls="view-risk" aria-selected="false">Равный риск</button>
     <button role="tab" id="tab-kelly" aria-controls="view-kelly" aria-selected="false">Келли и ошибка модели</button>
@@ -310,8 +310,8 @@ footer code { color: var(--ink-2); }
 
       <div class="group presets">
         <h3>Готовые сценарии</h3>
-        <button type="button" class="preset" id="pre-default"><span>Реальные ставки, ROI 2.5%</span><small>1013 ставок из данных, средний кэф 2.76</small></button>
-        <button type="button" class="preset" id="pre-month"><span>ROI 5%, кэф 1.5–4, месяц</span><small>средний кэф 2.75, 1000 ставок</small></button>
+        <button type="button" class="preset" id="pre-default"><span>Реальные ставки, ROI 2,5%</span><small>1013 ставок из данных, средний кэф 2,76</small></button>
+        <button type="button" class="preset" id="pre-month"><span>ROI 5%, кэф 1,5–4, месяц</span><small>средний кэф 2,75, 1000 ставок</small></button>
       </div>
 
       <div class="group">
@@ -382,8 +382,8 @@ footer code { color: var(--ink-2); }
           <label for="c-var">Отклонение суммы от расчётной</label>
           <select id="c-var">
             <option value="none">Нет, ставим ровно</option>
-            <option value="uniform">×0.8–1.2, в среднем ×1</option>
-            <option value="legacy">×0.35–1.15 (legacy, в среднем ×0.75)</option>
+            <option value="uniform">×0,8–1,2, в среднем ×1</option>
+            <option value="legacy">×0,35–1,15 (legacy, в среднем ×0,75)</option>
           </select>
         </div>
         <div class="row2">
@@ -473,7 +473,7 @@ footer code { color: var(--ink-2); }
               <label for="r-profile">Профиль риска из ТЗ</label>
               <select id="r-profile">
                 <option value="conservative">Консервативный: нет просадок ≥ 50%</option>
-                <option value="cautious" selected>Осторожный: просадка ≥ 50% не чаще 3.5%</option>
+                <option value="cautious" selected>Осторожный: просадка ≥ 50% не чаще 3,5%</option>
                 <option value="balanced">Сбалансированный: ≥ 50% не чаще 10%</option>
                 <option value="risky">Рискованный: ≥ 80% не чаще 5%</option>
                 <option value="extreme">Экстремальный: ≥ 80% не чаще 50%</option>
@@ -551,47 +551,48 @@ const BEFORE_AFTER = __BEFORE_AFTER__;
 const MONTH = __MONTH__;
 
 // ================= справочники =================
+const fp = (v) => String(+(+v).toFixed(3)).replace('.', ',');   // число параметра в формуле, через запятую
 const STRATS = {
   fixed: { label: 'Фиксированный %', desc: 'Всегда одна и та же доля текущего банка.',
-    params: [['pct', 'Доля банка', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.pct}%</b> × банк` },
-  flat: { label: 'Флэт от начального банка', desc: 'Сумма не меняется вместе с банком. Так фактически считались 22 из 25 стратегий в старом коде.',
-    params: [['pct', 'Доля начального банка', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.pct}%</b> × начальный банк` },
+    params: [['pct', 'Доля банка', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${fp(p.pct)}%</b> × банк` },
+  flat: { label: 'Флэт от начального банка', desc: 'Сумма не меняется вместе с банком. Так фактически считались 23 из 25 стратегий в старом коде.',
+    params: [['pct', 'Доля начального банка', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${fp(p.pct)}%</b> × начальный банк` },
   kelly_half: { label: 'Келли (доля)', desc: 'Доля от полного Келли. 0.5 — половина Келли.',
-    params: [['mult', 'Доля от полного Келли', 0.01, 3, 0.01, 0.5, '×']], formula: (p) => `ставка = <b>${p.mult}</b> × EV / (кэф − 1) × банк` },
+    params: [['mult', 'Доля от полного Келли', 0.01, 3, 0.01, 0.5, '×']], formula: (p) => `ставка = <b>${fp(p.mult)}</b> × EV / (кэф − 1) × банк` },
   kelly_guard: { label: 'Келли с урезанием на просадке', desc: 'Доля Келли, вдвое меньше при просадке от пика больше первого порога и вчетверо — больше второго.',
     params: [['mult', 'Доля от полного Келли', 0.01, 2, 0.01, 0.16, '×'], ['cut1', 'Первый порог просадки', 2, 40, 1, 10, '%'], ['cut2', 'Второй порог', 5, 60, 1, 20, '%']],
-    formula: (p) => `ставка = <b>${p.mult}</b> × EV / (кэф − 1) × банк; ×0.5 при просадке > ${p.cut1}%, ×0.25 > ${p.cut2}%` },
+    formula: (p) => `ставка = <b>${fp(p.mult)}</b> × EV / (кэф − 1) × банк; ×0.5 при просадке > ${fp(p.cut1)}%, ×0.25 > ${fp(p.cut2)}%` },
   floor_kelly: { label: 'Келли с полом просадки', desc: 'Grossman–Zhou: Келли от подушки над полом. Просадка от пика не глубже 1 − пол.',
-    params: [['mult', 'Доля Келли от подушки', 0.1, 1.5, 0.05, 1, '×'], ['floor', 'Пол, доля пика', 10, 90, 5, 50, '%']],
-    formula: (p) => `ставка = min(<b>${p.mult}</b> × EV/(кэф − 1), 1) × (банк − <b>${p.floor}%</b> × пик)` },
+    params: [['mult', 'Доля Келли от подушки', 0.1, 2, 0.01, 1, '×'], ['floor', 'Пол, доля пика', 5, 95, 5, 50, '%']],
+    formula: (p) => `ставка = min(<b>${fp(p.mult)}</b> × EV/(кэф − 1), 1) × (банк − <b>${fp(p.floor)}%</b> × пик)` },
   log_formula: { label: 'Лог-формула (backend)', desc: 'Формула из backend/calculator. Зависит от вероятности проигрыша, почти не от перевеса.',
     params: [['risk', 'Параметр risk', 2, 80, 0.5, 15, ''], ['edgeCap', 'Кап EV', 1, 20, 1, 8, '%']],
-    formula: (p) => `ставка = −log₁₀(1 − (1 + min(EV, ${p.edgeCap}%)) / кэф) / <b>${p.risk}</b> × банк` },
+    formula: (p) => `ставка = −log₁₀(1 − (1 + min(EV, ${fp(p.edgeCap)}%)) / кэф) / <b>${fp(p.risk)}</b> × банк` },
   linear_roi: { label: 'Линейно от ROI', desc: 'Процент растёт пропорционально EV ставки.',
     params: [['basePct', 'Ставка при базовом ROI', 0.1, 5, 0.1, 1, '%'], ['baseRoi', 'Базовый ROI', 1, 10, 0.5, 5, '%'], ['maxPct', 'Потолок', 1, 10, 0.5, 10, '%']],
-    formula: (p) => `ставка = <b>${p.basePct}%</b> × ROI / <b>${p.baseRoi}%</b>, не больше ${p.maxPct}%` },
+    formula: (p) => `ставка = <b>${fp(p.basePct)}%</b> × ROI / <b>${fp(p.baseRoi)}%</b>, не больше ${fp(p.maxPct)}%` },
   sqrt_roi: { label: 'Корень от ROI', desc: 'Процент растёт как корень из EV ставки.',
     params: [['basePct', 'Ставка при базовом ROI', 0.1, 5, 0.1, 1, '%'], ['baseRoi', 'Базовый ROI', 1, 10, 0.5, 5, '%'], ['maxPct', 'Потолок', 1, 10, 0.5, 10, '%']],
-    formula: (p) => `ставка = <b>${p.basePct}%</b> × √(ROI / <b>${p.baseRoi}%</b>), не больше ${p.maxPct}%` },
+    formula: (p) => `ставка = <b>${fp(p.basePct)}%</b> × √(ROI / <b>${fp(p.baseRoi)}%</b>), не больше ${fp(p.maxPct)}%` },
   constant_profit: { label: 'Постоянная прибыль', desc: 'Выигрыш всегда даёт одну и ту же долю банка. При одинаковом EV это Келли в другом масштабе.',
     params: [['target', 'Выигрыш, доля банка', 0.1, 5, 0.1, 1, '%'], ['maxPct', 'Потолок', 1, 10, 0.5, 10, '%']],
-    formula: (p) => `ставка = <b>${p.target}%</b> × банк / (кэф − 1), не больше ${p.maxPct}%` },
+    formula: (p) => `ставка = <b>${fp(p.target)}%</b> × банк / (кэф − 1), не больше ${fp(p.maxPct)}%` },
   adaptive_constant_profit: { label: 'Адаптивная пост. прибыль', desc: 'Целевой выигрыш растёт с EV ставки (ROI 3% → 20%).',
     params: [['minT', 'Выигрыш при ROI 3%', 0.1, 3, 0.1, 0.5, '%'], ['maxT', 'Выигрыш при ROI 20%', 0.5, 8, 0.1, 3, '%']],
-    formula: (p) => `ставка = (${p.minT}% … ${p.maxT}% по ROI) × банк / (кэф − 1), не больше 15%` },
+    formula: (p) => `ставка = (${fp(p.minT)}% … ${fp(p.maxT)}% по ROI) × банк / (кэф − 1), не больше 15%` },
   linear_roi_odds: { label: 'ROI со штрафом за кэф', desc: 'Линейно от EV, меньше на высоких кэфах.',
     params: [['basePct', 'Ставка при ROI 5%', 0.1, 5, 0.1, 1, '%'], ['penalty', 'Штраф за кэф 5.0', 0, 1, 0.05, 0.7, '']],
-    formula: (p) => `ставка = <b>${p.basePct}%</b> × ROI/5% × (1 − <b>${p.penalty}</b> × (кэф − 1.5)/3.5)` },
+    formula: (p) => `ставка = <b>${fp(p.basePct)}%</b> × ROI/5% × (1 − <b>${fp(p.penalty)}</b> × (кэф − 1.5)/3.5)` },
   dynamic_percentage: { label: 'Динамический %', desc: 'Больше при банке выше 120% старта, меньше ниже 80% и 60%.',
-    params: [['pct', 'Базовый процент', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.pct}%</b> × (1.2 | 1 | 0.7 | 0.5 по банку к старту) × банк` },
+    params: [['pct', 'Базовый процент', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${fp(p.pct)}%</b> × (1.2 | 1 | 0.7 | 0.5 по банку к старту) × банк` },
   drawdown_guard: { label: 'Защита от просадки', desc: 'Фиксированный процент, урезанный на просадке.',
     params: [['pct', 'Базовый процент', 0.1, 10, 0.1, 2, '%'], ['cut', 'Порог просадки', 5, 60, 5, 20, '%'], ['factor', 'Множитель на просадке', 0.1, 1, 0.05, 0.5, '×']],
-    formula: (p) => `ставка = <b>${p.pct}%</b> × банк, ×<b>${p.factor}</b> при просадке > ${p.cut}%` },
+    formula: (p) => `ставка = <b>${fp(p.pct)}%</b> × банк, ×<b>${fp(p.factor)}</b> при просадке > ${fp(p.cut)}%` },
   anti_martingale: { label: 'Анти-мартингейл', desc: 'Растёт после выигрыша, сбрасывается после проигрыша. Исходы независимы, поэтому серии ничего не предсказывают.',
-    params: [['basePct', 'База', 0.2, 5, 0.1, 1, '%'], ['mult', 'Множитель после выигрыша', 1, 3, 0.05, 1.5, '×'], ['maxStreak', 'Максимум шагов', 1, 10, 1, 5, '']],
-    formula: (p) => `ставка = <b>${p.basePct}%</b> × <b>${p.mult}</b>^(серия выигрышей, до ${p.maxStreak}) × банк, не больше 10%` },
+    params: [['basePct', 'База', 0.2, 5, 0.1, 1, '%'], ['mult', 'Множитель после выигрыша', 1, 3, 0.05, 1.5, '×'], ['maxStreak', 'Рост, пока серия короче', 1, 10, 1, 5, '']],
+    formula: (p) => `ставка = <b>${fp(p.basePct)}%</b> × <b>${fp(p.mult)}</b>^k × банк, k растёт после выигрыша, пока серия короче ${fp(p.maxStreak)} (до ${fp(p.maxStreak - 1)} увеличений), не больше 10%` },
   portfolio_theory: { label: 'Корзины кэфов', desc: 'Вес 0.4 для кэфов до 3.5, 0.2 для остальных.',
-    params: [['basePct', 'База', 0.1, 5, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.basePct}%</b> × (0.4 | 0.2) / 0.3 × банк` },
+    params: [['basePct', 'База', 0.1, 5, 0.1, 2, '%']], formula: (p) => `ставка = <b>${fp(p.basePct)}%</b> × (0.4 | 0.2) / 0.3 × банк` },
 };
 const ORDER = ['kelly_half', 'kelly_guard', 'fixed', 'flat', 'floor_kelly', 'log_formula', 'constant_profit', 'adaptive_constant_profit',
   'linear_roi', 'sqrt_roi', 'linear_roi_odds', 'dynamic_percentage', 'drawdown_guard', 'anti_martingale', 'portfolio_theory'];
@@ -711,7 +712,7 @@ function readConditions() {
   state.seed = Math.max(0, Math.floor(+$('c-seed').value || 0));
   state.round = Math.max(0, +$('c-round').value || 0);
   state.min = Math.max(0, +$('c-min').value || 0);
-  state.omin = +$('c-omin').value || 1.5;
+  state.omin = Math.max(1.01, +$('c-omin').value || 1.5);
   state.omax = +$('c-omax').value || 3.5;
   state.omean = +$('c-omean').value || 2.8;
 }
@@ -1177,7 +1178,7 @@ function runKelly() {
     if (m.type === 'progress') { $('k-prog').style.width = (m.done / m.total * 100) + '%'; return; }
     $('k-run').disabled = false;
     if (m.type === 'error') { $('k-source').textContent = 'Ошибка: ' + m.message; return; }
-    kellySource = { sig, data: m.out, k: m.k, nSims, ms: m.ms };
+    kellySource = { sig, data: m.out, k: m.k, meanEst: m.meanEst, nSims, ms: m.ms };
     showKelly();
   };
   kellyWorker.postMessage({ type: 'kelly', id, mults, market: { ...marketCfg(), source: state.source }, cfg: simCfg(nSims) });
@@ -1241,21 +1242,33 @@ function drawLines(box, getY, yLabel, refY) {
 }
 // k — во сколько раз истинный EV меньше оценки модели; для предрасчёта считается по данным
 const MEAN_EST_REAL = BETS.ev.reduce((a, e) => a + Math.min(e, 0.08), 0) / BETS.ev.length;
+function kellyLive() { return kellySource && kellySource.sig === condSig() ? kellySource : null; }
 function kellyK() {
-  const live = kellySource && kellySource.sig === condSig() ? kellySource : null;
-  return live && live.k ? live.k : PRE.settings.roi / MEAN_EST_REAL;
+  const live = kellyLive();
+  return live && Number.isFinite(live.k) ? live.k : PRE.settings.roi / MEAN_EST_REAL;
 }
 function kellyLabels() {
-  const k = kellyK(), over = k < 1, f = over ? 1 / k : k;
-  KELLY_CASES[1][1] = `Модель ${over ? 'завышает' : 'занижает'} EV в ${num(f, 1)} раза`;
-  KELLY_CASES[1][3] = over ? 'завышенный' : 'заниженный';
-  KELLY_CASES[2][1] = `${over ? 'Завышает' : 'Занижает'} + шум 5%`;
+  const k = kellyK();
+  if (k <= 0) {
+    KELLY_CASES[1][1] = 'Модель видит перевес, которого нет';
+    KELLY_CASES[1][3] = 'EV = 0';
+    KELLY_CASES[2][1] = 'То же + шум 5%';
+  } else if (Math.abs(k - 1) < 0.005) {
+    KELLY_CASES[1][1] = 'Модель точна';
+    KELLY_CASES[1][3] = 'точная модель';
+    KELLY_CASES[2][1] = 'Точна + шум 5%';
+  } else {
+    const over = k < 1;
+    KELLY_CASES[1][1] = `Модель ${over ? 'завышает' : 'занижает'} EV в ${num(over ? 1 / k : k, 1)} раза`;
+    KELLY_CASES[1][3] = over ? 'завышенный' : 'заниженный';
+    KELLY_CASES[2][1] = `${over ? 'Завышает' : 'Занижает'} + шум 5%`;
+  }
   return k;
 }
 function drawKelly() {
   const k = kellyLabels();
-  const live = kellySource && kellySource.sig === condSig();
-  $('k-est').textContent = pct((live ? state.roi / 100 : PRE.settings.roi) / k * 100, 1);
+  const live = kellyLive();
+  $('k-est').textContent = pct((live && Number.isFinite(live.meanEst) ? live.meanEst : MEAN_EST_REAL) * 100, 1);
   const lg = $('k-legend');
   lg.textContent = '';
   for (const [, label, c] of KELLY_CASES) { const sp = h('span'), k = h('span', { class: 'key-line' }); k.style.background = css('--' + c); sp.append(k, document.createTextNode(label)); lg.appendChild(sp); }
@@ -1266,8 +1279,15 @@ function drawKelly() {
   const full = kellyData.calibrated.find((r) => r.mult === 1);
   $('k-callout').innerHTML = '';
   const c = $('k-callout');
-  c.append('Если EV известен точно, лучшая медиана у ', h('b', {}, `${num(bc.mult, 2)}× Келли`), ` (${spct(bc.median)}), но шанс просадки ≥ 50% там ${pct(bc.pDD50, 0)}. Если модель ${k < 1 ? 'завышает' : 'занижает'} EV, оптимум сдвигается к `,
-    h('b', {}, `${num(bo.mult, 2)}× Келли по модели`), `: доля m по модели — это m × ${num(1 / k, 2)} Келли по факту.`);
+  if (k <= 0) {
+    c.append('Истинный перевес нулевой: ставка по Келли от истинного EV равна нулю, а любая ставка по оценке модели в среднем ничего не даёт и только раскачивает банк.');
+  } else {
+    c.append('Если EV известен точно, лучшая медиана у ', h('b', {}, `${num(bc.mult, 2)}× Келли`), ` (${spct(bc.median)}), но шанс просадки ≥ 50% там ${pct(bc.pDD50, 0)}. `);
+    if (Math.abs(k - 1) >= 0.005) {
+      c.append(`Если модель ${k < 1 ? 'завышает' : 'занижает'} EV, оптимум сдвигается к `, h('b', {}, `${num(bo.mult, 2)}× Келли по модели`),
+        `: доля m по модели — это m × ${num(1 / k, 2)} Келли по факту.`);
+    }
+  }
   if (full) c.append(` Полный Келли при точном EV: медиана ${spct(full.median)}, в минусе ${pct(full.pLoss, 0)} серий.`);
   const t = h('table'), hr = h('tr');
   hr.appendChild(h('th', {}, 'Доля Келли'));
@@ -1285,29 +1305,34 @@ function drawKelly() {
 
 // ================= аудит =================
 const FINDINGS = [
-  ['crit', '«Процент от банка» на деле был флэтом от начального банка', 'В 22 из 25 стратегий размер ставки считался в первом проходе от массива банка, который не обновлялся и всегда был равен 1000. Компаундинга не было, а «avg_bet_% от текущего банка» в отчётах ничего не значил. Пример: fixed 2% на 500-й ставке ставил 1.18% ± 0.93 п.п. живого банка (полуразмах 5–95%).', 'simulation-current/run_strategies_real_odds.py', 'Стратегии переведены на однопроходный движок brm, формулы сохранены.'],
-  ['crit', 'Банк уходил в минус', 'Второй проход разыгрывал суммы из другого пути без проверки банка. dynamic_percentage 5% с вариацией опускал банк до −237 006 при старте 1000 (22% симуляций в минусе), fixed_fraction 2% — до −826, target_based — до −1 739. Среднее «+4502%» было артефактом.', 'run_strategies_real_odds.py, dispersion_sim.py, kelly30_report.py, sim.html', 'Ставка никогда не больше живого банка.'],
-  ['crit', 'Ставки в 100 раз меньше задуманного', 'В dynamic_kelly, proportional_kelly, bayesian_kelly и test_kelly_realistic доля Келли делилась на 100 второй раз. proportional_kelly давал +1.2% вместо +239%, dynamic_kelly +0.4% вместо +50%.', 'run_strategies_real_odds.py, test_all_strategies_realistic.py:72', 'Единицы исправлены.'],
-  ['crit', '«Келли не работает» — следствие p = 1/кэф', 'В test_all_strategies_realistic.py вероятность выигрыша бралась как 1/кэф, то есть с нулевым перевесом. Ставка Келли поэтому всегда была 0. Вывод в BEST_STRATEGIES.md об этом.', 'test_all_strategies_realistic.py:62, BEST_STRATEGIES.md', 'p = (1 + ROI) / кэф. Документы помечены как устаревшие.'],
-  ['crit', 'Фиксированный ROI перестановкой не измерял риск', 'honest_engine и honest_sim переставляли один набор (кэф, исход). Итоговый банк — произведение множителей и от порядка не зависит, поэтому у флэт-% и Келли он одинаков во всех симуляциях: 5-й перцентиль = медиана = +15.6%. С независимыми исходами 5-й перцентиль −71%, в минусе 44% серий.', 'simulation-current/honest_engine.py, honest_sim.py', 'По умолчанию исходы независимые, старый режим — флагом fixed_roi с предупреждением.'],
+  ['crit', '«Процент от банка» на деле был флэтом от начального банка', 'В 23 из 25 стратегий размер ставки считался в первом проходе от массива банка, который не обновлялся и всегда был равен 1000. Компаундинга не было, а «avg_bet_% от текущего банка» в отчётах ничего не значил. Пример: fixed 2% на 500-й ставке ставил 1,18% ± 0,93 п.п. живого банка (полуразмах 5–95%).', 'simulation-current/run_strategies_real_odds.py', 'Стратегии переведены на однопроходный движок brm, формулы сохранены.'],
+  ['crit', 'Банк уходил в минус', 'Второй проход разыгрывал суммы из другого пути без проверки банка. dynamic_percentage 5% с вариацией опускал банк до −237 007 при старте 1000 (22% симуляций в минусе), fixed_fraction 2% — до −826, target_based — до −1 739. Среднее «+4502%» было артефактом. В dispersion_sim, kelly30_report и HTML-симуляторах ставка тоже не ограничивалась банком: на их настройках по умолчанию банк в минус не уходил, но при более агрессивных мог.', 'run_strategies_real_odds.py, dispersion_sim.py, kelly30_report.py, sim.html', 'Ставка никогда не больше живого банка.'],
+  ['crit', 'Ставки в 100 раз меньше задуманного', 'В dynamic_kelly, proportional_kelly, bayesian_kelly и test_kelly_realistic доля Келли делилась на 100 второй раз. proportional_kelly давал +1,2% вместо +239%, dynamic_kelly +0,4% вместо +50%.', 'run_strategies_real_odds.py, test_all_strategies_realistic.py (test_kelly_realistic)', 'Единицы исправлены.'],
+  ['crit', '«Келли не работает» — следствие p = 1/кэф', 'В test_all_strategies_realistic.py вероятность выигрыша бралась как 1/кэф, то есть с нулевым перевесом. Ставка Келли поэтому всегда была 0. Вывод в BEST_STRATEGIES.md об этом.', 'test_all_strategies_realistic.py (test_kelly_realistic), BEST_STRATEGIES.md', 'p = (1 + ROI) / кэф. Документы помечены как устаревшие.'],
+  ['crit', 'Фиксированный ROI перестановкой не измерял риск', 'honest_engine и honest_sim переставляли один набор (кэф, исход). Итоговый банк — произведение множителей и от порядка не зависит, поэтому у флэт-% и Келли он одинаков во всех симуляциях: у 2% банка +15,6% в каждой. С независимыми исходами у той же стратегии 5-й перцентиль −70%, в минусе 43% серий.', 'simulation-current/honest_engine.py, honest_sim.py', 'По умолчанию исходы независимые, старый режим — флагом fixed_roi с предупреждением.'],
   ['crit', 'Рейтинги по среднему награждали перебор ставки', 'combat_*, massive_experiments и оптимизатор сортировали по средней прибыли. Её делают несколько сверхудачных симуляций: Келли ×3 даёт среднее +5069% при медиане +115% и 38% серий в минусе.', 'combat_final.py, combat_parallel.py, combat_resumable.py, massive_experiments.py, strategy_optimizer.py', 'Ранжирование по медиане.'],
   ['crit', 'Оптимизатор выбирал удачу, а не параметры', '100 случайных наборов, каждый оценён один раз на своём случайном потоке, лучший без перепроверки, по самому шумному показателю — среднему росту. У Extreme adaptive_bet с «16 173%» на четырёх независимых прогонах по 500 симуляций среднее 3 393%, 5 471%, 9 222% и 32 206%, а медиана стабильна около +300%. Скоринг рискованных профилей поощрял сливы, лимиты допускали превышение на 10%, кэш старого прогона подхватывался молча.', 'simulation-original/strategy_optimizer.py', 'Общий seed, перепроверка top-5 на независимом seed, медиана, строгие лимиты, кэш с подписью настроек.'],
-  ['crit', 'Адаптивные стратегии не адаптировались', 'volatility_adjusted, sharpe_optimized и multi_objective считали волатильность по плоскому банку, и она всегда была 0: результат volatility_adjusted совпадал с fixed_fraction до цифры. В original adaptive_bet получал статичный max_bank.', 'run_strategies_real_odds.py, simulation-original/bet_simulator.py', 'Стратегии видят живой банк и его историю.'],
-  ['major', 'Вариация суммы уменьшала ставку на 25%', 'Множители 0.35–1.15 в среднем дают 0.75. Вывод «вариация снижает риск и прибыль» объясняется меньшей средней ставкой, а не разбросом.', 'run_strategies_real_odds.py, README', 'В симуляторе есть вариант ×0.8–1.2 со средним 1. Описание исправлено.'],
+  ['crit', 'Адаптивные стратегии не адаптировались', 'volatility_adjusted, sharpe_optimized и multi_objective считали волатильность по плоскому банку, и она всегда была 0: результат volatility_adjusted совпадал с fixed_fraction до цифры. ml_adaptive сравнивал проходимость с ROI + 1/средний кэф вместо средней (1 + ROI)/кэф. В original adaptive_bet получал статичный max_bank (10× старта), поэтому урезание ×0,375 действовало всегда, а не на просадке.', 'run_strategies_real_odds.py, simulation-original/bet_simulator.py', 'Стратегии видят живой банк и его историю, ожидаемая проходимость считается правильно.'],
+  ['major', 'Вариация суммы уменьшала ставку на 25%', 'Множители 0,35–1,15 в среднем дают 0,75. Вывод «вариация снижает риск и прибыль» объясняется меньшей средней ставкой, а не разбросом.', 'run_strategies_real_odds.py, README', 'В симуляторе есть вариант ×0,8–1,2 со средним 1. Описание исправлено.'],
   ['major', 'Слитые симуляции считались как «0% прибыли»', 'После банкротства хвост истории оставался равен начальному банку, и финальный банк был 1000 вместо ~0.', 'logarithmic_kelly.py, kelly_correct.py, test_all_strategies_realistic.py', 'Хвост заполняется фактическим банком.'],
-  ['major', 'ROI с оборота занижался', 'Среднее отношений прибыль/оборот по симуляциям при компаундинге смещено вниз: 7% показывались как ~5.2%.', 'run_strategies_real_odds.py', 'Суммарная прибыль / суммарный оборот.'],
-  ['major', 'Генератор из ТЗ давал средний кэф 2.45', 'Beta(2, 2.2) на [1.5, 3.5] имеет среднее 2.45 при требуемых 2.8.', 'simulation-original/distribution_generator.py', 'Параметры Beta выводятся из нужного среднего.'],
+  ['major', 'ROI с оборота занижался', 'Среднее отношений прибыль/оборот по симуляциям при компаундинге смещено вниз: 7% показывались как ~5,2%.', 'run_strategies_real_odds.py', 'Суммарная прибыль / суммарный оборот.'],
+  ['major', 'Генератор из ТЗ давал средний кэф 2,45', 'Beta(2, 2.2) на [1,5, 3,5] имеет среднее 2,45 при требуемых 2,8.', 'simulation-original/distribution_generator.py', 'Параметры Beta выводятся из нужного среднего.'],
   ['major', 'У каждой ставки свой EV, но в расчёт шёл один ROI', 'В matching_teams_clean.csv есть EV каждой ставки (от −3% до +293%), а симуляции давали всем ставкам один ROI. ROI-зависимые стратегии вырождались в фиксированный процент.', 'run_strategies_real_odds.py, config.py', 'Модель «EV каждой ставки из данных» в brm и в симуляторе.'],
-  ['major', 'Лог-формула ставит без перевеса', '−log₁₀(1 − p) / risk зависит от вероятности проигрыша, а не от перевеса: при нулевом EV на кэфе 1.5 и risk 15 ставка 3.2% банка. Это не Келли.', 'logarithmic_kelly.py, backend/calculator', 'Оставлена как есть и показана при равном риске рядом с Келли.'],
+  ['major', 'Лог-формула ставит без перевеса', '−log₁₀(1 − p) / risk зависит от вероятности проигрыша, а не от перевеса: при нулевом EV на кэфе 1,5 и risk 15 ставка 3,2% банка. Это не Келли.', 'logarithmic_kelly.py, backend/calculator', { note: 'Это свойство формулы, а не ошибка кода: оставлена как есть и сравнивается с Келли при равном риске.' }],
   ['minor', 'Просадка в HTML-симуляторах проверялась раз в 50 ставок', 'Провалы между проверками пропускались, а «период перерасчёта банкролла» на ставку не влиял.', 'sim.html, simulation.html, supersim.html', 'Просадка после каждой ставки, период задаёт базу ставки.'],
   ['minor', 'Склейка при возобновлении и выброшенные убыточные варианты', 'combat_final узнавал готовые задачи только по параметрам, и linear_roi/sqrt_roi с одинаковыми параметрами склеивались. Фильтр profit > 0 выкидывал честные убыточные варианты.', 'combat_final.py', 'Ключ (стратегия, параметры), фильтр убран.'],
-  ['minor', 'Неравные условия в combat-сравнениях', 'kelly_correct всегда применяет вариацию 0.35–1.15, а у части соперников её нет. «Келли 1.0» там на деле около 0.75 Келли с шумом.', 'kelly_correct.py, combat_final.py', null],
+  ['minor', 'Неравные условия в combat-сравнениях', 'kelly_correct всегда применяет вариацию 0,35–1,15, а у части соперников её нет. «Келли 1,0» там на деле около 0,75 Келли с шумом.', 'kelly_correct.py, combat_final.py', null],
 ];
+// ставка на 500-й в % живого банка: медиана ± полуразмах 5–95% (разброс показываем, только если он есть)
+const stakeTxt = (x) => `${num(x.stake_pct_live_median, 2)}%` + (x.stake_pct_live_spread / 2 >= 0.005 ? ` ± ${num(x.stake_pct_live_spread / 2, 2)}` : '');
 function renderAudit() {
   const crit = FINDINGS.filter((f) => f[0] === 'crit').length;
   $('audit-count').textContent = FINDINGS.length;
-  $('fact-bugs').textContent = FINDINGS.filter((f) => f[4]).length;
-  $('audit-lede').textContent = `Короткий ответ: прежние симуляции некорректны. ${crit} ошибок меняли выводы, ещё ${FINDINGS.length - crit} искажали метрики. Все, кроме одной, исправлены в коде; документы с выводами на старом коде помечены. Ниже сравнение до и после на одних и тех же исходах и полный список.`;
+  const fixed = FINDINGS.filter((f) => typeof f[4] === 'string').length;
+  $('fact-bugs').textContent = fixed;
+  $('audit-lede').textContent = `Короткий ответ: прежние симуляции некорректны. ${crit} ошибок меняли выводы, ещё ${FINDINGS.length - crit} искажали метрики. `
+    + `${fixed} исправлены в коде, одна оставлена как свойство формулы, одна не исправлена; документы с выводами на старом коде помечены. `
+    + 'Ниже сравнение до и после на одних и тех же исходах и полный список.';
   const box = $('findings');
   box.textContent = '';
   const SEV = { crit: 'Критично', major: 'Значимо', minor: 'Мелочь' };
@@ -1316,7 +1341,9 @@ function renderAudit() {
     d.dataset.sev = sev;
     const body = h('div');
     body.append(h('h3', {}, title), h('p', {}, what), h('div', { class: 'where' }, where));
-    body.appendChild(h('div', { class: 'fix' + (fix ? '' : ' open') }, fix ? '✓ Исправлено: ' + fix : 'Не исправлено, учитывайте при чтении старых сравнений.'));
+    if (typeof fix === 'string') body.appendChild(h('div', { class: 'fix' }, '✓ Исправлено: ' + fix));
+    else if (fix && fix.note) body.appendChild(h('div', { class: 'fix open' }, fix.note));
+    else body.appendChild(h('div', { class: 'fix open' }, 'Не исправлено, учитывайте при чтении старых сравнений.'));
     d.append(h('div', { class: 'sev' }, SEV[sev]), body);
     box.appendChild(d);
   }
@@ -1325,14 +1352,14 @@ function renderAudit() {
   t.appendChild(hr);
   for (const r of BEFORE_AFTER) {
     const tr = h('tr');
-    tr.appendChild(h('td', {}, r.case));
+    tr.appendChild(h('td', {}, r.case.replace(/(\d)\.(\d)/g, '$1,$2')));
     const o = r.old, n = r.new;
     const bad = o.min_bank < 0;
     tr.append(h('td', {}, spct(o.mean_profit)), h('td', {}, spct(o.median_profit)));
     const mb = h('td', {}, num(o.min_bank, 0));
     if (bad) mb.className = 'old';
     tr.append(mb, h('td', {}, spct(n.mean_profit)), h('td', {}, spct(n.median_profit)), h('td', {}, num(n.min_bank, 0)),
-      h('td', {}, `${num(o.stake_pct_live_median, 2)}% ± ${num(o.stake_pct_live_spread / 2, 2)} → ${num(n.stake_pct_live_median, 2)}%`));
+      h('td', {}, `${stakeTxt(o)} → ${stakeTxt(n)}`));
     t.appendChild(tr);
   }
   $('before-after').textContent = '';
@@ -1432,6 +1459,8 @@ function recipeCard(title, rule, row, tier, metric, level) {
     add2('Месяц в минусе', pct(alt.eval.p_loss_pct));
     add2('Плохой месяц, 5% худших', spct(alt.eval.p5_profit_pct));
     add2('Медиана, если ROI на деле 2,5%', `${spct(r1.median_profit_pct)} (у основного ${spct(r0.median_profit_pct)})`);
+    const b0 = row.robustness.backend_rules, b1 = alt.robustness.backend_rules;
+    add2(`Просадка ≥ ${level}% при пересчёте банка раз в 30–70 ставок`, `${pct(b1[metric])} (у основного ${pct(b0[metric])})`);
     a.append(dl2, simButton(alt.key, alt.param, tier, 'Открыть в симуляторе', alt.floor));
     d.appendChild(a);
   }
@@ -1442,7 +1471,7 @@ function renderMonth() {
   $('m-lede').textContent = `Условия: у каждой ставки ROI ${pct(s0.roi * 100, 0)}, кэф от ${num(s0.odds_min, 1)} до ${num(s0.odds_max, 0)} `
     + `(средний ${num(s0.avg_odds, 2)}, σ ${num(s0.sd_odds, 2)} — как у реальных ставок в этом диапазоне), ${num(s0.n_bets, 0)} ставок за месяц, ставка от текущего банка и не больше `
     + `${pct(s0.cap * 100, 0)} банка. Для каждого уровня риска найден размер ставки с наибольшей медианной прибылью месяца. `
-    + `Основной рецепт — дробный Келли: при одинаковом EV это та же лог-формула backend, у него меньше месяцев в минусе и он устойчивее, если ROI окажется ниже; `
+    + `Основной рецепт — дробный Келли: по результату он почти совпадает с лог-формулой backend при подходящем risk, у него меньше месяцев в минусе, чем у варианта с максимальной медианой, и он устойчивее, если ROI окажется ниже; `
     + `в карточке ниже — стратегия с максимальной медианой и её цена. `
     + `Все цифры — проверка на ${num(s0.n_sims_eval, 0)} независимых симуляциях (несколько месяцев подряд — ${num(s0.n_sims_horizon || 6000, 0)}). `
     + `Прибыль и просадка считаются внутри месяца от банка на его начало.`;
@@ -1571,8 +1600,8 @@ function renderMonthTable() {
   $('m-table').appendChild(t);
 }
 const ROBUST_NAMES = [
-  ['true_roi_0.050', 'ROI 5%, как задумано'], ['true_roi_0.035', 'ROI на деле 3.5%'], ['true_roi_0.025', 'ROI на деле 2.5%'],
-  ['true_roi_0.000', 'ROI на деле 0%'], ['backend_rules', 'правила backend: снимок раз в 30–70, округление 5, мин. 10'], ['real_odds', 'реальные кэфы 1.5–4'],
+  ['true_roi_0.050', 'ROI 5%, как задумано'], ['true_roi_0.035', 'ROI на деле 3,5%'], ['true_roi_0.025', 'ROI на деле 2,5%'],
+  ['true_roi_0.000', 'ROI на деле 0%'], ['backend_rules', 'правила backend: снимок раз в 30–70, округление 5, мин. 10'], ['real_odds', 'реальные кэфы 1,5–4'],
 ];
 function renderRobust() {
   const t = h('table'), hr = h('tr');

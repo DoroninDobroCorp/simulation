@@ -136,7 +136,9 @@ if __name__ == '__main__':
     print("📁 ОБЪЕДИНЕНИЕ С СУЩЕСТВУЮЩИМИ РЕЗУЛЬТАТАМИ")
     print("="*100)
     
-    if os.path.exists('combat_results_final.csv'):
+    if os.path.exists('combat_results_final.csv') and 'mean_profit' not in pd.read_csv('combat_results_final.csv', nrows=1).columns:
+        print("   ⚠️  combat_results_final.csv в старом формате (ранжирование по среднему) — не объединяю")
+    elif os.path.exists('combat_results_final.csv'):
         df_old = pd.read_csv('combat_results_final.csv')
         print(f"   Старых результатов: {len(df_old)}")
         print(f"   Новых Kelly: {len(df_kelly)}")

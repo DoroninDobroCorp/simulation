@@ -82,7 +82,7 @@ for k in k_values:
         'strategy': 'adaptive_constant_profit',
         'params': f'k={k:.2f}_var',
         'k': k,
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
@@ -90,7 +90,7 @@ for k in k_values:
         'avg_bet': avg_bet
     })
     
-    print(f"Profit: +{m['avg_profit_pct']:.0f}%, Bankrupt: {m['bankrupt_pct']:.2f}%")
+    print(f"Median: +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), Bankrupt: {m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 2. ANTI-MARTINGALE - РАСШИРЕННЫЙ
@@ -119,7 +119,7 @@ for base in base_values:
             'strategy': 'anti_martingale',
             'params': f'base={base}%_m={mult}',
             'k': None,
-            'profit': m['avg_profit_pct'],
+            'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
             'bankrupt': m['bankrupt_pct'],
             'dd50': m['drawdown_50_pct'],
             'dd80': m['drawdown_80_pct'],
@@ -127,7 +127,7 @@ for base in base_values:
             'avg_bet': None
         })
         
-        print(f"Profit: +{m['avg_profit_pct']:.0f}%, Bankrupt: {m['bankrupt_pct']:.2f}%")
+        print(f"Median: +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), Bankrupt: {m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 3. LINEAR ROI - РАСШИРЕННЫЙ
@@ -154,7 +154,7 @@ for base in base_values_linear:
         'strategy': 'linear_roi',
         'params': f'base={base}%',
         'k': None,
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
@@ -162,7 +162,7 @@ for base in base_values_linear:
         'avg_bet': None
     })
     
-    print(f"Profit: +{m['avg_profit_pct']:.0f}%, Bankrupt: {m['bankrupt_pct']:.2f}%")
+    print(f"Median: +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), Bankrupt: {m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 4. EXPONENTIAL ROI - РАСШИРЕННЫЙ
@@ -192,7 +192,7 @@ for base in base_values_exp:
             'strategy': 'exponential_roi',
             'params': f'base={base}%_e={exp}',
             'k': None,
-            'profit': m['avg_profit_pct'],
+            'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
             'bankrupt': m['bankrupt_pct'],
             'dd50': m['drawdown_50_pct'],
             'dd80': m['drawdown_80_pct'],
@@ -200,7 +200,7 @@ for base in base_values_exp:
             'avg_bet': None
         })
         
-        print(f"Profit: +{m['avg_profit_pct']:.0f}%, Bankrupt: {m['bankrupt_pct']:.2f}%")
+        print(f"Median: +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), Bankrupt: {m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 5. FIXED FRACTION - РАСШИРЕННЫЙ
@@ -223,7 +223,7 @@ for pct in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 7.0, 8.0
         'strategy': 'fixed_fraction',
         'params': f'{pct}%',
         'k': None,
-        'profit': m['avg_profit_pct'],
+        'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],  # ИСПРАВЛЕНО: ранжируем по медиане
         'bankrupt': m['bankrupt_pct'],
         'dd50': m['drawdown_50_pct'],
         'dd80': m['drawdown_80_pct'],
@@ -231,7 +231,7 @@ for pct in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 7.0, 8.0
         'avg_bet': None
     })
     
-    print(f"Profit: +{m['avg_profit_pct']:.0f}%, Bankrupt: {m['bankrupt_pct']:.2f}%")
+    print(f"Median: +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), Bankrupt: {m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # СОХРАНЯЕМ И АНАЛИЗИРУЕМ

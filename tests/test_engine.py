@@ -202,3 +202,25 @@ def test_floor_kelly_calibration_tunes_floor():
     scale, m = calibrate_floor_kelly(market, cfg, 'p_dd30_pct', 10.0, iters=6)
     assert m is not None and m['p_dd30_pct'] <= 10.0
     assert 0.05 <= m['floor'] <= 0.95
+
+
+def test_floor_kelly_uses_snapshot_when_bank_is_recalculated():
+    """При снимке банка раз в K ставок подушка считается от снимка и пика снимков, а не от живого банка."""
+    cfg = brm.SimConfig(n_sims=200, n_bets=300, recalc_every=30, cap=1.0, record_full=True, seed=8)
+    res = brm.run(S.FloorKelly(mult=1.0, floor=0.5), single_odds_market(), cfg)
+    f_star = EDGE / (ODDS - 1)
+    for s in range(5):
+        snaps = res.history[s, [(t // 30) * 30 for t in range(cfg.n_bets)]]
+        peak_snap = np.maximum.accumulate(snaps)
+        expected = np.minimum(f_star * np.maximum(snaps - 0.5 * peak_snap, 0.0), res.history[s, :-1])
+        np.testing.assert_allclose(res.stakes[s], expected, rtol=1e-9, atol=1e-9)
+
+
+def test_live_cap_limits_stake_after_variation():
+    cfg = brm.SimConfig(n_sims=300, n_bets=300, cap=0.10, live_cap=0.10, variation=('uniform', 1.0, 1.5),
+                        record_full=True, seed=6)
+    res = brm.run(S.FixedFraction(10), single_odds_market(), cfg)
+    assert (res.stakes <= 0.10 * res.history[:, :-1] + 1e-9).all()
+    loose = brm.run(S.FixedFraction(10), single_odds_market(), brm.SimConfig(
+        n_sims=300, n_bets=300, cap=0.10, variation=('uniform', 1.0, 1.5), record_full=True, seed=6))
+    assert (loose.stakes > 0.10 * loose.history[:, :-1] + 1e-9).any()
