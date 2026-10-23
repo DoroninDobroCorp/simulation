@@ -78,7 +78,7 @@ for k in k_values:
             'max_profit': m['max_profit_pct']
         })
         
-        print(f"✓ Profit: +{m['avg_profit_pct']:.0f}%, Bankrupt: {m['bankrupt_pct']:.2f}%")
+        print(f"✓ Median: {m['median_profit_pct']:+.0f}% (mean {m['avg_profit_pct']:+.0f}%), Bankrupt: {m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 2. ANTI-MARTINGALE - РАЗНЫЕ КОМБИНАЦИИ
@@ -118,7 +118,7 @@ for base in base_values:
             'max_profit': m['max_profit_pct']
         })
         
-        print(f"✓ Profit: +{m['avg_profit_pct']:.0f}%, Bankrupt: {m['bankrupt_pct']:.2f}%")
+        print(f"✓ Median: {m['median_profit_pct']:+.0f}% (mean {m['avg_profit_pct']:+.0f}%), Bankrupt: {m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 3. LINEAR ROI - РАЗНЫЕ BASE
@@ -156,7 +156,7 @@ for base in base_values_linear:
         'max_profit': m['max_profit_pct']
     })
     
-    print(f"✓ Profit: +{m['avg_profit_pct']:.0f}%, Bankrupt: {m['bankrupt_pct']:.2f}%")
+    print(f"✓ Median: {m['median_profit_pct']:+.0f}% (mean {m['avg_profit_pct']:+.0f}%), Bankrupt: {m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 4. EXPONENTIAL ROI - РАЗНЫЕ BASE И EXPONENT
@@ -197,7 +197,7 @@ for base in base_values_exp:
             'max_profit': m['max_profit_pct']
         })
         
-        print(f"✓ Profit: +{m['avg_profit_pct']:.0f}%, Bankrupt: {m['bankrupt_pct']:.2f}%")
+        print(f"✓ Median: {m['median_profit_pct']:+.0f}% (mean {m['avg_profit_pct']:+.0f}%), Bankrupt: {m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 5. SQRT ROI - РАЗНЫЕ BASE
@@ -233,7 +233,7 @@ for base in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]:
         'max_profit': m['max_profit_pct']
     })
     
-    print(f"✓ Profit: +{m['avg_profit_pct']:.0f}%, Bankrupt: {m['bankrupt_pct']:.2f}%")
+    print(f"✓ Median: {m['median_profit_pct']:+.0f}% (mean {m['avg_profit_pct']:+.0f}%), Bankrupt: {m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 6. FIXED FRACTION - РАЗНЫЕ ПРОЦЕНТЫ
@@ -267,7 +267,7 @@ for pct in [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 7.0, 8.0
         'max_profit': m['max_profit_pct']
     })
     
-    print(f"✓ Profit: +{m['avg_profit_pct']:.0f}%, Bankrupt: {m['bankrupt_pct']:.2f}%")
+    print(f"✓ Median: {m['median_profit_pct']:+.0f}% (mean {m['avg_profit_pct']:+.0f}%), Bankrupt: {m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # СОХРАНЯЕМ ВСЕ РЕЗУЛЬТАТЫ

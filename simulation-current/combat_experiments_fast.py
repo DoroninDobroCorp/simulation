@@ -65,7 +65,7 @@ for k in k_values:
         'worst_dd': m['worst_drawdown_pct']
     })
     
-    print(f"med +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), B:{m['bankrupt_pct']:.2f}%")
+    print(f"med {m['median_profit_pct']:+.0f}% (mean {m['avg_profit_pct']:+.0f}%), B:{m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 2. ANTI-MARTINGALE - КЛЮЧЕВЫЕ КОМБИНАЦИИ
@@ -98,7 +98,7 @@ for base, mult in combinations:
         'worst_dd': m['worst_drawdown_pct']
     })
     
-    print(f"med +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), B:{m['bankrupt_pct']:.2f}%")
+    print(f"med {m['median_profit_pct']:+.0f}% (mean {m['avg_profit_pct']:+.0f}%), B:{m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 3. LINEAR ROI
@@ -121,7 +121,7 @@ for base in [2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]:
         'worst_dd': m['worst_drawdown_pct']
     })
     
-    print(f"med +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), B:{m['bankrupt_pct']:.2f}%")
+    print(f"med {m['median_profit_pct']:+.0f}% (mean {m['avg_profit_pct']:+.0f}%), B:{m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # 4. EXPONENTIAL ROI - КЛЮЧЕВЫЕ КОМБИНАЦИИ
@@ -152,7 +152,7 @@ for base, exp in exp_combinations:
         'worst_dd': m['worst_drawdown_pct']
     })
     
-    print(f"med +{m['median_profit_pct']:.0f}% (mean +{m['avg_profit_pct']:.0f}%), B:{m['bankrupt_pct']:.2f}%")
+    print(f"med {m['median_profit_pct']:+.0f}% (mean {m['avg_profit_pct']:+.0f}%), B:{m['bankrupt_pct']:.2f}%")
 
 # =============================================================================
 # АНАЛИЗ

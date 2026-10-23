@@ -18,7 +18,7 @@
 независимом seed с большим числом симуляций. Для четырёх основных стратегий
 дополнительно строятся кривые «размер -> рост/риск».
 
-  python -m brm.month_study            # ~20 минут -> reports/MONTH_ROI5.md, month_roi5.json
+  python -m brm.month_study            # ~15–20 минут -> reports/MONTH_ROI5.md, month_roi5.json
   python -m brm.month_study --quick    # быстрый прогон
 """
 

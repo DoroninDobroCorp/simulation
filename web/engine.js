@@ -379,8 +379,32 @@ function calibrate(key, params, mk, cfg, profile, iters = 12) {
     const s = sMax * k;
     if (!feasible.has(s)) { m = ev(s); if (m[metric] <= limit) feasible.set(s, m); }
   }
-  let best = null;
-  for (const [s, mm] of feasible) if (!best || mm.median > best[1].median) best = [s, mm];
+  const argmax = () => { let b = null; for (const [s, mm] of feasible) if (!b || mm.median > b[1].median) b = [s, mm]; return b; };
+  let best = argmax();
+  if (best[0] < sMax) {
+    // лимит не держит: максимум медианы внутри области (как в brm.optimize.calibrate) —
+    // сетка sMax·0,8^k до ~3% от sMax, затем золотое сечение между соседями лучшей точки
+    // (если она самая нижняя — между 0 и соседом)
+    for (let k = 1; k < 16; k++) {
+      const s = sMax * 0.8 ** k;
+      if (!feasible.has(s)) { const mm = ev(s); if (mm[metric] <= limit) feasible.set(s, mm); }
+    }
+    best = argmax();
+    const xs = [...feasible.keys()].sort((x, y) => x - y);
+    const i = xs.indexOf(best[0]);
+    let a = i ? xs[i - 1] : 0, b = xs[i + 1];
+    const r = (Math.sqrt(5) - 1) / 2, bad = new Set();
+    const med = (s) => {
+      if (!feasible.has(s) && !bad.has(s)) { const mm = ev(s); if (mm[metric] <= limit) feasible.set(s, mm); else bad.add(s); }
+      return feasible.has(s) ? feasible.get(s).median : -Infinity;
+    };
+    let x1 = b - r * (b - a), x2 = a + r * (b - a);
+    for (let k = 0; k < 8; k++) {
+      if (med(x1) >= med(x2)) { b = x2; x2 = x1; x1 = b - r * (b - a); }
+      else { a = x1; x1 = x2; x2 = a + r * (b - a); }
+    }
+    best = argmax();
+  }
   return { scale: best[0], scaleMax: sMax, ...best[1] };
 }
 

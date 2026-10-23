@@ -152,6 +152,18 @@ def test_calibration_hits_profile_boundary():
     assert evaluate(build(scale * 1.15), market, cfg)['p_dd50_pct'] > 5.0
 
 
+def test_calibration_finds_median_optimum_far_below_loose_limit():
+    """При слабом лимите граница s_max в разы выше оптимума медианы; калибровка должна найти оптимум."""
+    from brm.optimize import evaluate
+    cfg = brm.SimConfig(n_sims=600, n_bets=600, cap=1.0, seed=12)
+    build = lambda pct: S.FixedFraction(pct)  # noqa: E731
+    # лимит не срабатывает вовсе: s_max = scale_hi = 24%, а оптимум медианы около Келли (5%)
+    scale, m = calibrate(build, single_odds_market(), cfg, 'p_dd50_pct', 100.0, scale_hi=24.0)
+    assert m['scale_max'] > 3 * scale
+    grid_best = max(evaluate(build(p), single_odds_market(), cfg)['median_profit_pct'] for p in np.linspace(3, 8, 11))
+    assert m['median_profit_pct'] >= grid_best - 1.0
+
+
 def test_calibration_with_several_constraints():
     pool = brm.load_real_bets()
     market = brm.make_market(pool, roi=0.05)

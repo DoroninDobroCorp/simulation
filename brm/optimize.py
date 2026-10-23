@@ -9,13 +9,16 @@
   1) бисекцией ищется граница s_max, где стратегия упирается в лимит профиля;
   2) внутри допустимой области [0, s_max] берётся scale с лучшей медианой —
      иногда это не граница: за полным Келли рост падает, даже если лимит
-     по просадке ещё не нарушен.
+     по просадке ещё не нарушен. Тогда проходим геометрическую сетку от s_max
+     вниз (×0.8 до ~3% от s_max) и уточняем максимум золотым сечением между
+     соседними точками.
 Все прогоны идут с одним seed (common random numbers), поэтому метрика
 монотонна по scale, а разница между стратегиями не тонет в шуме.
 """
 
 from __future__ import annotations
 
+import math
 from typing import Callable, Dict, Tuple
 
 from .engine import Market, SimConfig, run
@@ -40,7 +43,7 @@ def evaluate(strategy, market: Market, cfg: SimConfig, sampling='bootstrap') -> 
 
 def calibrate(build: Build, market: Market, cfg: SimConfig, metric: str, limit: float,
               scale_hi: float = 64.0, iters: int = 12, refine=(0.4, 0.55, 0.7, 0.85),
-              sampling: str = 'bootstrap'):
+              sampling: str = 'bootstrap', golden: int = 8):
     """
     Возвращает (scale, метрики) с лучшей медианой среди scale, при которых
     metric <= limit, или (0, None), если лимит нарушает даже минимальная ставка.
@@ -84,7 +87,47 @@ def calibrate(build: Build, market: Market, cfg: SimConfig, metric: str, limit: 
             m = ev(s)
             if ok(m):
                 feasible[s] = m
-    best = max(feasible, key=lambda s: feasible[s]['median_profit_pct'])
+
+    def argmax():
+        return max(feasible, key=lambda s: feasible[s]['median_profit_pct'])
+
+    best = argmax()
+    if best < s_max and golden:
+        # лимит не держит: максимум медианы внутри области, и точки выше могли его проскочить —
+        # при слабом лимите s_max бывает в разы больше оптимума, а у части стратегий кривая
+        # медианы не унимодальна. Поэтому сначала сетка s_max·0.8^k до ~3% от s_max, затем
+        # золотое сечение между соседями лучшей точки (если она самая нижняя — между 0 и соседом)
+        for k in range(1, 16):
+            s = s_max * 0.8 ** k
+            if s not in feasible:
+                m = ev(s)
+                if ok(m):
+                    feasible[s] = m
+        best = argmax()
+        xs = sorted(feasible)
+        i = xs.index(best)
+        a, b = (xs[i - 1] if i else 0.0), xs[i + 1]
+        r = (math.sqrt(5) - 1) / 2
+        bad = set()
+
+        def med(s):
+            if s not in feasible and s not in bad:
+                m = ev(s)
+                if ok(m):
+                    feasible[s] = m
+                else:
+                    bad.add(s)
+            return feasible[s]['median_profit_pct'] if s in feasible else -math.inf
+
+        x1, x2 = b - r * (b - a), a + r * (b - a)
+        for _ in range(golden):
+            if med(x1) >= med(x2):
+                b, x2 = x2, x1
+                x1 = b - r * (b - a)
+            else:
+                a, x1 = x1, x2
+                x2 = a + r * (b - a)
+        best = argmax()
     return best, dict(feasible[best], scale_max=s_max)
 
 

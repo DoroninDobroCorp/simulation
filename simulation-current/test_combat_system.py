@@ -127,7 +127,10 @@ if __name__ == '__main__':
     results = []
     completed = set()
     
-    if os.path.exists(progress_file):
+    if os.path.exists(progress_file) and not {'mean_profit', 'params_json'} <= set(pd.read_csv(progress_file, nrows=1).columns):
+        # ИСПРАВЛЕНО: старый файл прогресса (profit = среднее) больше не подмешивается
+        print(f"\n⚠️  {progress_file} в старом формате (ранжирование по среднему) — начинаем с нуля")
+    elif os.path.exists(progress_file):
         print(f"\n📂 Найден файл прогресса: {progress_file}")
         df_prev = pd.read_csv(progress_file)
         results = df_prev.to_dict('records')

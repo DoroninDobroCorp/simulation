@@ -1,2 +1,3 @@
 numpy>=1.21
+pandas>=1.3   # нужен scripts/compare_legacy.py (legacy-код)
 pytest>=7
