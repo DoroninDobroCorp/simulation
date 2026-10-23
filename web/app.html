@@ -21,6 +21,7 @@
   --s1: #2a78d6;
   --s2: #eb6834;
   --s3: #1baf7a;
+  --s4: #eda100;
   --band-1: rgba(42, 120, 214, 0.11);
   --band-2: rgba(42, 120, 214, 0.24);
   --path: rgba(71, 82, 90, 0.28);
@@ -41,7 +42,7 @@
   :root:not([data-theme="light"]) {
     --bg: #0d1012; --surface: #14181a; --raise: #191e21; --ink: #e7ecea; --ink-2: #b2bbbb; --muted: #87929a;
     --line: #252b2e; --axis: #3b4347; --accent: #a99cff; --accent-ink: #120f2e; --accent-wash: #231e48;
-    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
     --band-1: rgba(57, 135, 229, 0.14); --band-2: rgba(57, 135, 229, 0.30); --path: rgba(178, 187, 187, 0.22);
     --bar-muted: #4b5459; --loss-wash: rgba(208, 59, 59, 0.10); --good-text: #2fbf2f; --crit-text: #ef7a7a;
     --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 30px -18px rgba(0, 0, 0, 0.7);
@@ -51,7 +52,7 @@
 :root[data-theme="dark"] {
   --bg: #0d1012; --surface: #14181a; --raise: #191e21; --ink: #e7ecea; --ink-2: #b2bbbb; --muted: #87929a;
   --line: #252b2e; --axis: #3b4347; --accent: #a99cff; --accent-ink: #120f2e; --accent-wash: #231e48;
-  --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
   --band-1: rgba(57, 135, 229, 0.14); --band-2: rgba(57, 135, 229, 0.30); --path: rgba(178, 187, 187, 0.22);
   --bar-muted: #4b5459; --loss-wash: rgba(208, 59, 59, 0.10); --good-text: #2fbf2f; --crit-text: #ef7a7a;
   --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 30px -18px rgba(0, 0, 0, 0.7);
@@ -116,6 +117,31 @@ h1 .tick { color: var(--accent); }
 .field output { font: 500 12.5px var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
 .field .hint { font-size: 12px; color: var(--muted); line-height: 1.35; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.presets { display: grid; gap: 6px; }
+.preset { appearance: none; text-align: left; cursor: pointer; border: 1px solid var(--line); background: var(--raise); color: var(--ink);
+  border-radius: 8px; padding: 8px 10px; font: 500 13px/1.3 var(--f-body); display: grid; gap: 1px; }
+.preset small { font: 400 12px var(--f-body); color: var(--muted); }
+.preset:hover { border-color: var(--accent); }
+.preset[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-wash); }
+
+/* рецепты месяца */
+.recipes { display: grid; grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); gap: 12px; }
+.recipe { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.recipe.main { border-color: var(--accent); box-shadow: var(--shadow); }
+.recipe .tier { font: 500 11px/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.recipe h3 { font: 600 17px/1.25 var(--f-body); }
+.recipe .rule { font-size: 12.5px; color: var(--ink-2); line-height: 1.4; }
+.recipe .big { font: 600 30px/1.05 var(--f-body); letter-spacing: -0.01em; }
+.recipe .big small { font: 400 12.5px var(--f-body); color: var(--muted); display: block; letter-spacing: 0; margin-top: 3px; }
+.recipe dl { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; margin: 0; font-size: 13px; }
+.recipe dt { color: var(--ink-2); }
+.recipe dd { margin: 0; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.stakes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.stakes span { background: var(--raise); border-radius: 6px; padding: 5px 2px; text-align: center; font: 12px/1.25 var(--f-body); color: var(--ink-2); }
+.stakes b { display: block; color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.recipe .btn { justify-self: start; padding: 8px 12px; font-size: 13px; }
+.seg.inline { display: inline-grid; grid-auto-flow: column; grid-template-columns: none; }
 input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; height: 20px; }
 select, input[type="number"] {
   width: 100%; font: 14px var(--f-body); color: var(--ink); background: var(--raise);
@@ -269,7 +295,8 @@ footer code { color: var(--ink-2); }
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Разделы">
-    <button role="tab" id="tab-sim" aria-controls="view-sim" aria-selected="true">Симулятор</button>
+    <button role="tab" id="tab-month" aria-controls="view-month" aria-selected="true">Месяц: ROI 5%, кэф 1.5–4</button>
+    <button role="tab" id="tab-sim" aria-controls="view-sim" aria-selected="false">Симулятор</button>
     <button role="tab" id="tab-risk" aria-controls="view-risk" aria-selected="false">Равный риск</button>
     <button role="tab" id="tab-kelly" aria-controls="view-kelly" aria-selected="false">Келли и ошибка модели</button>
     <button role="tab" id="tab-audit" aria-controls="view-audit" aria-selected="false">Аудит<span class="count" id="audit-count">—</span></button>
@@ -279,14 +306,25 @@ footer code { color: var(--ink-2); }
     <details class="conditions" id="conditions" open>
       <summary><div class="sum-title">Условия эксперимента <small>общие для всех вкладок</small></div></summary>
 
+      <div class="group presets">
+        <h3>Готовые сценарии</h3>
+        <button type="button" class="preset" id="pre-default"><span>Реальные ставки, ROI 2.5%</span><small>1013 ставок из данных, средний кэф 2.76</small></button>
+        <button type="button" class="preset" id="pre-month"><span>ROI 5%, кэф 1.5–4, месяц</span><small>средний кэф 2.75, 1000 ставок</small></button>
+      </div>
+
       <div class="group">
         <h3>Рынок</h3>
         <div class="field">
           <span class="lab">Ставки</span>
           <div class="seg" role="group" aria-label="Источник ставок">
             <button type="button" id="src-real" aria-pressed="true">Реальные, 1013</button>
-            <button type="button" id="src-syn" aria-pressed="false">Синтетика по ТЗ</button>
+            <button type="button" id="src-syn" aria-pressed="false">Синтетика</button>
           </div>
+        </div>
+        <div class="row3" id="synth-box" hidden>
+          <div class="field"><label for="c-omin">Кэф от</label><input type="number" id="c-omin" min="1.01" step="0.05" value="1.5"></div>
+          <div class="field"><label for="c-omax">до</label><input type="number" id="c-omax" min="1.1" step="0.05" value="3.5"></div>
+          <div class="field"><label for="c-omean">средний</label><input type="number" id="c-omean" min="1.05" step="0.05" value="2.8"></div>
         </div>
         <div class="field">
           <label for="c-roi">Истинный средний ROI <output id="o-roi"></output></label>
@@ -359,8 +397,32 @@ footer code { color: var(--ink-2); }
     </details>
 
     <main class="pane">
+      <!-- ================= МЕСЯЦ ================= -->
+      <section id="view-month" role="tabpanel" aria-labelledby="tab-month" class="pane">
+        <div class="panel"><p class="lede" id="m-lede"></p></div>
+        <div class="recipes" id="m-recipes"></div>
+        <div class="panel">
+          <div class="panel-head"><div><h2>Рост против просадки</h2><span class="sub">каждая точка — один размер ставки: медианная прибыль месяца против убытка в плохой месяц (5% худших месяцев)</span></div></div>
+          <div class="legend" id="m-legend"></div>
+          <div class="chart" id="m-frontier"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Все стратегии на одном риске</h2><div class="seg inline" role="group" aria-label="Уровень риска" id="m-tiers"></div></div>
+          <p class="sub" id="m-tier-rule" style="margin-bottom:8px"></p>
+          <div class="table-wrap" id="m-table"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><h2>Если ROI окажется ниже</h2><span class="sub">ставка считается по ROI 5%, а на деле ROI другой; плюс правила backend и реальные кэфы</span></div></div>
+          <div class="table-wrap" id="m-robust"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><h2>Несколько месяцев подряд</h2><span class="sub">банк не выводится, ставки продолжаются от текущего банка</span></div></div>
+          <div class="table-wrap" id="m-horizon"></div>
+        </div>
+      </section>
+
       <!-- ================= СИМУЛЯТОР ================= -->
-      <section id="view-sim" role="tabpanel" aria-labelledby="tab-sim" class="pane">
+      <section id="view-sim" role="tabpanel" aria-labelledby="tab-sim" class="pane" hidden>
         <div class="panel">
           <div class="strategy">
             <div class="field">
@@ -484,6 +546,7 @@ footer code { color: var(--ink-2); }
 const BETS = __REAL_BETS__;
 const PRE = __RESULTS__;
 const BEFORE_AFTER = __BEFORE_AFTER__;
+const MONTH = __MONTH__;
 
 // ================= справочники =================
 const STRATS = {
@@ -492,12 +555,15 @@ const STRATS = {
   flat: { label: 'Флэт от начального банка', desc: 'Сумма не меняется вместе с банком. Так фактически считались 22 из 25 стратегий в старом коде.',
     params: [['pct', 'Доля начального банка', 0.1, 10, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.pct}%</b> × начальный банк` },
   kelly_half: { label: 'Келли (доля)', desc: 'Доля от полного Келли. 0.5 — половина Келли.',
-    params: [['mult', 'Доля от полного Келли', 0.05, 3, 0.05, 0.5, '×']], formula: (p) => `ставка = <b>${p.mult}</b> × EV / (кэф − 1) × банк` },
+    params: [['mult', 'Доля от полного Келли', 0.01, 3, 0.01, 0.5, '×']], formula: (p) => `ставка = <b>${p.mult}</b> × EV / (кэф − 1) × банк` },
+  kelly_guard: { label: 'Келли с урезанием на просадке', desc: 'Доля Келли, вдвое меньше при просадке от пика больше первого порога и вчетверо — больше второго.',
+    params: [['mult', 'Доля от полного Келли', 0.01, 2, 0.01, 0.16, '×'], ['cut1', 'Первый порог просадки', 2, 40, 1, 10, '%'], ['cut2', 'Второй порог', 5, 60, 1, 20, '%']],
+    formula: (p) => `ставка = <b>${p.mult}</b> × EV / (кэф − 1) × банк; ×0.5 при просадке > ${p.cut1}%, ×0.25 > ${p.cut2}%` },
   floor_kelly: { label: 'Келли с полом просадки', desc: 'Grossman–Zhou: Келли от подушки над полом. Просадка от пика не глубже 1 − пол.',
     params: [['mult', 'Доля Келли от подушки', 0.1, 1.5, 0.05, 1, '×'], ['floor', 'Пол, доля пика', 10, 90, 5, 50, '%']],
     formula: (p) => `ставка = min(<b>${p.mult}</b> × EV/(кэф − 1), 1) × (банк − <b>${p.floor}%</b> × пик)` },
   log_formula: { label: 'Лог-формула (backend)', desc: 'Формула из backend/calculator. Зависит от вероятности проигрыша, почти не от перевеса.',
-    params: [['risk', 'Параметр risk', 2, 40, 0.5, 15, ''], ['edgeCap', 'Кап EV', 1, 20, 1, 8, '%']],
+    params: [['risk', 'Параметр risk', 2, 80, 0.5, 15, ''], ['edgeCap', 'Кап EV', 1, 20, 1, 8, '%']],
     formula: (p) => `ставка = −log₁₀(1 − (1 + min(EV, ${p.edgeCap}%)) / кэф) / <b>${p.risk}</b> × банк` },
   linear_roi: { label: 'Линейно от ROI', desc: 'Процент растёт пропорционально EV ставки.',
     params: [['basePct', 'Ставка при базовом ROI', 0.1, 5, 0.1, 1, '%'], ['baseRoi', 'Базовый ROI', 1, 10, 0.5, 5, '%'], ['maxPct', 'Потолок', 1, 10, 0.5, 10, '%']],
@@ -525,7 +591,7 @@ const STRATS = {
   portfolio_theory: { label: 'Корзины кэфов', desc: 'Вес 0.4 для кэфов до 3.5, 0.2 для остальных.',
     params: [['basePct', 'База', 0.1, 5, 0.1, 2, '%']], formula: (p) => `ставка = <b>${p.basePct}%</b> × (0.4 | 0.2) / 0.3 × банк` },
 };
-const ORDER = ['kelly_half', 'fixed', 'flat', 'floor_kelly', 'log_formula', 'constant_profit', 'adaptive_constant_profit',
+const ORDER = ['kelly_half', 'kelly_guard', 'fixed', 'flat', 'floor_kelly', 'log_formula', 'constant_profit', 'adaptive_constant_profit',
   'linear_roi', 'sqrt_roi', 'linear_roi_odds', 'dynamic_percentage', 'drawdown_guard', 'anti_martingale', 'portfolio_theory'];
 const PROFILE_TEXT = {
   conservative: ['P(DD ≥ 50%)', 0], cautious: ['P(DD ≥ 50%)', 3.5], balanced: ['P(DD ≥ 50%)', 10], risky: ['P(DD ≥ 80%)', 5], extreme: ['P(DD ≥ 80%)', 50],
@@ -535,7 +601,9 @@ const KELLY_CASES = [
   ['overstated', 'Модель завышает EV', 's2', 'завышенный'],
   ['overstated_noise', 'Завышает + шум 5%', 's3', '+ шум'],
 ];
-const DEFAULTS = { source: 'real', roi: 2.5, ev: 'flat', calib: true, noise: 0, bets: 1000, sims: 2000, cap: 10, recalc: 'live', variation: 'none', bank: 10000, seed: 2026, round: 0, min: 0 };
+const DEFAULTS = { source: 'real', roi: 2.5, ev: 'flat', calib: true, noise: 0, bets: 1000, sims: 2000, cap: 10, recalc: 'live', variation: 'none', bank: 10000, seed: 2026, round: 0, min: 0, omin: 1.5, omax: 3.5, omean: 2.8 };
+const MONTH_PRESET = { ...DEFAULTS, source: 'synthetic', omin: 1.5, omax: 4, omean: 2.75, roi: 5 };
+const ODDS_CONC = 3;   // разброс кэфов как у реальных ставок
 
 // ================= утилиты =================
 const $ = (id) => document.getElementById(id);
@@ -641,15 +709,20 @@ function readConditions() {
   state.seed = Math.max(0, Math.floor(+$('c-seed').value || 0));
   state.round = Math.max(0, +$('c-round').value || 0);
   state.min = Math.max(0, +$('c-min').value || 0);
+  state.omin = +$('c-omin').value || 1.5;
+  state.omax = +$('c-omax').value || 3.5;
+  state.omean = +$('c-omean').value || 2.8;
 }
 function writeConditions(c) {
   $('c-roi').value = c.roi; $('c-ev').value = c.ev; $('c-calib').checked = c.calib; $('c-noise').value = c.noise;
   $('c-bets').value = c.bets; $('c-sims').value = c.sims; $('c-cap').value = c.cap; $('c-recalc').value = c.recalc;
   $('c-var').value = c.variation; $('c-bank').value = c.bank; $('c-seed').value = c.seed; $('c-round').value = c.round; $('c-min').value = c.min;
+  $('c-omin').value = c.omin; $('c-omax').value = c.omax; $('c-omean').value = c.omean;
   setSource(c.source, false);
 }
 function marketCfg() {
-  return { source: state.source, evModel: state.ev, calibrated: state.calib, roi: state.roi / 100, estCap: 0.08, noise: state.noise / 100 };
+  return { source: state.source, evModel: state.ev, calibrated: state.calib, roi: state.roi / 100, estCap: 0.08, noise: state.noise / 100,
+    synth: { lo: state.omin, hi: state.omax, mean: state.omean, conc: ODDS_CONC } };
 }
 function simCfg(nSims) {
   return { nSims: nSims || state.sims, nBets: state.bets, bank0: state.bank, cap: state.cap / 100, recalc: state.recalc,
@@ -663,6 +736,10 @@ function syncOutputs() {
   const scaled = state.ev === 'scaled';
   $('c-calib').disabled = !scaled;
   $('calib-wrap').setAttribute('aria-disabled', String(!scaled));
+  const isPreset = (p) => ['source', 'roi', 'ev', 'bets', 'cap', 'recalc', 'variation', 'noise', 'round', 'min']
+    .every((k) => state[k] === p[k]) && (state.source === 'real' || (state.omin === p.omin && state.omax === p.omax && state.omean === p.omean));
+  $('pre-default').setAttribute('aria-pressed', String(isPreset(DEFAULTS)));
+  $('pre-month').setAttribute('aria-pressed', String(isPreset(MONTH_PRESET)));
   $('ev-hint').textContent = scaled
     ? 'Оценки EV из данных (кап 8%) пропорционально уменьшены, чтобы средний истинный ROI был равен заданному.'
     : 'Как в simulation-current: у каждой ставки истинный EV равен среднему ROI.';
@@ -671,6 +748,7 @@ function setSource(src, fire = true) {
   state.source = src;
   $('src-real').setAttribute('aria-pressed', String(src === 'real'));
   $('src-syn').setAttribute('aria-pressed', String(src === 'synthetic'));
+  $('synth-box').hidden = src !== 'synthetic';
   if (fire) onConditions();
 }
 
@@ -1226,21 +1304,281 @@ function renderAudit() {
   $('before-after').appendChild(t);
 }
 
+// ================= месяц: ROI 5%, кэф 1.5–4 =================
+const TIERS = {
+  aggressive: { label: 'Агрессивная', metric: 'p_dd50_pct', level: 50, rule: 'Просадка на 50% от пика — не чаще 1 месяца из 10' },
+  moderate: { label: 'Умеренная', metric: 'p_dd30_pct', level: 30, rule: 'Просадка на 30% от пика — не чаще 1 месяца из 10' },
+  conservative: { label: 'Консервативная, большой банк', metric: 'p_dd20_pct', level: 20, rule: 'Просадка на 20% от пика и месяц хуже −10% — каждое не чаще 1 месяца из 20' },
+};
+const M_FAMILY = {
+  kelly: 'Келли', fixed: 'Фиксированный %', flat: 'Флэт от начального банка', log_formula: 'Лог-формула (backend)',
+  floor_kelly: 'Келли с полом просадки', kelly_guard: 'Келли с урезанием на просадке', dynamic_percentage: 'Динамический %', anti_martingale: 'Анти-мартингейл',
+};
+const floorOf = (tier) => 100 - (TIERS[tier] ? TIERS[tier].level : 50);
+function paramText(key, param, tier) {
+  switch (key) {
+    case 'kelly': return `${num(param, 2)} от полного Келли`;
+    case 'log_formula': return `risk = ${num(param, 1)}`;
+    case 'floor_kelly': return `${num(param, 2)} Келли от банка сверх ${floorOf(tier)}% пика`;
+    case 'fixed': return `${num(param, 2)}% текущего банка`;
+    case 'flat': return `${num(param, 2)}% начального банка`;
+    case 'kelly_guard': return `${num(param, 2)} Келли, ×0.5 при просадке > 10%, ×0.25 > 20%`;
+    default: return `база ${num(param, 2)}%`;
+  }
+}
+function webStrategy(key, param, tier) {
+  switch (key) {
+    case 'kelly': return ['kelly_half', { mult: +param.toFixed(3) }];
+    case 'kelly_guard': return ['kelly_guard', { mult: +param.toFixed(3), cut1: 10, cut2: 20 }];
+    case 'log_formula': return ['log_formula', { risk: +param.toFixed(1), edgeCap: 8 }];
+    case 'floor_kelly': return ['floor_kelly', { mult: +param.toFixed(2), floor: floorOf(tier) }];
+    case 'fixed': return ['fixed', { pct: +param.toFixed(2) }];
+    case 'flat': return ['flat', { pct: +param.toFixed(2) }];
+    case 'dynamic_percentage': return ['dynamic_percentage', { pct: +param.toFixed(2) }];
+    case 'anti_martingale': return ['anti_martingale', { basePct: +param.toFixed(2), mult: 1.5, maxStreak: 5 }];
+    default: return null;
+  }
+}
+function openInSim(key, param, tier) {
+  const ws = webStrategy(key, param, tier);
+  if (!ws) return;
+  writeConditions(MONTH_PRESET);
+  readConditions();
+  syncOutputs();
+  state.key = ws[0];
+  state.params = { ...loadParams(ws[0]), ...ws[1] };
+  $('s-key').value = state.key;
+  renderParams();
+  openTab('sim');
+  runSim();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function simButton(key, param, tier, text) {
+  if (!webStrategy(key, param, tier)) return h('span');
+  const b = h('button', { class: 'btn ghost', type: 'button' }, text);
+  b.addEventListener('click', () => openInSim(key, param, tier));
+  return b;
+}
+function recipeCard(title, rule, key, param, m, stakes, tier, metric, level) {
+  const d = h('article', { class: 'recipe' });
+  d.append(h('span', { class: 'tier' }, title), h('div', { class: 'rule' }, rule), h('h3', {}, M_FAMILY[key]), h('div', { class: 'rule' }, paramText(key, param, tier)));
+  const big = h('div', { class: 'big' }, spct(m.median_profit_pct));
+  big.appendChild(h('small', {}, 'медианная прибыль за месяц'));
+  d.appendChild(big);
+  const cap = h('div', { class: 'rule' }, 'Ставка, % банка, при кэфе:');
+  const st = h('div', { class: 'stakes' });
+  for (const o of ['1.5', '2.0', '2.75', '3.5', '4.0']) {
+    const sp = h('span', {}, num(+o, o.length > 3 ? 2 : 1));
+    sp.appendChild(h('b', {}, num(stakes[o], 2)));
+    st.appendChild(sp);
+  }
+  d.append(cap, st);
+  const dl = h('dl');
+  const add = (a, b) => dl.append(h('dt', {}, a), h('dd', {}, b));
+  add('Плохой месяц, 5% худших', spct(m.p5_profit_pct));
+  add('Хороший месяц, 5% лучших', spct(m.p95_profit_pct, 0));
+  add('Месяц в минусе', pct(m.p_loss_pct));
+  if (m.p_profit_below_m10_pct !== undefined) add('Месяц хуже −10%', pct(m.p_profit_below_m10_pct));
+  add('Медиана макс. просадки', pct(m.median_max_dd_pct));
+  add(`Просадка ≥ ${level}% от пика`, pct(m[metric]));
+  add('Средняя ставка', pct(m.avg_stake_pct, 2) + ' банка');
+  d.appendChild(dl);
+  d.appendChild(simButton(key, param, tier, 'Открыть в симуляторе'));
+  return d;
+}
+function renderMonth() {
+  const s0 = MONTH.settings;
+  $('m-lede').textContent = `Условия: у каждой ставки ROI ${pct(s0.roi * 100, 0)}, кэф от ${num(s0.odds_min, 1)} до ${num(s0.odds_max, 0)} `
+    + `(средний ${num(s0.avg_odds, 2)}, разброс как у реальных ставок), ${num(s0.n_bets, 0)} ставок за месяц, ставка от текущего банка и не больше `
+    + `${pct(s0.cap * 100, 0)} банка. Для каждого уровня риска найден размер ставки с наибольшей медианной прибылью месяца. `
+    + `Все цифры — проверка на ${num(s0.n_sims_eval, 0)} независимых симуляциях. Прибыль и просадка считаются внутри месяца от банка на его начало.`;
+  const box = $('m-recipes');
+  box.textContent = '';
+  for (const [tier, t] of Object.entries(TIERS)) {
+    const r = MONTH.recommended[tier];
+    if (r) box.appendChild(recipeCard(t.label, t.rule, r.key, r.param, r.eval, r.stakes, tier, t.metric, t.level));
+  }
+  const c = MONTH.ceiling;
+  box.appendChild(recipeCard('Потолок', 'Без ограничений: дальше ставить больше бессмысленно, медиана падает', 'kelly', c.scale, c.eval, c.stakes, null, 'p_dd50_pct', 50));
+  drawFrontier();
+  renderMonthTable();
+  renderRobust();
+  renderHorizon();
+}
+function drawFrontier() {
+  const box = $('m-frontier');
+  const fams = [['kelly', 'Келли', 's1'], ['fixed', 'Фиксированный %', 's2'], ['flat', 'Флэт от начального банка', 's3'], ['log_formula', 'Лог-формула', 's4']];
+  const series = fams.filter(([k]) => MONTH.frontier[k]).map(([k, label, c]) => ({
+    k, label, color: css('--' + c),
+    // точки, где в плохой месяц теряется больше 90% банка (почти разорение), не показываем: они сжимают масштаб
+    pts: MONTH.frontier[k].map((p) => ({ x: Math.max(0, -p.p5_profit_pct), y: p.median_profit_pct, p })).filter((p) => p.x <= 90),
+  }));
+  const lg = $('m-legend');
+  lg.textContent = '';
+  for (const s of series) { const sp = h('span'), key = h('span', { class: 'key-line' }); key.style.background = s.color; sp.append(key, document.createTextNode(s.label)); lg.appendChild(sp); }
+  const mk = h('span'), ring = h('span', { class: 'key-rect' });
+  ring.style.background = 'transparent'; ring.style.border = '2px solid ' + css('--ink'); ring.style.borderRadius = '50%';
+  mk.append(ring, document.createTextNode('рекомендации'));
+  lg.appendChild(mk);
+
+  const H = box.clientWidth < 520 ? 300 : 380;
+  const { svg, w } = chartBox(box, H);
+  const m = { l: 54, r: 18, t: 14, b: 38 };
+  const iw = w - m.l - m.r, ih = H - m.t - m.b;
+  const all = series.flatMap((s) => s.pts);
+  const xMax = Math.min(100, Math.max(...all.map((p) => p.x)) * 1.03);
+  const markYs = [MONTH.ceiling.eval.median_profit_pct, ...Object.keys(TIERS).filter((t) => MONTH.recommended[t]).map((t) => MONTH.recommended[t].eval.median_profit_pct)];
+  const yLo = Math.min(0, ...all.map((p) => p.y)), yHi = Math.max(...all.map((p) => p.y), ...markYs) * 1.1;
+  const X = (v) => m.l + (v / xMax) * iw;
+  const Y = (v) => m.t + ih - ((v - yLo) / (yHi - yLo)) * ih;
+  const g = el('g', { class: 'grid' }, svg);
+  for (const t of niceTicks(yLo, yHi, 5)) {
+    el('line', { x1: m.l, x2: w - m.r, y1: Y(t), y2: Y(t) }, g);
+    el('text', { x: m.l - 8, y: Y(t) + 4, 'text-anchor': 'end' }, svg).textContent = spct(t, 0);
+  }
+  for (const t of niceTicks(0, xMax, Math.max(3, Math.floor(iw / 90)))) {
+    el('text', { x: X(t), y: H - 18, 'text-anchor': 'middle' }, svg).textContent = t ? '−' + num(t, 0) + '%' : '0%';
+  }
+  el('text', { x: w - m.r, y: H - 3, 'text-anchor': 'end' }, svg).textContent = 'убыток в плохой месяц (5% худших) →';
+  el('line', { x1: m.l, x2: w - m.r, y1: Y(0), y2: Y(0), class: 'base' }, svg);
+  for (const s of series) {
+    el('path', { d: s.pts.map((p, i) => (i ? 'L' : 'M') + X(p.x).toFixed(1) + ',' + Y(p.y).toFixed(1)).join(''), fill: 'none', stroke: s.color, 'stroke-width': 2, 'stroke-linejoin': 'round' }, svg);
+    for (const p of s.pts) el('circle', { cx: X(p.x), cy: Y(p.y), r: 3, fill: s.color, stroke: css('--surface'), 'stroke-width': 1.5 }, svg);
+  }
+  const marks = Object.entries(TIERS).filter(([t]) => MONTH.recommended[t]).map(([t, info]) => ({ label: info.label.split(',')[0], r: MONTH.recommended[t] }));
+  marks.push({ label: 'Потолок', r: { eval: MONTH.ceiling.eval } });
+  const placed = [];
+  for (const mk2 of marks) {
+    const x = X(Math.max(0, -mk2.r.eval.p5_profit_pct)), y = Y(mk2.r.eval.median_profit_pct);
+    el('circle', { cx: x, cy: y, r: 7, fill: 'none', stroke: css('--ink'), 'stroke-width': 2 }, svg);
+    // подпись сверху-слева; если там уже есть соседняя подпись — снизу-справа
+    const clash = placed.some((q) => Math.abs(q.x - x) < 130 && Math.abs(q.y - y) < 18);
+    const t = clash ? el('text', { x: x + 10, y: y + 18, 'text-anchor': 'start' }, svg) : el('text', { x: x - 10, y: y - 10, 'text-anchor': 'end' }, svg);
+    placed.push({ x, y });
+    t.textContent = mk2.label;
+    t.style.fill = css('--ink');
+    t.style.fontWeight = '600';
+  }
+  const tip = tooltip(box);
+  const hit = el('rect', { x: m.l, y: m.t, width: iw, height: ih, fill: 'transparent', tabindex: 0, 'aria-label': 'Кривые рост против просадки' }, svg);
+  const at = (px, py) => {
+    let best = null, bd = Infinity;
+    for (const s of series) for (const p of s.pts) { const d = Math.hypot(X(p.x) - px, Y(p.y) - py); if (d < bd) { bd = d; best = [s, p]; } }
+    if (!best) return;
+    const [s, p] = best;
+    const unitTxt = s.k === 'kelly' ? `${num(p.p.param, 2)} Келли` : s.k === 'log_formula' ? `risk ${num(p.p.param, 1)}` : `${num(p.p.param, 2)}%`;
+    showTip(tip, box, X(p.x), Y(p.y) - 20, `${s.label}: ${unitTxt}`, [
+      [s.color, 'медиана месяца', spct(p.y)], [null, 'плохой месяц (5%)', spct(p.p.p5_profit_pct)], [null, 'медиана просадки', pct(p.p.median_max_dd_pct)],
+      [null, 'просадка ≥ 50%', pct(p.p.p_dd50_pct)],
+      [null, 'месяц в минусе', pct(p.p.p_loss_pct)], [null, 'средняя ставка', pct(p.p.avg_stake_pct, 2)],
+    ]);
+  };
+  hit.addEventListener('pointermove', (e) => { const r = svg.getBoundingClientRect(); at((e.clientX - r.left) * (w / r.width), (e.clientY - r.top) * (H / r.height)); });
+  hit.addEventListener('pointerleave', () => { tip.hidden = true; });
+  hit.addEventListener('blur', () => { tip.hidden = true; });
+}
+let monthTier = 'aggressive';
+function renderMonthTable() {
+  const seg = $('m-tiers');
+  if (!seg.childElementCount) {
+    for (const [tier, t] of Object.entries(TIERS)) {
+      const b = h('button', { type: 'button', 'aria-pressed': String(tier === monthTier) }, t.label.split(',')[0]);
+      b.addEventListener('click', () => {
+        monthTier = tier;
+        for (const x of seg.children) x.setAttribute('aria-pressed', String(x === b));
+        renderMonthTable();
+      });
+      seg.appendChild(b);
+    }
+  }
+  $('m-tier-rule').textContent = TIERS[monthTier].rule + '. Отсортировано по медиане.';
+  const rows = [...(MONTH.tasks[monthTier] || [])].sort((a, b) => b.eval.median_profit_pct - a.eval.median_profit_pct);
+  const t = h('table'), hr = h('tr');
+  for (const c of ['Стратегия', 'Медиана', 'Среднее', 'Плохой месяц', 'В минусе', 'Хуже −10%', 'Медиана просадки', 'Просадка ≥ 20%', '≥ 30%', '≥ 50%', 'Ср. ставка', '']) hr.appendChild(h('th', {}, c));
+  t.appendChild(hr);
+  const rec = MONTH.recommended[monthTier];
+  rows.forEach((r) => {
+    const tr = h('tr');
+    if (rec && r.key === rec.key) tr.className = 'best';
+    const td = h('td', {}, M_FAMILY[r.key] || r.key);
+    td.appendChild(h('span', { class: 'k' }, paramText(r.key, r.param, monthTier)));
+    tr.appendChild(td);
+    const e = r.eval;
+    for (const v of [spct(e.median_profit_pct), spct(e.mean_profit_pct, 0), spct(e.p5_profit_pct), pct(e.p_loss_pct), pct(e.p_profit_below_m10_pct ?? NaN), pct(e.median_max_dd_pct), pct(e.p_dd20_pct), pct(e.p_dd30_pct), pct(e.p_dd50_pct), pct(e.avg_stake_pct, 2)]) tr.appendChild(h('td', {}, v));
+    const bt = h('td');
+    const b = simButton(r.key, r.param, monthTier, 'в симулятор');
+    if (b.tagName === 'BUTTON') { b.style.padding = '4px 8px'; b.style.fontSize = '12px'; }
+    bt.appendChild(b);
+    tr.appendChild(bt);
+    t.appendChild(tr);
+  });
+  $('m-table').textContent = '';
+  $('m-table').appendChild(t);
+}
+const ROBUST_NAMES = [
+  ['true_roi_0.050', 'ROI 5%, как задумано'], ['true_roi_0.035', 'ROI на деле 3.5%'], ['true_roi_0.025', 'ROI на деле 2.5%'],
+  ['true_roi_0.000', 'ROI на деле 0%'], ['backend_rules', 'правила backend: снимок раз в 30–70, округление 5, мин. 10'], ['real_odds', 'реальные кэфы 1.5–4'],
+];
+function renderRobust() {
+  const t = h('table'), hr = h('tr');
+  for (const c of ['Стратегия', 'Сценарий', 'Медиана', 'Плохой месяц', 'В минусе', 'Медиана просадки', 'Просадка ≥ 20%', '≥ 30%', '≥ 50%']) hr.appendChild(h('th', {}, c));
+  t.appendChild(hr);
+  for (const [tier, info] of Object.entries(TIERS)) {
+    const rec = MONTH.recommended[tier];
+    if (!rec) continue;
+    for (const v of [rec, ...(rec.alternatives || [])]) {
+      ROBUST_NAMES.forEach(([k, name], i) => {
+        const m = v.robustness[k];
+        const tr = h('tr');
+        const td = h('td');
+        if (i === 0) { td.textContent = info.label.split(',')[0] + ': ' + (M_FAMILY[v.key] || v.key); td.appendChild(h('span', { class: 'k' }, paramText(v.key, v.param, tier))); }
+        tr.append(td, h('td', {}, name));
+        for (const x of [spct(m.median_profit_pct), spct(m.p5_profit_pct), pct(m.p_loss_pct), pct(m.median_max_dd_pct), pct(m.p_dd20_pct), pct(m.p_dd30_pct), pct(m.p_dd50_pct)]) tr.appendChild(h('td', {}, x));
+        t.appendChild(tr);
+      });
+    }
+  }
+  $('m-robust').textContent = '';
+  $('m-robust').appendChild(t);
+}
+function renderHorizon() {
+  const t = h('table'), hr = h('tr');
+  for (const c of ['Стратегия', 'Месяцев', 'Медиана', 'Плохой исход (5%)', 'Хороший (95%)', 'В минусе', 'Медиана просадки', 'Просадка ≥ 50%']) hr.appendChild(h('th', {}, c));
+  t.appendChild(hr);
+  for (const [tier, info] of Object.entries(TIERS)) {
+    const rec = MONTH.recommended[tier];
+    if (!rec) continue;
+    const rows = [[1, rec.eval], ...Object.entries(rec.robustness.horizon).map(([k, v]) => [+k, v])];
+    rows.forEach(([months, m], i) => {
+      const tr = h('tr');
+      const td = h('td');
+      if (i === 0) { td.textContent = info.label.split(',')[0] + ': ' + M_FAMILY[rec.key]; td.appendChild(h('span', { class: 'k' }, paramText(rec.key, rec.param, tier))); }
+      tr.append(td, h('td', {}, String(months)));
+      for (const x of [spct(m.median_profit_pct, months > 1 ? 0 : 1), spct(m.p5_profit_pct, months > 1 ? 0 : 1), spct(m.p95_profit_pct, 0), pct(m.p_loss_pct), pct(m.median_max_dd_pct), pct(m.p_dd50_pct)]) tr.appendChild(h('td', {}, x));
+      t.appendChild(tr);
+    });
+  }
+  $('m-horizon').textContent = '';
+  $('m-horizon').appendChild(t);
+}
+
 // ================= вкладки и связка =================
-const TABS = ['sim', 'risk', 'kelly', 'audit'];
-let current = 'sim';
+const TABS = ['month', 'sim', 'risk', 'kelly', 'audit'];
+let current = 'month';
 function openTab(name, push = true) {
-  if (!TABS.includes(name)) name = 'sim';
+  if (!TABS.includes(name)) name = 'month';
   current = name;
   for (const t of TABS) {
     $('tab-' + t).setAttribute('aria-selected', String(t === name));
     $('tab-' + t).tabIndex = t === name ? 0 : -1;
     $('view-' + t).hidden = t !== name;
   }
-  $('conditions').hidden = name === 'audit';
-  document.querySelector('.bench').style.gridTemplateColumns = name === 'audit' ? 'minmax(0, 1fr)' : '';
+  const wide = name === 'audit' || name === 'month';
+  $('conditions').hidden = wide;
+  document.querySelector('.bench').style.gridTemplateColumns = wide ? 'minmax(0, 1fr)' : '';
   if (push) { try { history.replaceState(null, '', '#' + name); } catch (e) { /* в песочнице может быть запрещено */ } }
   if (name === 'sim' && lastSim) renderSim();
+  if (name === 'month') renderMonth();
   if (name === 'risk') showRisk();
   if (name === 'kelly') showKelly();
 }
@@ -1262,7 +1600,9 @@ function onConditions() {
   if (current === 'kelly') showKelly();
 }
 for (const id of ['c-roi', 'c-noise', 'c-bets', 'c-cap']) $(id).addEventListener('input', onConditions);
-for (const id of ['c-ev', 'c-calib', 'c-sims', 'c-recalc', 'c-var', 'c-bank', 'c-seed', 'c-round', 'c-min']) $(id).addEventListener('change', onConditions);
+for (const id of ['c-ev', 'c-calib', 'c-sims', 'c-recalc', 'c-var', 'c-bank', 'c-seed', 'c-round', 'c-min', 'c-omin', 'c-omax', 'c-omean']) $(id).addEventListener('change', onConditions);
+$('pre-default').addEventListener('click', () => { writeConditions(DEFAULTS); onConditions(); });
+$('pre-month').addEventListener('click', () => { writeConditions(MONTH_PRESET); onConditions(); });
 $('src-real').addEventListener('click', () => setSource('real'));
 $('src-syn').addEventListener('click', () => setSource('synthetic'));
 $('reset').addEventListener('click', () => { writeConditions(DEFAULTS); onConditions(); });
@@ -1297,7 +1637,7 @@ new MutationObserver(() => openTab(current, false)).observe(document.documentEle
   buildStrategyUI();
   renderAudit();
   const hash = (location.hash || '').replace('#', '');
-  openTab(TABS.includes(hash) ? hash : 'sim', false);
+  openTab(TABS.includes(hash) ? hash : 'month', false);
   runSim();
 })();
 </script>

@@ -44,19 +44,25 @@ def calibrate(build: Build, market: Market, cfg: SimConfig, metric: str, limit: 
     """
     Возвращает (scale, метрики) с лучшей медианой среди scale, при которых
     metric <= limit, или (0, None), если лимит нарушает даже минимальная ставка.
+    metric может быть списком пар (метрика, лимит) — тогда должны выполняться все.
     """
+    rules = list(metric) if isinstance(metric, (list, tuple)) else [(metric, limit)]
+
     def ev(s):
         return evaluate(build(s), market, cfg, sampling)
+
+    def ok(m):
+        return all(m[k] <= v for k, v in rules)
 
     feasible = {}
     lo, hi = 0.0, min(1.0, scale_hi)
     m = ev(hi)
-    if m[metric] <= limit:
+    if ok(m):
         feasible[hi] = m
         while hi < scale_hi:
             lo, hi = hi, min(hi * 2, scale_hi)
             m = ev(hi)
-            if m[metric] > limit:
+            if not ok(m):
                 break
             feasible[hi] = m
         else:
@@ -65,7 +71,7 @@ def calibrate(build: Build, market: Market, cfg: SimConfig, metric: str, limit: 
         for _ in range(iters):
             mid = (lo + hi) / 2
             m = ev(mid)
-            if m[metric] <= limit:
+            if ok(m):
                 lo, feasible[mid] = mid, m
             else:
                 hi = mid
@@ -76,7 +82,7 @@ def calibrate(build: Build, market: Market, cfg: SimConfig, metric: str, limit: 
         s = s_max * k
         if s not in feasible:
             m = ev(s)
-            if m[metric] <= limit:
+            if ok(m):
                 feasible[s] = m
     best = max(feasible, key=lambda s: feasible[s]['median_profit_pct'])
     return best, dict(feasible[best], scale_max=s_max)

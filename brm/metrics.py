@@ -6,7 +6,7 @@ import numpy as np
 
 from .engine import SimResult
 
-DD_LEVELS = (20, 30, 50, 66, 80)
+DD_LEVELS = (10, 15, 20, 25, 30, 50, 66, 80)
 
 
 def summarize(res: SimResult) -> dict:
@@ -29,6 +29,7 @@ def summarize(res: SimResult) -> dict:
         'p75_profit_pct': float(np.percentile(profit, 75)),
         'p95_profit_pct': float(np.percentile(profit, 95)),
         'p_loss_pct': float((profit < 0).mean() * 100),
+        'p_profit_below_m10_pct': float((profit < -10).mean() * 100),
         'median_max_dd_pct': float(np.median(dd)),
         'mean_max_dd_pct': float(dd.mean()),
         'p95_max_dd_pct': float(np.percentile(dd, 95)),

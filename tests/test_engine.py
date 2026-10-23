@@ -150,3 +150,21 @@ def test_calibration_hits_profile_boundary():
     assert m['p_dd50_pct'] <= 5.0 and scale == m['scale_max']
     from brm.optimize import evaluate
     assert evaluate(build(scale * 1.15), market, cfg)['p_dd50_pct'] > 5.0
+
+
+def test_calibration_with_several_constraints():
+    pool = brm.load_real_bets()
+    market = brm.make_market(pool, roi=0.05)
+    cfg = brm.SimConfig(n_sims=600, n_bets=600, seed=7)
+    rules = [('p_dd20_pct', 5.0), ('p_profit_below_m10_pct', 5.0)]
+    scale, m = calibrate(lambda s: S.Kelly(s), market, cfg, rules, None, scale_hi=4.0, iters=8)
+    assert all(m[k] <= v for k, v in rules)
+    single, _ = calibrate(lambda s: S.Kelly(s), market, cfg, 'p_dd20_pct', 5.0, scale_hi=4.0, iters=8, refine=())
+    assert scale <= single + 1e-9
+
+
+def test_beta_odds_pool_matches_request():
+    pool = brm.data.beta_odds_pool(1.5, 4.0, 2.75, roi=0.05, concentration=3.0, size=200000)
+    assert abs(pool.odds.mean() - 2.75) < 0.01
+    assert pool.odds.min() >= 1.5 and pool.odds.max() <= 4.0
+    assert (pool.ev == 0.05).all()

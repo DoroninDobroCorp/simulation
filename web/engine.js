@@ -7,7 +7,7 @@
 'use strict';
 
 let DATA = null;
-let SYN = null;
+const SYN = new Map();
 
 // ---------- генераторы случайных чисел ----------
 function makeRng(seed, stream) {
@@ -53,10 +53,12 @@ function gamma(r, k) {
   }
 }
 
-// Генератор из ТЗ: кэф в [1.5, 3.5] со средним 2.8, ROI из смеси 3–6 / 6–12 / 12–20% (85/10/5)
-function syntheticPool(size = 20000, seed = 7) {
+// Синтетика: кэф из Beta на [lo, hi] с заданным средним, ROI из смеси ТЗ 3–6 / 6–12 / 12–20% (85/10/5).
+// По умолчанию — генератор из ТЗ: [1.5, 3.5], среднее 2.8.
+function syntheticPool(lo = 1.5, hi = 3.5, mean = 2.8, conc = 4, size = 20000, seed = 7) {
   const r = makeRng(seed, 9);
-  const lo = 1.5, hi = 3.5, m = (2.8 - lo) / (hi - lo), conc = 4;
+  if (!(hi > lo) || !(mean > lo && mean < hi)) throw new Error('Средний кэф должен лежать строго между минимальным и максимальным');
+  const m = (mean - lo) / (hi - lo);
   const odds = new Float64Array(size), ev = new Float64Array(size);
   const ranges = [[0.03, 0.06], [0.06, 0.12], [0.12, 0.20]];
   for (let i = 0; i < size; i++) {
@@ -71,7 +73,13 @@ function syntheticPool(size = 20000, seed = 7) {
 
 // ---------- рынок: что видит стратегия и что правда ----------
 function buildMarket(c) {
-  const pool = c.source === 'synthetic' ? (SYN || (SYN = syntheticPool())) : DATA;
+  let pool = DATA;
+  if (c.source === 'synthetic') {
+    const sp = c.synth || { lo: 1.5, hi: 3.5, mean: 2.8, conc: 4 };
+    const key = [sp.lo, sp.hi, sp.mean, sp.conc].join('|');
+    if (!SYN.has(key)) SYN.set(key, syntheticPool(sp.lo, sp.hi, sp.mean, sp.conc));
+    pool = SYN.get(key);
+  }
   const n = pool.odds.length;
   const est = new Float64Array(n), tru = new Float64Array(n);
   let k = 1;
@@ -101,6 +109,13 @@ function makeStrategy(key, p, nSims) {
     case 'fixed': { const f = p.pct / 100; return { frac: () => f }; }
     case 'flat': { const a = p.pct / 100; return { frac: (o, e, b, pk, base, b0) => a * b0 / Math.max(base, 1e-12) }; }
     case 'kelly_half': return { frac: (o, e) => p.mult * kellyF(o, e) };
+    case 'kelly_guard':
+      return {
+        frac: (o, e, b, pk) => {
+          const dd = (pk - b) / pk;
+          return p.mult * kellyF(o, e) * (dd > p.cut2 / 100 ? 0.25 : dd > p.cut1 / 100 ? 0.5 : 1);
+        },
+      };
     case 'floor_kelly': {
       const fl = p.floor / 100;
       return { frac: (o, e, b, pk, base) => Math.min(p.mult * kellyF(o, e), 1) * Math.max(b - fl * pk, 0) / Math.max(base, 1e-12) };

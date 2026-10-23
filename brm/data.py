@@ -51,6 +51,22 @@ def beta_params_for_mean(mean01: float, concentration: float = 4.0) -> tuple[flo
     return mean01 * concentration, (1.0 - mean01) * concentration
 
 
+def beta_odds_pool(odds_min: float, odds_max: float, odds_mean: float, roi: float = 0.0,
+                   concentration: float = 4.0, size: int = 50000, seed: int = 11) -> BetPool:
+    """Кэфы из Beta на [odds_min, odds_max] с заданным средним; у всех ставок одна оценка EV = roi."""
+    rng = np.random.default_rng(seed)
+    a, b = beta_params_for_mean((odds_mean - odds_min) / (odds_max - odds_min), concentration)
+    odds = odds_min + (odds_max - odds_min) * rng.beta(a, b, size)
+    return BetPool(odds, np.full(size, float(roi)), name=f'beta[{odds_min}, {odds_max}] mean {odds_mean}')
+
+
+def real_odds_in_range(odds_min: float, odds_max: float, roi: float = 0.0) -> BetPool:
+    """Реальные кэфы из CSV, попавшие в [odds_min, odds_max]; EV у всех = roi."""
+    pool = load_real_bets()
+    keep = (pool.odds >= odds_min) & (pool.odds <= odds_max)
+    return BetPool(pool.odds[keep], np.full(int(keep.sum()), float(roi)), name=f'real[{odds_min}, {odds_max}]')
+
+
 def synthetic_pool(size: int = 20000,
                    odds_min: float = 1.5, odds_max: float = 3.5, odds_mean: float = 2.8,
                    roi_ranges=((0.03, 0.06), (0.06, 0.12), (0.12, 0.20)),
