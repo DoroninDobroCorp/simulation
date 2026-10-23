@@ -784,7 +784,7 @@ function renderParams() {
     const out = h('output');
     lab.appendChild(out);
     const inp = h('input', { type: 'range', id: inputId, min, max, step, value: state.params[id] });
-    const show = () => { out.textContent = num(state.params[id], step < 0.1 ? 2 : step < 1 ? 1 : 0) + (unit ? (unit === '×' ? '×' : unit) : ''); };
+    const show = () => { out.textContent = fp(state.params[id]) + (unit || ''); };   // как в формуле: параметры из «Месяца» бывают вне сетки шага
     inp.addEventListener('input', () => { state.params[id] = +inp.value; show(); renderFormula(); debouncedSim(); });
     show();
     f.append(lab, inp);
@@ -1010,7 +1010,18 @@ function renderFanTable() {
 
 // ================= равный риск =================
 let riskRows = null, riskSource = null;
-let riskMsg = null;   // прогресс или ошибка живого расчёта: { profile, sig, text }
+let riskMsg = null;   // живой расчёт: { profile, sig, text, running, pct }; показывается, только пока выбраны те же профиль и условия
+function riskLive() {
+  const profile = $('r-profile').value;
+  return riskSource && riskSource.profile === profile && riskSource.sig === condSig() ? riskSource : null;
+}
+function riskRun() { return riskMsg && riskMsg.profile === $('r-profile').value && riskMsg.sig === condSig() ? riskMsg : null; }
+function paintRiskRun() {
+  const run = riskRun(), live = riskLive();
+  if (run && (run.running || !live)) $('r-source').textContent = run.text;
+  $('r-run').disabled = !!(run && run.running);
+  $('r-prog').style.width = run && run.running ? run.pct + '%' : live ? '100%' : '0%';
+}
 function preRiskRows(profile) {
   const block = state.ev === 'scaled' ? PRE.risk_matched.scaled_calibrated : PRE.risk_matched.flat;
   const rows = block && block.profiles[profile];
@@ -1024,7 +1035,7 @@ function preRiskRows(profile) {
 }
 function showRisk() {
   const profile = $('r-profile').value;
-  const live = riskSource && riskSource.profile === profile && riskSource.sig === condSig() ? riskSource : null;
+  const live = riskLive();
   if (live) { riskRows = live.rows; }
   else {
     const pre = preRiskRows(profile);
@@ -1045,9 +1056,8 @@ function showRisk() {
     const src = $('r-source');
     src.dataset.stale = 'false';
     src.textContent = `Посчитано в браузере: ${num(live.nSims, 0)} симуляций на шаг · ${num(live.ms / 1000, 1)} с`;
-  } else if (riskMsg && riskMsg.profile === profile && riskMsg.sig === condSig()) {
-    $('r-source').textContent = riskMsg.text;
   }
+  paintRiskRun();
   $('risk-panel').classList.toggle('busy', !live && !preMatches('risk'));
   const [label, limit] = PROFILE_TEXT[profile];
   $('r-sub').textContent = `лимит: ${label} ≤ ${pct(limit, 1)}`;
@@ -1068,22 +1078,18 @@ function runRisk() {
   if (riskWorker) riskWorker.terminate();
   riskWorker = spawn();
   const id = ++jobId, profile = $('r-profile').value, nSims = +$('r-sims').value, sig = condSig();
-  $('r-run').disabled = true;
-  $('r-prog').style.width = '2%';
-  riskMsg = { profile, sig, text: 'Калибрую стратегии…' };
-  $('r-source').textContent = riskMsg.text;
+  riskMsg = { profile, sig, text: 'Калибрую стратегии…', running: true, pct: 2 };
+  paintRiskRun();
   const items = ORDER.map((k) => ({ key: k, params: loadParams(k) }));
   riskWorker.onmessage = (e) => {
     const m = e.data;
     if (m.id !== id) return;
     if (m.type === 'progress') {
-      $('r-prog').style.width = (m.done / m.total * 100) + '%';
-      riskMsg = { profile, sig, text: `Калибрую стратегии: ${m.done} из ${m.total}` };
-      $('r-source').textContent = riskMsg.text;
+      riskMsg = { profile, sig, text: `Калибрую стратегии: ${m.done} из ${m.total}`, running: true, pct: m.done / m.total * 100 };
+      paintRiskRun();
       return;
     }
-    $('r-run').disabled = false;
-    if (m.type === 'error') { riskMsg = { profile, sig, text: 'Ошибка: ' + m.message }; $('r-source').textContent = riskMsg.text; return; }
+    if (m.type === 'error') { riskMsg = { profile, sig, text: 'Ошибка: ' + m.message, running: false, pct: 0 }; paintRiskRun(); return; }
     riskMsg = null;
     riskSource = { profile, sig, rows: m.rows, nSims, ms: m.ms };
     showRisk();
@@ -1158,7 +1164,14 @@ function renderRiskTable() {
 
 // ================= Келли =================
 let kellyData = null, kellySource = null;
-let kellyMsg = null;   // ошибка живого расчёта: { sig, text }
+let kellyMsg = null;   // живой расчёт: { sig, text, running, pct }; показывается, только пока условия те же
+function kellyRun() { return kellyMsg && kellyMsg.sig === condSig() ? kellyMsg : null; }
+function paintKellyRun() {
+  const run = kellyRun(), live = kellyLive();
+  if (run && !run.running && !live) $('k-source').textContent = run.text;
+  $('k-run').disabled = !!(run && run.running);
+  $('k-prog').style.width = run && run.running ? run.pct + '%' : live ? '100%' : '0%';
+}
 function preKelly() {
   const out = {};
   for (const [k] of KELLY_CASES) {
@@ -1179,8 +1192,8 @@ function showKelly() {
     src.dataset.stale = String(!ok);
     src.textContent = ok ? `Предрасчёт в Python: ${num(PRE.settings.n_sims, 0)} симуляций на точку, ROI ${pct(PRE.settings.roi * 100, 1)}`
       : 'Условия слева отличаются от предрасчёта. Нажмите «Пересчитать в браузере».';
-    if (kellyMsg && kellyMsg.sig === condSig()) src.textContent = kellyMsg.text;
   }
+  paintKellyRun();
   $('kelly-panel').classList.toggle('busy', !live && !preMatches('kelly'));
   drawKelly();
 }
@@ -1189,15 +1202,13 @@ function runKelly() {
   kellyWorker = spawn();
   const id = ++jobId, sig = condSig(), nSims = Math.min(state.sims, 2000);
   const mults = [0.1, 0.25, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.5, 2, 2.5, 3];
-  $('k-run').disabled = true;
-  $('k-prog').style.width = '2%';
-  kellyMsg = null;
+  kellyMsg = { sig, text: '', running: true, pct: 2 };
+  paintKellyRun();
   kellyWorker.onmessage = (e) => {
     const m = e.data;
     if (m.id !== id) return;
-    if (m.type === 'progress') { $('k-prog').style.width = (m.done / m.total * 100) + '%'; return; }
-    $('k-run').disabled = false;
-    if (m.type === 'error') { kellyMsg = { sig, text: 'Ошибка: ' + m.message }; $('k-source').textContent = kellyMsg.text; return; }
+    if (m.type === 'progress') { kellyMsg = { sig, text: '', running: true, pct: m.done / m.total * 100 }; paintKellyRun(); return; }
+    if (m.type === 'error') { kellyMsg = { sig, text: 'Ошибка: ' + m.message, running: false, pct: 0 }; paintKellyRun(); return; }
     kellyMsg = null;
     kellySource = { sig, data: m.out, k: m.k, meanEst: m.meanEst, nSims, ms: m.ms };
     showKelly();
@@ -1331,7 +1342,7 @@ const FINDINGS = [
   ['crit', 'Ставки в 100 раз меньше задуманного', 'В dynamic_kelly, proportional_kelly, bayesian_kelly и test_kelly_realistic доля Келли делилась на 100 второй раз. proportional_kelly давал +1,2% вместо +239%, dynamic_kelly +0,4% вместо +50%. Исправленный bayesian_kelly с prior_std 0,05 по умолчанию почти не ставит: вычитание 5 п.п. из вероятности съедает перевес.', 'run_strategies_real_odds.py, test_all_strategies_realistic.py (test_kelly_realistic)', 'Единицы исправлены.'],
   ['crit', '«Келли не работает» — следствие p = 1/кэф', 'В test_all_strategies_realistic.py вероятность выигрыша бралась как 1/кэф, то есть с нулевым перевесом. Ставка Келли поэтому всегда была 0. Вывод в BEST_STRATEGIES.md об этом.', 'test_all_strategies_realistic.py (test_kelly_realistic), BEST_STRATEGIES.md', 'p = (1 + ROI) / кэф. Документы помечены как устаревшие.'],
   ['crit', 'Фиксированный ROI перестановкой не измерял риск', 'honest_engine и honest_sim переставляли один набор (кэф, исход). Итоговый банк — произведение множителей и от порядка не зависит, поэтому у флэт-% и Келли он одинаков во всех симуляциях: у 2% банка +15,6% в каждой, у полного Келли +28,7%. С независимыми исходами у той же стратегии 5-й перцентиль −70%, в минусе 43% серий.', 'simulation-current/honest_engine.py, honest_sim.py', 'По умолчанию исходы независимые, старый режим — флагом fixed_roi с предупреждением.'],
-  ['crit', 'Рейтинги по среднему награждали перебор ставки', 'combat_*, massive_experiments и оптимизатор сортировали по средней прибыли. Её делают несколько сверхудачных симуляций: Келли ×3 даёт среднее +5069% при медиане +115% и 38% серий в минусе.', 'combat_final.py, combat_parallel.py, combat_resumable.py, combat_experiments*.py, massive_experiments.py, test_kelly_combat.py, test_all_strategies_realistic.py, strategy_optimizer.py', 'Ранжирование по медиане; файлы прогресса старого формата не подмешиваются.'],
+  ['crit', 'Рейтинги по среднему награждали перебор ставки', 'combat_*, massive_experiments и оптимизатор сортировали по средней прибыли. Её делают несколько сверхудачных симуляций: Келли ×3 даёт среднее +5069% при медиане +115% и 38% серий в минусе.', 'combat_*.py, massive_experiments.py, test_kelly_combat.py, test_all_strategies_realistic.py, test_combat_system.py, test_realistic_full.py, test_top3_full.py, test_exact_from_report.py, generate_custom_aggressive.py, analyze_top10.py, strategy_optimizer.py', 'Ранжирование по медиане; файлы прогресса старого формата не подмешиваются.'],
   ['crit', 'Оптимизатор выбирал удачу, а не параметры', '100 случайных наборов, каждый оценён один раз на своём случайном потоке, лучший без перепроверки, по самому шумному показателю — среднему росту. У Extreme adaptive_bet с «16 173%» на четырёх независимых прогонах по 500 симуляций среднее 3 393%, 5 471%, 9 222% и 32 206%, а медиана стабильна около +300%. Скоринг рискованных профилей поощрял сливы, лимиты допускали превышение на 10%, кэш старого прогона подхватывался молча.', 'simulation-original/strategy_optimizer.py', 'Общий seed, перепроверка top-5 на независимом seed, медиана, строгие лимиты, кэш с подписью настроек.'],
   ['crit', 'Адаптивные стратегии не адаптировались', 'volatility_adjusted, sharpe_optimized и multi_objective считали волатильность по плоскому банку, и она всегда была 0: результат volatility_adjusted совпадал с fixed_fraction до цифры. ml_adaptive сравнивал проходимость с ROI + 1/средний кэф вместо средней (1 + ROI)/кэф. В original adaptive_bet получал статичный max_bank (10× старта), поэтому урезание ×0,375 действовало всегда, а не на просадке.', 'run_strategies_real_odds.py, simulation-original/bet_simulator.py', 'Стратегии видят живой банк и его историю, ожидаемая проходимость считается правильно.'],
   ['major', 'Вариация суммы уменьшала ставку на 25%', 'Множители 0,35–1,15 в среднем дают 0,75. Вывод «вариация снижает риск и прибыль» объясняется меньшей средней ставкой, а не разбросом.', 'run_strategies_real_odds.py, simulation-current/README.md', 'В симуляторе есть вариант ×0,8–1,2 со средним 1. Описание в коде и README исправлено.'],
@@ -1341,7 +1352,7 @@ const FINDINGS = [
   ['major', 'У каждой ставки свой EV, но в расчёт шёл один ROI', 'В matching_teams_clean.csv есть EV каждой ставки (от −3% до +293%), а симуляции давали всем ставкам один ROI. ROI-зависимые стратегии вырождались в фиксированный процент.', 'run_strategies_real_odds.py, config.py', 'Модель «EV каждой ставки из данных» в brm и в симуляторе.'],
   ['major', 'Лог-формула ставит без перевеса', '−log₁₀(1 − p) / risk зависит от вероятности проигрыша, а не от перевеса: при нулевом EV на кэфе 1,5 и risk 15 ставка 3,2% банка. Это не Келли.', 'logarithmic_kelly.py, backend/calculator', { note: 'Это свойство формулы, а не ошибка кода: оставлена как есть и сравнивается с Келли при равном риске.' }],
   ['minor', 'Просадка в HTML-симуляторах проверялась раз в 50 ставок', 'Провалы между проверками пропускались, а «период перерасчёта банкролла» на ставку не влиял.', 'sim.html, simulation.html, supersim.html', 'Просадка после каждой ставки, период задаёт базу ставки.'],
-  ['minor', 'Склейка при возобновлении и выброшенные убыточные варианты', 'combat_final узнавал готовые задачи только по параметрам, и linear_roi/sqrt_roi с одинаковыми параметрами склеивались. Фильтр profit > 0 выкидывал честные убыточные варианты. combat_parallel и combat_resumable не запускались вовсе: в пул передавалась lambda.', 'combat_final.py, combat_parallel.py, combat_resumable.py', 'Ключ (стратегия, параметры), фильтр убран, воркер пула на уровне модуля; чужой файл прогресса не подхватывается.'],
+  ['minor', 'Склейка при возобновлении и выброшенные убыточные варианты', 'combat_final узнавал готовые задачи только по параметрам, и linear_roi/sqrt_roi с одинаковыми параметрами склеивались. Фильтр profit > 0 выкидывал честные убыточные варианты. combat_parallel и combat_resumable не запускались вовсе: в пул передавалась lambda, а test_combat_system падал на проверке ошибок.', 'combat_final.py, combat_parallel.py, combat_resumable.py, test_combat_system.py, analyze_top10.py', 'Ключ (стратегия, параметры), фильтр убран, воркер пула на уровне модуля; чужой файл прогресса не подхватывается.'],
   ['minor', 'Неравные условия в combat-сравнениях', 'kelly_correct всегда применяет вариацию 0,35–1,15, а у части соперников её нет. «Келли 1,0» там на деле около 0,75 Келли с шумом.', 'kelly_correct.py, combat_final.py', null],
 ];
 // ставка на 500-й в % живого банка: медиана ± полуразмах 5–95% (разброс показываем, только если он есть)

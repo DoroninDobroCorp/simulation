@@ -3,6 +3,7 @@
 Тестируем их напрямую.
 """
 
+# ИСПРАВЛЕНО: ранжирование и вывод по медиане прибыли, а не по среднему (AUDIT.md, № 6)
 import numpy as np
 from generate_real_odds_simulations import load_real_odds_outcomes
 from run_strategies_real_odds import (
@@ -142,13 +143,13 @@ for strategy_name, profile, strategy_func, params in exact_strategies:
             # Сохраняем в разные файлы в зависимости от bankrupt
             if metrics['bankrupt_pct'] <= 10:
                 save_results_to_csv(result, filename='results_aggressive_bankrupt10.csv')
-                print(f"✅ +{metrics['avg_profit_pct']:.0f}% B:{metrics['bankrupt_pct']:.1f}% DD50:{metrics['drawdown_50_pct']:.1f}% → bankrupt10")
+                print(f"✅ {metrics['median_profit_pct']:+.0f}% B:{metrics['bankrupt_pct']:.1f}% DD50:{metrics['drawdown_50_pct']:.1f}% → bankrupt10")
             elif metrics['bankrupt_pct'] <= 20:
                 save_results_to_csv(result, filename='results_aggressive_bankrupt20.csv')
-                print(f"✅ +{metrics['avg_profit_pct']:.0f}% B:{metrics['bankrupt_pct']:.1f}% DD50:{metrics['drawdown_50_pct']:.1f}% → bankrupt20")
+                print(f"✅ {metrics['median_profit_pct']:+.0f}% B:{metrics['bankrupt_pct']:.1f}% DD50:{metrics['drawdown_50_pct']:.1f}% → bankrupt20")
             else:
                 save_results_to_csv(result, filename='results_aggressive_bankrupt30plus.csv')
-                print(f"⚠️ +{metrics['avg_profit_pct']:.0f}% B:{metrics['bankrupt_pct']:.1f}% DD50:{metrics['drawdown_50_pct']:.1f}% → bankrupt30+")
+                print(f"⚠️ {metrics['median_profit_pct']:+.0f}% B:{metrics['bankrupt_pct']:.1f}% DD50:{metrics['drawdown_50_pct']:.1f}% → bankrupt30+")
             
             added += 1
             results.append(result)
@@ -163,9 +164,9 @@ print(f"✅ Протестировано: {added}/{len(exact_strategies)*2}")
 
 if results:
     print("\n🏆 ТОП-10 по прибыли:")
-    sorted_results = sorted(results, key=lambda x: x['avg_profit_pct'], reverse=True)[:10]
+    sorted_results = sorted(results, key=lambda x: x['median_profit_pct'], reverse=True)[:10]
     for i, r in enumerate(sorted_results, 1):
-        print(f"{i:2}. {r['strategy_name'][:50]:<50} +{r['avg_profit_pct']:>6.0f}% B:{r['bankrupt_pct']:>4.1f}%")
+        print(f"{i:2}. {r['strategy_name'][:50]:<50} {r['median_profit_pct']:>+6.0f}% B:{r['bankrupt_pct']:>4.1f}%")
     
     print("\n📂 Файлы созданы:")
     print("  - results_aggressive_bankrupt10.csv (0-10% сливов)")

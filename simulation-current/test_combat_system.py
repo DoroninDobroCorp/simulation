@@ -6,6 +6,7 @@
 - Можно ли продолжить после прерывания
 """
 
+# ИСПРАВЛЕНО: ранжирование и вывод по медиане прибыли, а не по среднему (AUDIT.md, № 6)
 import numpy as np
 import pandas as pd
 from multiprocessing import Pool, cpu_count
@@ -70,7 +71,7 @@ def run_single_test(args):
             'strategy': strategy,
             'params': param_str,
             'params_json': json.dumps(params),
-            'profit': m['avg_profit_pct'],
+            'profit': m['median_profit_pct'], 'mean_profit': m['avg_profit_pct'],
             'bankrupt': m['bankrupt_pct'],
             'dd50': m['drawdown_50_pct'],
             'dd80': m['drawdown_80_pct'],
@@ -175,7 +176,10 @@ if __name__ == '__main__':
     df = pd.DataFrame(results)
     
     # Проверка на ошибки
-    errors = df[df.get('error', '') != '']
+    # ИСПРАВЛЕНО: без колонки error сравнение давало скаляр и df[False] падал с KeyError,
+    # а при ошибках NaN != '' записывал в ошибки каждую строку
+    err_mask = df['error'].notna() if 'error' in df.columns else pd.Series(False, index=df.index)
+    errors = df[err_mask]
     if len(errors) > 0:
         print(f"\n❌ ОШИБКИ: {len(errors)} тестов с ошибками!")
         for _, e in errors.iterrows():
@@ -183,7 +187,7 @@ if __name__ == '__main__':
     else:
         print(f"\n✅ Ошибок нет, все {len(df)} тестов успешны")
     
-    df = df[df['profit'] > 0]  # Только успешные
+    df = df[~err_mask]  # упавшие тесты (profit 0, bankrupt 100) не участвуют в рейтинге
     df = df.sort_values('profit', ascending=False)
     df.to_csv('test_combat_final.csv', index=False)
     
@@ -199,17 +203,17 @@ if __name__ == '__main__':
     if len(zero) > 0:
         best = zero.iloc[0]
         print(f"\n🥇 Лучшая без сливов:")
-        print(f"   {best['strategy']} ({best['params']}) → +{best['profit']:.0f}%")
+        print(f"   {best['strategy']} ({best['params']}) → {best['profit']:+.0f}%")
     
     if len(agg) > 0:
         best = agg.iloc[0]
         print(f"\n🥈 Лучшая агрессивная:")
-        print(f"   {best['strategy']} ({best['params']}) → +{best['profit']:.0f}%, B:{best['bankrupt']:.2f}%")
+        print(f"   {best['strategy']} ({best['params']}) → {best['profit']:+.0f}%, B:{best['bankrupt']:.2f}%")
     
     if len(mega) > 0:
         best = mega.iloc[0]
         print(f"\n🥉 Лучшая мега:")
-        print(f"   {best['strategy']} ({best['params']}) → +{best['profit']:.0f}%, B:{best['bankrupt']:.2f}%")
+        print(f"   {best['strategy']} ({best['params']}) → {best['profit']:+.0f}%, B:{best['bankrupt']:.2f}%")
     
     # ПРОВЕРКА СИСТЕМЫ
     print("\n" + "="*100)

@@ -107,7 +107,7 @@ def calibrate_floor_kelly(market: Market, cfg: SimConfig, metric, limit, floors=
     if not results:
         return 0.0, None
     best = max(results, key=lambda r: r[1]['median_profit_pct'])
-    for fl in (best[1]['floor'] - 0.05, best[1]['floor'] + 0.05):
+    for fl in (round(best[1]['floor'] - 0.05, 3), round(best[1]['floor'] + 0.05, 3)):   # без round 0.9 + 0.05 > 0.95
         if 0.05 <= fl <= 0.95:
             r = run_floor(fl)
             if r and r[1]['median_profit_pct'] > best[1]['median_profit_pct']:

@@ -3,6 +3,7 @@
 От k=0.25 до k=2.5 с шагом 0.25
 """
 
+# ИСПРАВЛЕНО: ранжирование и вывод по медиане прибыли, а не по среднему (AUDIT.md, № 6)
 import numpy as np
 from generate_real_odds_simulations import load_real_odds_outcomes
 from realistic_simulation import adaptive_constant_profit_realistic, calculate_metrics_realistic
@@ -58,14 +59,14 @@ for k in k_values:
         
         var_str = "Yes" if apply_var else "No"
         
-        print(f"{k:<6.2f} {var_str:<5} +{m['avg_profit_pct']:<9.0f} "
+        print(f"{k:<6.2f} {var_str:<5} {m['median_profit_pct']:<+9.0f} "
               f"{m['bankrupt_pct']:<10.2f} {m['drawdown_50_pct']:<10.1f} "
               f"{m['drawdown_80_pct']:<10.1f} {m['worst_drawdown_pct']:<10.1f} {avg_bet:<10.2f}")
         
         results.append({
             'k': k,
             'var': apply_var,
-            'profit': m['avg_profit_pct'],
+            'profit': m['median_profit_pct'],
             'bankrupt': m['bankrupt_pct'],
             'dd50': m['drawdown_50_pct'],
             'dd80': m['drawdown_80_pct'],
@@ -90,7 +91,7 @@ if zero_bankrupt:
         avg_bet_eur = bank * r['avg_bet'] / 100
         
         print(f"{i}. k={r['k']:.2f} {var_str}")
-        print(f"   💰 Profit: +{r['profit']:.0f}% = +{profit_eur:,.0f} евро")
+        print(f"   💰 Profit: {r['profit']:+.0f}% = {profit_eur:+,.0f} евро")
         print(f"   ✅ Bankrupt: 0.00%")
         print(f"   ⚠️  DD>50%: {r['dd50']:.1f}%, DD>80%: {r['dd80']:.1f}%")
         print(f"   📊 Worst DD: {r['worst_dd']:.1f}%")
@@ -115,7 +116,7 @@ if aggressive_sorted:
         avg_bet_eur = bank * r['avg_bet'] / 100
         
         print(f"{i}. k={r['k']:.2f} {var_str}")
-        print(f"   💰 Profit: +{r['profit']:.0f}% = +{profit_eur:,.0f} евро на 1000")
+        print(f"   💰 Profit: {r['profit']:+.0f}% = {profit_eur:+,.0f} евро на 1000")
         print(f"   ⚠️  Bankrupt: {r['bankrupt']:.2f}% ({int(r['bankrupt']*100):.0f} из 10000)")
         print(f"   ⚠️  DD>50%: {r['dd50']:.1f}%, DD>80%: {r['dd80']:.1f}%")
         print(f"   📊 Avg bet: {r['avg_bet']:.2f}% = {avg_bet_eur:.0f} евро")
@@ -130,7 +131,7 @@ best_safe = max(zero_bankrupt, key=lambda x: x['profit'])
 var_str = "с вариацией" if best_safe['var'] else "без вариации"
 print(f"\n🛡️ ДЛЯ 100,000 ЕВРО (безопасность):")
 print(f"   k={best_safe['k']:.2f} {var_str}")
-print(f"   → +{best_safe['profit']:.0f}% (+{100000*best_safe['profit']/100:,.0f} евро)")
+print(f"   → {best_safe['profit']:+.0f}% ({100000*best_safe['profit']/100:+,.0f} евро)")
 print(f"   → 0% сливов, DD>50%: {best_safe['dd50']:.1f}%")
 
 # Лучший для мелких
@@ -139,7 +140,7 @@ if aggressive_sorted:
     var_str = "с вариацией" if best_aggr['var'] else "без вариации"
     print(f"\n🚀 ДЛЯ 1,000 ЕВРО (агрессивно):")
     print(f"   k={best_aggr['k']:.2f} {var_str}")
-    print(f"   → +{best_aggr['profit']:.0f}% (+{1000*best_aggr['profit']/100:,.0f} евро)")
+    print(f"   → {best_aggr['profit']:+.0f}% ({1000*best_aggr['profit']/100:+,.0f} евро)")
     print(f"   → {best_aggr['bankrupt']:.2f}% сливов, DD>50%: {best_aggr['dd50']:.1f}%")
 
 print("\n" + "="*100)

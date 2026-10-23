@@ -204,6 +204,21 @@ def test_floor_kelly_calibration_tunes_floor():
     assert 0.05 <= m['floor'] <= 0.95
 
 
+def test_floor_kelly_refine_reaches_edge_floor(monkeypatch):
+    """Если лучший пол сетки 0.9, уточнение пробует и 0.95 (0.9 + 0.05 в float больше 0.95)."""
+    from brm import optimize
+    tried = []
+
+    def fake_calibrate(build, market, cfg, metric, limit, **kw):
+        fl = build(1.0).floor
+        tried.append(round(fl, 3))
+        return 1.0, {'median_profit_pct': fl}   # чем выше пол, тем лучше
+
+    monkeypatch.setattr(optimize, 'calibrate', fake_calibrate)
+    _, m = optimize.calibrate_floor_kelly(None, None, 'p_dd30_pct', 10.0)
+    assert 0.95 in tried and m['floor'] == 0.95
+
+
 def test_floor_kelly_uses_snapshot_when_bank_is_recalculated():
     """При снимке банка раз в K ставок подушка считается от снимка и пика снимков, а не от живого банка."""
     cfg = brm.SimConfig(n_sims=200, n_bets=300, recalc_every=30, cap=1.0, record_full=True, seed=8)

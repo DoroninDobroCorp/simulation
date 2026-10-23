@@ -2,6 +2,8 @@
 ТОП-10 СТРАТЕГИЙ ПО РАЗНЫМ КАТЕГОРИЯМ
 """
 
+# ИСПРАВЛЕНО: убыточные варианты больше не выкидываются; колонка profit в новых
+# combat_results_final.csv — медиана прибыли, а не среднее (AUDIT.md, № 6, № 16)
 import pandas as pd
 import json
 
@@ -10,7 +12,6 @@ print("🏆 ТОП-10 СТРАТЕГИЙ ПО РАЗНЫМ КАТЕГОРИЯМ"
 print("="*120)
 
 df = pd.read_csv('combat_results_final.csv')
-df = df[df['profit'] > 0]  # Только успешные
 
 # Добавляем k для adaptive
 df['k_value'] = df.apply(
@@ -36,12 +37,12 @@ print("-"*120)
 
 for i, (_, r) in enumerate(safe.head(10).iterrows(), 1):
     profit_100k = 100000 * r['profit'] / 100
-    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} +{r['profit']:<11.0f} {r['worst_dd']:<12.1f} {r['dd50']:<10.1f} +{profit_100k:>10,.0f} €")
+    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} {r['profit']:<+11.0f} {r['worst_dd']:<12.1f} {r['dd50']:<10.1f} {profit_100k:>+10,.0f} €")
 
 if len(safe) > 0:
     best = safe.iloc[0]
     print(f"\n💎 ПОБЕДИТЕЛЬ: {best['strategy']} ({best['params']})")
-    print(f"   → Только +{best['profit']:.0f}% прибыль, но worst DD всего {best['worst_dd']:.1f}%")
+    print(f"   → Только {best['profit']:+.0f}% прибыль, но worst DD всего {best['worst_dd']:.1f}%")
 
 # =============================================================================
 # 2. БАЛАНС ПРИБЫЛЬ/БЕЗОПАСНОСТЬ
@@ -59,12 +60,12 @@ print("-"*120)
 
 for i, (_, r) in enumerate(balanced.head(10).iterrows(), 1):
     profit_50k = 50000 * r['profit'] / 100
-    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} +{r['profit']:<11.0f} {r['worst_dd']:<12.1f} {r['dd80']:<10.1f} +{profit_50k:>10,.0f} €")
+    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} {r['profit']:<+11.0f} {r['worst_dd']:<12.1f} {r['dd80']:<10.1f} {profit_50k:>+10,.0f} €")
 
 if len(balanced) > 0:
     best = balanced.iloc[0]
     print(f"\n💎 ПОБЕДИТЕЛЬ: {best['strategy']} ({best['params']})")
-    print(f"   → +{best['profit']:.0f}% прибыль при worst DD {best['worst_dd']:.1f}%")
+    print(f"   → {best['profit']:+.0f}% прибыль при worst DD {best['worst_dd']:.1f}%")
 
 # =============================================================================
 # 3. МАКСИМУМ ПРИБЫЛИ БЕЗ СЛИВОВ
@@ -82,12 +83,12 @@ print("-"*120)
 
 for i, (_, r) in enumerate(max_profit_zero.head(10).iterrows(), 1):
     profit_10k = 10000 * r['profit'] / 100
-    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} +{r['profit']:<11.0f} {r['worst_dd']:<12.1f} {r['dd80']:<10.1f} +{profit_10k:>10,.0f} €")
+    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} {r['profit']:<+11.0f} {r['worst_dd']:<12.1f} {r['dd80']:<10.1f} {profit_10k:>+10,.0f} €")
 
 if len(max_profit_zero) > 0:
     best = max_profit_zero.iloc[0]
     print(f"\n💎 ПОБЕДИТЕЛЬ: {best['strategy']} ({best['params']})")
-    print(f"   → +{best['profit']:.0f}% прибыль (x{best['profit']/100 + 1:.1f}!)")
+    print(f"   → {best['profit']:+.0f}% прибыль (x{best['profit']/100 + 1:.1f}!)")
     print(f"   ⚠️  НО worst DD {best['worst_dd']:.1f}% - может упасть почти до нуля!")
 
 # =============================================================================
@@ -107,12 +108,12 @@ print("-"*120)
 for i, (_, r) in enumerate(aggressive.head(10).iterrows(), 1):
     profit_1k = 1000 * r['profit'] / 100
     bankrupt_ratio = f"1 из {int(100/r['bankrupt'])}"
-    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} +{r['profit']:<11.0f} {r['bankrupt']:<5.2f}% ({bankrupt_ratio}) {r['dd50']:<10.1f} +{profit_1k:>8,.0f} €")
+    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} {r['profit']:<+11.0f} {r['bankrupt']:<5.2f}% ({bankrupt_ratio}) {r['dd50']:<10.1f} {profit_1k:>+8,.0f} €")
 
 if len(aggressive) > 0:
     best = aggressive.iloc[0]
     print(f"\n💎 ПОБЕДИТЕЛЬ: {best['strategy']} ({best['params']})")
-    print(f"   → +{best['profit']:.0f}% прибыль")
+    print(f"   → {best['profit']:+.0f}% прибыль")
     print(f"   → {best['bankrupt']:.2f}% сливов (1 из {int(100/best['bankrupt'])})")
 
 # =============================================================================
@@ -132,12 +133,12 @@ print("-"*120)
 for i, (_, r) in enumerate(mega.head(10).iterrows(), 1):
     profit_100 = 100 * r['profit'] / 100
     bankrupt_ratio = f"1 из {int(100/r['bankrupt'])}"
-    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} +{r['profit']:<11.0f} {r['bankrupt']:<5.2f}% ({bankrupt_ratio}) +{profit_100:>8,.0f} €")
+    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} {r['profit']:<+11.0f} {r['bankrupt']:<5.2f}% ({bankrupt_ratio}) {profit_100:>+8,.0f} €")
 
 if len(mega) > 0:
     best = mega.iloc[0]
     print(f"\n💎 ПОБЕДИТЕЛЬ: {best['strategy']} ({best['params']})")
-    print(f"   → +{best['profit']:.0f}% прибыль (x{best['profit']/100 + 1:.0f}!)")
+    print(f"   → {best['profit']:+.0f}% прибыль (x{best['profit']/100 + 1:.0f}!)")
     print(f"   → {best['bankrupt']:.2f}% сливов (1 из {int(100/best['bankrupt'])})")
 
 # =============================================================================
@@ -155,13 +156,13 @@ print(f"\n{'#':<4} {'Стратегия':<30} {'Параметры':<25} {'Profi
 print("-"*120)
 
 for i, (_, r) in enumerate(low_dd.head(10).iterrows(), 1):
-    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} +{r['profit']:<11.0f} {r['dd50']:<10.1f} {r['dd80']:<10.1f} {r['worst_dd']:.1f}%")
+    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} {r['profit']:<+11.0f} {r['dd50']:<10.1f} {r['dd80']:<10.1f} {r['worst_dd']:.1f}%")
 
 if len(low_dd) > 0:
     best = low_dd.iloc[0]
     print(f"\n💎 ПОБЕДИТЕЛЬ: {best['strategy']} ({best['params']})")
     print(f"   → DD>50% всего в {best['dd50']:.1f}% случаев!")
-    print(f"   → Прибыль +{best['profit']:.0f}%")
+    print(f"   → Прибыль {best['profit']:+.0f}%")
 
 # =============================================================================
 # 7. ABSOLUTE TOP-10 (по прибыли, любые условия)
@@ -176,7 +177,7 @@ print(f"\n{'#':<4} {'Стратегия':<30} {'Параметры':<25} {'Profi
 print("-"*120)
 
 for i, (_, r) in enumerate(absolute_top.head(10).iterrows(), 1):
-    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} +{r['profit']:<11.0f} {r['bankrupt']:<10.2f} {r['dd80']:.1f}%")
+    print(f"{i:<4} {r['strategy']:<30} {r['params']:<25} {r['profit']:<+11.0f} {r['bankrupt']:<10.2f} {r['dd80']:.1f}%")
 
 # =============================================================================
 # ИТОГОВАЯ ТАБЛИЦА ПОБЕДИТЕЛЕЙ
@@ -251,7 +252,7 @@ print(f"\n{'Категория':<20} {'Для банка':<15} {'Стратег�
 print("-"*120)
 
 for w in winners:
-    print(f"{w['category']:<20} {w['for_bank']:<15} {w['strategy']:<30} {w['params']:<20} +{w['profit']:<9.0f} {w['bankrupt']:.2f}%")
+    print(f"{w['category']:<20} {w['for_bank']:<15} {w['strategy']:<30} {w['params']:<20} {w['profit']:<+9.0f} {w['bankrupt']:.2f}%")
 
 print("\n" + "="*120)
 print("✅ АНАЛИЗ ЗАВЕРШЕН!")

@@ -338,7 +338,7 @@ function calibrateFloorKelly(mk, cfg, profile, iters) {
   let best = null;
   for (const fl of [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]) { const r = run(fl); if (r && (!best || r.median > best.median)) best = r; }
   if (!best) return null;
-  for (const fl of [best.floor - 0.05, best.floor + 0.05]) {
+  for (const fl of [best.floor - 0.05, best.floor + 0.05].map((x) => Math.round(x * 1000) / 1000)) {   // без округления 0,9 + 0,05 > 0,95
     if (fl >= 0.05 && fl <= 0.95) { const r = run(fl); if (r && r.median > best.median) best = r; }
   }
   return best;

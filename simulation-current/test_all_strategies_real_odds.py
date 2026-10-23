@@ -21,18 +21,18 @@ for bet_size in bet_sizes:
         'dynamic_percentage', 
         outcomes, 
         odds_array, 
-        bet_size, 
-        apply_variation=False
+        apply_variation=False,
+        bet_size_pct=bet_size  # ИСПРАВЛЕНО: позиционный bet_size давал TypeError
     )
     save_results_to_csv(result)
     
-    # С вариацией (30%-115%)
+    # С вариацией (35%-115%)
     result = run_strategy_with_real_odds(
         'dynamic_percentage',
         outcomes,
         odds_array,
-        bet_size,
-        apply_variation=True
+        apply_variation=True,
+        bet_size_pct=bet_size  # ИСПРАВЛЕНО: позиционный bet_size давал TypeError
     )
     save_results_to_csv(result)
 

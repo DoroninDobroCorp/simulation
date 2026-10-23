@@ -133,6 +133,7 @@ def calculate_metrics_with_odds(bankroll_history, bet_history, odds_array):
         'drawdown_50_pct': threshold_50_count / num_sims * 100,
         'drawdown_80_pct': threshold_80_count / num_sims * 100,
         'avg_profit_pct': np.mean(final_profits_pct),
+        'median_profit_pct': np.median(final_profits_pct),
         'min_profit_pct': np.min(final_profits_pct),
         'max_profit_pct': np.max(final_profits_pct),
         'avg_max_drawdown_pct': np.mean(max_drawdown_per_sim),

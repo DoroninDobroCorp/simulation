@@ -3,6 +3,7 @@
 Цель: profit 200-300%, bankrupt < 20%
 """
 
+# ИСПРАВЛЕНО: ранжирование и вывод по медиане прибыли, а не по среднему (AUDIT.md, № 6)
 import numpy as np
 from generate_real_odds_simulations import load_real_odds_outcomes
 from run_strategies_real_odds import *
@@ -83,7 +84,7 @@ for strategy_name, strategy_func, params in strategies:
         # ЖЕСТКИЕ фильтры
         if max_bet > 10:
             continue
-        if metrics['avg_profit_pct'] < 100:
+        if metrics['median_profit_pct'] < 100:
             continue
         if metrics['bankrupt_pct'] > 20:
             continue
@@ -109,7 +110,7 @@ for strategy_name, strategy_func, params in strategies:
         
         results.append({
             'name': name,
-            'profit': metrics['avg_profit_pct'],
+            'profit': metrics['median_profit_pct'],
             'bankrupt': metrics['bankrupt_pct'],
             'dd50': metrics['drawdown_50_pct'],
             'max_bet': max_bet
@@ -130,13 +131,13 @@ if len(results) > 0:
     print(f"{'Стратегия':<50} {'Profit':<9} {'Bankrupt':<9} {'Max bet'}")
     print("-"*90)
     for i, r in enumerate(results_sorted[:10], 1):
-        print(f"{i:2}. {r['name'][:48]:<48} +{r['profit']:>5.0f}%  {r['bankrupt']:>6.1f}%  {r['max_bet']:>6.1f}%")
+        print(f"{i:2}. {r['name'][:48]:<48} {r['profit']:>+5.0f}%  {r['bankrupt']:>6.1f}%  {r['max_bet']:>6.1f}%")
     
     # Лучшая по соотношению прибыль/риск
     best_ratio = max(results_sorted, key=lambda x: x['profit'] / (x['bankrupt'] + 1))
     print(f"\n💎 ЛУЧШЕЕ СООТНОШЕНИЕ profit/risk:")
     print(f"   {best_ratio['name']}")
-    print(f"   Profit: +{best_ratio['profit']:.0f}%")
+    print(f"   Profit: {best_ratio['profit']:+.0f}%")
     print(f"   Bankrupt: {best_ratio['bankrupt']:.1f}%")
     print(f"   DD>50%: {best_ratio['dd50']:.1f}%")
     print(f"   Max bet: {best_ratio['max_bet']:.1f}%")
