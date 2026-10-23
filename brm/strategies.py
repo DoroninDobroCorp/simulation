@@ -409,7 +409,8 @@ class TargetBased(Strategy):
 
 
 class AntiMartingale(Strategy):
-    """После выигрыша процент x multiplier (не более max_streak раз), после проигрыша — база."""
+    """После выигрыша процент x multiplier (пока серия выигрышей короче max_streak, то есть
+    не больше max_streak - 1 увеличений подряд, как в legacy), после проигрыша — база."""
     label = 'Анти-мартингейл'
 
     def __init__(self, base_percent=1.0, multiplier=1.5, max_percent=10.0, max_streak=5):

@@ -4,7 +4,8 @@
 Условия по умолчанию: ROI 5% у каждой ставки, кэф от 1.5 до 4 (средний 2.75,
 разброс как у реальных ставок), 1000 ставок = месяц, не больше 10% банка на ставку.
 
-Задачи (максимум медианной прибыли месяца при ограничении на просадку от пика):
+Задачи (максимум медианной прибыли месяца при ограничении на просадку от пика; основной рецепт —
+дробный Келли, рядом — стратегия с максимальной медианой):
   aggressive    — просадка ≥ 50% не чаще чем в 1 месяце из 10;
   moderate      — просадка ≥ 30% не чаще чем в 1 месяце из 10;
   conservative  — большой банк: просадка ≥ 20% не чаще чем в 1 месяце из 20
@@ -34,7 +35,7 @@ from . import strategies as S
 from .data import REPO_ROOT, beta_odds_pool, real_odds_in_range
 from .engine import Market, SimConfig, make_market, run
 from .metrics import summarize
-from .optimize import calibrate
+from .optimize import calibrate, calibrate_floor_kelly
 
 OUT_DIR = os.path.join(REPO_ROOT, 'reports')
 
@@ -64,8 +65,10 @@ TASKS = {
 }
 FRONTIER_KEYS = ('kelly', 'fixed', 'flat', 'log_formula')
 # при почти равной медиане рекомендуем стратегию выше по списку: она проще и обоснованнее
-PREFERENCE = ('kelly', 'log_formula', 'floor_kelly', 'fixed', 'flat', 'kelly_guard', 'dynamic_percentage', 'anti_martingale')
-TIE_PP = 1.5
+# Основной рецепт в каждой задаче — дробный Келли: это та же лог-формула backend при одинаковом EV,
+# он проще остальных, у него меньше месяцев в минусе и он заметно устойчивее, если ROI завышен.
+# Стратегия с максимальной медианой показывается рядом как альтернатива со своей ценой.
+PRIMARY = 'kelly'
 
 KEEP = ('median_profit_pct', 'mean_profit_pct', 'p_profit_below_m10_pct', 'p1_profit_pct', 'p5_profit_pct', 'p25_profit_pct', 'p75_profit_pct',
         'p95_profit_pct', 'p_loss_pct', 'median_max_dd_pct', 'p95_max_dd_pct', 'p_dd10_pct', 'p_dd15_pct', 'p_dd20_pct',
@@ -87,15 +90,10 @@ def rules_of(task):
     return list(c) if isinstance(c[0], tuple) else [c]
 
 
-def floor_for(task):
-    metric = rules_of(task)[0][0]
-    return 1.0 - int(metric[len('p_dd'):-len('_pct')]) / 100.0
-
-
-def build_for(key, scale, task=None):
+def build_for(key, scale, floor=None):
     """Сборка стратегии; для лог-формулы scale = 1/risk, чтобы рост scale всегда означал большую ставку."""
     if key == 'floor_kelly':
-        return S.FloorKelly(scale, floor_for(task) if task else 0.5)
+        return S.FloorKelly(scale, 0.5 if floor is None else floor)
     _, build, *_ = FAMILIES[key]
     return build(1.0 / scale) if is_inverse(key) else build(scale)
 
@@ -109,8 +107,8 @@ def param_value(key, scale):
     return 1.0 / scale if is_inverse(key) else scale
 
 
-def evaluate(key, scale, market, cfg, task=None):
-    return summarize(run(build_for(key, scale, task), market, cfg))
+def evaluate(key, scale, market, cfg, floor=None):
+    return summarize(run(build_for(key, scale, floor), market, cfg))
 
 
 def frontier(key, market, cfg, points):
@@ -144,16 +142,20 @@ def best_growth(key, market, cfg, front):
     return best, cache[best]
 
 
-def solve(key, task, market, cfg):
+def solve(key, rules, market, cfg):
+    """Лучший размер под ограничения; у Келли с полом подбираются и пол, и доля. -> (scale, метрики, пол)."""
     lo, hi = scale_range(key)
-    scale, m = calibrate(lambda s: build_for(key, s, task), market, cfg, rules_of(task), None, scale_hi=hi,
-                         refine=(0.3, 0.45, 0.6, 0.75, 0.9))
-    return scale, m
+    refine = (0.3, 0.45, 0.6, 0.75, 0.9)
+    if key == 'floor_kelly':
+        scale, m = calibrate_floor_kelly(market, cfg, rules, None, mult_hi=hi, refine=refine)
+        return scale, m, (None if m is None else m['floor'])
+    scale, m = calibrate(lambda s: build_for(key, s), market, cfg, rules, None, scale_hi=hi, refine=refine)
+    return scale, m, None
 
 
-def stake_table(key, scale, task=None, bank0=1000.0, cap=0.10):
+def stake_table(key, scale, floor=None, bank0=1000.0, cap=0.10):
     """Ставка в % банка при разных кэфах (банк на пике, без просадки)."""
-    strat = build_for(key, scale, task)
+    strat = build_for(key, scale, floor)
     n = len(STAKE_ODDS)
     strat.reset(n, bank0)
     from types import SimpleNamespace
@@ -169,21 +171,23 @@ def overstated_market(odds, est, true):
                   f'оценка EV {est:.1%}, на деле {true:.1%}')
 
 
-def robustness(key, scale, task, pool, cfg_eval):
+def robustness(row, pool, cfg_eval, cfg_horizon):
+    key, scale, floor = row['key'], row['scale'], row.get('floor')
     out = {}
     odds = pool.odds
 
     def go(mk, cfg):
-        return slim(summarize(run(build_for(key, scale, task), mk, cfg)))
+        return slim(summarize(run(build_for(key, scale, floor), mk, cfg)))
 
-    for true in (0.05, 0.035, 0.025, 0.0):
+    out['true_roi_0.050'] = row['eval']          # это и есть основная перепроверка
+    for true in (0.035, 0.025, 0.0):
         out[f'true_roi_{true:.3f}'] = go(overstated_market(odds, ROI, true), cfg_eval)
     base_mk = make_market(pool, roi=ROI, ev_model='flat')
     out['backend_rules'] = go(base_mk, replace(cfg_eval, bank0=10000.0, recalc_every=(30, 70), round_to=5.0, min_stake=10.0))
     out['real_odds'] = go(make_market(real_odds_in_range(ODDS_MIN, ODDS_MAX, ROI), roi=ROI), cfg_eval)
     out['horizon'] = {}
     for months in (3, 6, 12):
-        out['horizon'][months] = go(base_mk, replace(cfg_eval, n_sims=min(cfg_eval.n_sims, 6000), n_bets=1000 * months))
+        out['horizon'][months] = go(base_mk, replace(cfg_horizon, n_bets=1000 * months))
     return out
 
 
@@ -191,27 +195,19 @@ def conservative_tolerance(market, cfg, keys=('kelly', 'floor_kelly', 'fixed', '
     """Как меняется консервативный размер при разной допустимой просадке (P ≤ 5%)."""
     rows = []
     for level in (10, 15, 20, 25, 30):
-        metric = f'p_dd{level}_pct'
         row = {'dd_level': level}
         for key in keys:
-            lo, hi = scale_range(key)
-            if key == 'floor_kelly':
-                build = lambda s, fl=1 - level / 100: S.FloorKelly(s, fl)  # noqa: E731
-            else:
-                build = lambda s, k=key: build_for(k, s)  # noqa: E731
-            scale, m = calibrate(build, market, cfg, metric, 5.0, scale_hi=hi, refine=(0.45, 0.6, 0.75, 0.9))
-            row[key] = None if m is None else dict(slim(m), scale=scale, param=param_value(key, scale))
+            scale, m, floor = solve(key, [(f'p_dd{level}_pct', 5.0)], market, cfg)
+            row[key] = None if m is None else dict(slim(m), scale=scale, param=param_value(key, scale), floor=floor)
         rows.append(row)
         print(f"  просадка ≥ {level}% не чаще 5%: " + ', '.join(
             f"{k}={row[k]['param']:.3f} ({row[k]['median_profit_pct']:+.1f}%)" for k in keys if row[k]))
     return rows
 
 
-def pick(rows):
-    """Лучшая медиана; если другие отстают меньше чем на TIE_PP — стратегия выше в PREFERENCE."""
-    best = max(r['eval']['median_profit_pct'] for r in rows)
-    near = [r for r in rows if r['eval']['median_profit_pct'] >= best - TIE_PP]
-    return min(near, key=lambda r: PREFERENCE.index(r['key']))
+def feasible_rows(task, rows):
+    """Строки, которые выполняют ограничения задачи и на независимой перепроверке."""
+    return [r for r in rows if all(r['eval'][k] <= v for k, v in rules_of(task))]
 
 
 def pp(x, d=1):
@@ -229,41 +225,66 @@ def write_markdown(res, path):
     L = []
     a = L.append
 
+    def ptxt(r):
+        if r['key'] == 'floor_kelly':
+            return f"{r['param']:.3g} Келли от подушки над полом {r['floor']:.0%} пика"
+        return f"{r['param']:.3g} ({unit[r['key']]})"
+
     def row_metrics(m):
         return (f"{pp(m['median_profit_pct'])} | {pp(m['mean_profit_pct'], 0)} | {pp(m['p5_profit_pct'])} | {pp(m['p95_profit_pct'], 0)} | "
-                f"{pc(m['p_loss_pct'])} | {pc(m.get('p_profit_below_m10_pct', float('nan')))} | {pc(m['median_max_dd_pct'])} | {pc(m['p_dd20_pct'])} | {pc(m['p_dd30_pct'])} | "
-                f"{pc(m['p_dd50_pct'])} | {pc(m['p_dd80_pct'])}")
+                f"{pc(m['p_loss_pct'])} | {pc(m.get('p_profit_below_m10_pct', float('nan')))} | {pc(m['median_max_dd_pct'])} | "
+                f"{pc(m['p_dd20_pct'])} | {pc(m['p_dd30_pct'])} | {pc(m['p_dd50_pct'])} | {pc(m['p_dd80_pct'])}")
     head = ('Медиана месяца | Среднее | Плохой месяц (5%) | Хороший (95%) | Месяц в минусе | Месяц хуже −10% | Медиана макс. просадки | '
             'Просадка ≥ 20% | ≥ 30% | ≥ 50% | ≥ 80%')
     ncol = 11
 
+    def stakes_txt(st):
+        return ' / '.join(f"{st[k]:.2f}" for k in ('1.5', '2.0', '2.75', '3.5', '4.0'))
+
     a('# Месяц ставок: ROI 5%, кэф 1.5–4\n')
-    a(f"**Условия.** У каждой ставки истинный ROI {s['roi'] * 100:.0f}%. Кэф от {s['odds_min']} до {s['odds_max']}, средний "
-      f"{s['avg_odds']:.2f}, разброс σ {s['sd_odds']:.2f} — как у реальных ставок в этом диапазоне. {s['n_bets']} ставок в месяц, "
-      f"ставка от текущего банка, не больше {s['cap'] * 100:.0f}% банка. Размер подбирался на {s['n_sims_search']} симуляциях на точку, "
-      f"все цифры ниже — перепроверка на независимых {s['n_sims_eval']} симуляциях. Прибыль и просадка — за месяц, от банка на его начало.\n")
+    a(f"**Условия.** У каждой ставки истинный ROI {s['roi'] * 100:.0f}%. Кэф от {s['odds_min']} до {s['odds_max']} из Beta-распределения, "
+      f"средний {s['avg_odds']:.2f}, разброс σ {s['sd_odds']:.2f} (у реальных ставок в этом диапазоне σ 0.65 при среднем 2.63). "
+      f"{s['n_bets']} ставок в месяц, ставка от текущего банка, не больше {s['cap'] * 100:.0f}% банка. "
+      f"Размер подбирался на {s['n_sims_search']} симуляциях на точку с запасом {100 - s['search_margin'] * 100:.0f}% от лимита; "
+      f"если на перепроверке лимит всё же нарушался, размер уменьшался шагами по 3%. "
+      f"Основные таблицы, кривые и устойчивость — перепроверка на независимых {s['n_sims_eval']} симуляциях, "
+      f"несколько месяцев подряд — {s['n_sims_horizon']} симуляций. Прибыль и просадка — за месяц, от банка на его начало.\n")
     a('**Задачи.** Везде максимизируется медианная прибыль месяца, ограничение — на просадку от пика внутри месяца:\n')
     for t, (label, _, text) in TASKS.items():
         a(f'- **{label}** — {text}.')
     a('')
     a('Медиана, а не среднее: среднее делают несколько сверхудачных месяцев, и оно растёт с размером ставки далеко за разумные пределы.\n')
+    a('**Как выбран рецепт.** Основной рецепт в каждой задаче — дробный Келли: при одинаковом EV это та же лог-формула backend '
+      '(эквивалентный risk указан ниже), у него меньше всего месяцев в минусе среди сильных стратегий и он заметно устойчивее, '
+      'если ROI окажется ниже 5%. Рядом — стратегия с максимальной медианой при том же ограничении и её цена.\n')
 
     a('## Рекомендации\n')
-    a('| Задача | Стратегия | Параметр | Ставка, % банка, при кэфе 1.5 / 2 / 2.75 / 3.5 / 4 | ' + head + ' |')
-    a('|---|---|---|---|' + '---:|' * ncol)
+    a('Ставка указана при банке на пике (у Келли с полом она меньше, когда банк ниже пика).\n')
+    a('| Задача | Вариант | Стратегия | Параметр | Ставка, % банка, при кэфе 1.5 / 2 / 2.75 / 3.5 / 4 | ' + head + ' |')
+    a('|---|---|---|---|---|' + '---:|' * ncol)
     for task, r in res['recommended'].items():
-        st = r['stakes']
-        stakes = ' / '.join(f"{st[k]:.2f}" for k in ('1.5', '2.0', '2.75', '3.5', '4.0'))
-        a(f"| {TASKS[task][0]} | {fam[r['key']]} | {r['param']:.3g} ({unit[r['key']]}) | {stakes} | {row_metrics(r['eval'])} |")
+        a(f"| {TASKS[task][0]} | основной | {fam[r['key']]} | {ptxt(r)} | {stakes_txt(r['stakes'])} | {row_metrics(r['eval'])} |")
+        for alt in r['alternatives']:
+            a(f"| | максимум медианы | {fam[alt['key']]} | {ptxt(alt)} | {stakes_txt(alt['stakes'])} | {row_metrics(alt['eval'])} |")
     c = res['ceiling']
-    st = c['stakes']
-    stakes = ' / '.join(f"{st[k]:.2f}" for k in ('1.5', '2.0', '2.75', '3.5', '4.0'))
-    a(f"| Потолок, без ограничений | Келли | {c['scale']:.3g} (доля от полного Келли) | {stakes} | {row_metrics(c['eval'])} |")
+    a(f"| Потолок, без ограничений | | Келли | {c['scale']:.3g} (доля от полного Келли) | {stakes_txt(c['stakes'])} | {row_metrics(c['eval'])} |")
     a('')
     for task, r in res['recommended'].items():
-        eq = [x for x in res['tasks'][task] if x['key'] in ('log_formula', 'floor_kelly', 'fixed') and x['key'] != r['key']]
-        parts = [f"{fam[x['key']]} {x['param']:.3g} ({unit[x['key']]}) — медиана {pp(x['eval']['median_profit_pct'])}" for x in eq]
-        a(f"- **{TASKS[task][0]}.** Альтернативы на том же риске: " + '; '.join(parts) + '.')
+        log = next((x for x in res['tasks'][task] if x['key'] == 'log_formula'), None)
+        fixed = next((x for x in res['tasks'][task] if x['key'] == 'fixed'), None)
+        parts = []
+        if log:
+            parts.append(f"в лог-формуле backend это risk ≈ {log['param']:.0f} (медиана {pp(log['eval']['median_profit_pct'])})")
+        if fixed:
+            parts.append(f"фиксированный процент на том же ограничении — {fixed['param']:.2f}% банка, медиана {pp(fixed['eval']['median_profit_pct'])}")
+        for alt in r['alternatives']:
+            m0, m1 = r['eval'], alt['eval']
+            r0, r1 = r['robustness']['true_roi_0.025'], alt['robustness']['true_roi_0.025']
+            parts.append(f"{fam[alt['key']]} даёт медиану на {m1['median_profit_pct'] - m0['median_profit_pct']:.1f} п.п. выше, "
+                         f"но месяцев в минусе {pc(m1['p_loss_pct'])} против {pc(m0['p_loss_pct'])}, а при ROI 2.5% медиана "
+                         f"{pp(r1['median_profit_pct'])} против {pp(r0['median_profit_pct'])}")
+        text = '; '.join(parts)
+        a(f"- **{TASKS[task][0]}.** " + text[:1].upper() + text[1:] + '.')
     a('')
 
     for task, (label, _, text) in TASKS.items():
@@ -273,7 +294,7 @@ def write_markdown(res, path):
         a('|---:|---|---|---:|' + '---:|' * ncol)
         rows = sorted(res['tasks'][task], key=lambda r: r['eval']['median_profit_pct'], reverse=True)
         for i, r in enumerate(rows, 1):
-            a(f"| {i} | {fam[r['key']]} | {r['param']:.3g} {unit[r['key']]} | {pc(r['eval']['avg_stake_pct'], 2)} | {row_metrics(r['eval'])} |")
+            a(f"| {i} | {fam[r['key']]} | {ptxt(r)} | {pc(r['eval']['avg_stake_pct'], 2)} | {row_metrics(r['eval'])} |")
         a('')
 
     a('## Консервативная: сколько ставить при разной допустимой просадке\n')
@@ -283,7 +304,15 @@ def write_markdown(res, path):
     a('| Допустимая просадка | ' + ' | '.join(f"{fam[k]} ({unit[k]})" for k in keys) + ' |')
     a('|---:|' + '---|' * len(keys))
     for row in res['tolerance']:
-        cells = ['—' if row[k] is None else f"{row[k]['param']:.3g} → {pp(row[k]['median_profit_pct'])}" for k in keys]
+        cells = []
+        for k in keys:
+            x = row[k]
+            if x is None:
+                cells.append('—')
+            elif k == 'floor_kelly':
+                cells.append(f"пол {x['floor']:.0%}, доля {x['param']:.3g} → {pp(x['median_profit_pct'])}")
+            else:
+                cells.append(f"{x['param']:.3g} → {pp(x['median_profit_pct'])}")
         a(f"| {row['dd_level']}% | " + ' | '.join(cells) + ' |')
     a('')
 
@@ -295,8 +324,8 @@ def write_markdown(res, path):
     a('| Стратегия | Сценарий | ' + head + ' |')
     a('|---|---|' + '---:|' * ncol)
     for task, r in res['recommended'].items():
-        for variant in [r] + r.get('alternatives', []):
-            title = f"{TASKS[task][0]}: {fam[variant['key']]} {variant['param']:.3g}"
+        for variant in [r] + r['alternatives']:
+            title = f"{TASKS[task][0]}: {fam[variant['key']]} {ptxt(variant)}"
             for sk, sname in names.items():
                 a(f"| {title} | {sname} | {row_metrics(variant['robustness'][sk])} |")
                 title = ''
@@ -308,15 +337,19 @@ def write_markdown(res, path):
     a('| Стратегия | Месяцев | Медиана | Плохой исход (5%) | Хороший (95%) | В минусе | Медиана макс. просадки | Просадка ≥ 50% |')
     a('|---|---:|---:|---:|---:|---:|---:|---:|')
     for task, r in res['recommended'].items():
-        m = r['eval']
-        a(f"| {TASKS[task][0]}: {fam[r['key']]} {r['param']:.3g} | 1 | {pp(m['median_profit_pct'])} | {pp(m['p5_profit_pct'])} | "
-          f"{pp(m['p95_profit_pct'], 0)} | {pc(m['p_loss_pct'])} | {pc(m['median_max_dd_pct'])} | {pc(m['p_dd50_pct'])} |")
-        for months, m in r['robustness']['horizon'].items():
-            a(f"| | {months} | {pp(m['median_profit_pct'], 0)} | {pp(m['p5_profit_pct'], 0)} | {pp(m['p95_profit_pct'], 0)} | "
-              f"{pc(m['p_loss_pct'])} | {pc(m['median_max_dd_pct'])} | {pc(m['p_dd50_pct'])} |")
+        for variant in [r] + r['alternatives']:
+            m = variant['eval']
+            a(f"| {TASKS[task][0]}: {fam[variant['key']]} {ptxt(variant)} | 1 | {pp(m['median_profit_pct'])} | {pp(m['p5_profit_pct'])} | "
+              f"{pp(m['p95_profit_pct'], 0)} | {pc(m['p_loss_pct'])} | {pc(m['median_max_dd_pct'])} | {pc(m['p_dd50_pct'])} |")
+            for months, m in variant['robustness']['horizon'].items():
+                a(f"| | {months} | {pp(m['median_profit_pct'], 0)} | {pp(m['p5_profit_pct'], 0)} | {pp(m['p95_profit_pct'], 0)} | "
+                  f"{pc(m['p_loss_pct'])} | {pc(m['median_max_dd_pct'])} | {pc(m['p_dd50_pct'])} |")
     a('')
     with open(path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(L))
+
+
+SEARCH_MARGIN = 0.95   # подбор идёт к 95% лимита, чтобы на перепроверке лимит выполнялся, а не был на грани
 
 
 def main():
@@ -332,50 +365,68 @@ def main():
     market = make_market(pool, roi=ROI, ev_model='flat')
     cfg = SimConfig(n_sims=n_search, n_bets=1000, cap=0.10, seed=101, quantile_every=1000)
     cfg_eval = replace(cfg, n_sims=n_eval, seed=202)
-    cfg_rob = replace(cfg_eval, n_sims=min(n_eval, 10000))
+    cfg_horizon = replace(cfg_eval, n_sims=min(n_eval, 6000))
     res = {'settings': {'roi': ROI, 'odds_min': ODDS_MIN, 'odds_max': ODDS_MAX, 'avg_odds': float(pool.odds.mean()),
                         'sd_odds': float(pool.odds.std()), 'n_bets': cfg.n_bets, 'cap': cfg.cap,
-                        'n_sims_search': n_search, 'n_sims_eval': n_eval}}
+                        'n_sims_search': n_search, 'n_sims_eval': n_eval, 'n_sims_horizon': cfg_horizon.n_sims,
+                        'search_margin': SEARCH_MARGIN, 'primary': PRIMARY}}
 
+    # кривые и потолок считаются на той же выборке, что и итоговые цифры, чтобы точки рекомендаций лежали на кривых
     print('Кривые «размер -> рост/риск»')
     res['frontier'] = {}
     for key in FRONTIER_KEYS:
-        res['frontier'][key] = frontier(key, market, cfg, points)
+        res['frontier'][key] = frontier(key, market, cfg_eval, points)
         print(f'  {FAMILIES[key][0]}: {len(res["frontier"][key])} точек')
-    scale, _ = best_growth('kelly', market, cfg, res['frontier']['kelly'])
-    res['ceiling'] = {'scale': scale, 'eval': slim(evaluate('kelly', scale, market, cfg_eval)),
-                      'stakes': stake_table('kelly', scale)}
+    scale, m = best_growth('kelly', market, cfg_eval, res['frontier']['kelly'])
+    res['ceiling'] = {'scale': scale, 'eval': slim(m), 'stakes': stake_table('kelly', scale)}
     print(f"Потолок: Келли {scale:.3f}, медиана {res['ceiling']['eval']['median_profit_pct']:+.1f}%")
 
     res['tasks'] = {}
     for task, (label, _, _) in TASKS.items():
-        print(f'\n{label}: ' + ', '.join(f'{k} <= {v}%' for k, v in rules_of(task)))
-        metric = rules_of(task)[0][0]
+        rules = rules_of(task)
+        print(f'\n{label}: ' + ', '.join(f'{k} <= {v}%' for k, v in rules))
+        search_rules = [(k, v * SEARCH_MARGIN) for k, v in rules]
+        metric = rules[0][0]
         rows = []
         for key in FAMILIES:
-            scale, m = solve(key, task, market, cfg)
+            scale, m, floor = solve(key, search_rules, market, cfg)
             if m is None:
                 print(f'  {key:20s}: не укладывается в ограничение')
                 continue
-            ev = slim(evaluate(key, scale, market, cfg_eval, task))
-            rows.append({'key': key, 'scale': scale, 'param': param_value(key, scale), 'search': slim(m), 'eval': ev})
-            print(f"  {key:20s} параметр {param_value(key, scale):7.3f}  медиана {ev['median_profit_pct']:+7.1f}%  "
-                  f"{metric} {ev[metric]:5.1f}%  в минусе {ev['p_loss_pct']:4.1f}%  ставка {ev['avg_stake_pct']:.2f}%")
+            ev = slim(evaluate(key, scale, market, cfg_eval, floor))
+            # если на независимой перепроверке лимит всё же нарушен (шум поиска), уменьшаем размер шагами по 3%
+            shrink = 0
+            while not all(ev[k] <= v for k, v in rules) and shrink < 40:
+                scale *= 0.97
+                shrink += 1
+                ev = slim(evaluate(key, scale, market, cfg_eval, floor))
+            row = {'key': key, 'scale': scale, 'param': param_value(key, scale), 'search': slim(m), 'eval': ev,
+                   'shrink_steps': shrink}
+            if floor is not None:
+                row['floor'] = floor
+            rows.append(row)
+            print(f"  {key:20s} параметр {param_value(key, scale):7.3f}{'' if floor is None else f' пол {floor:.2f}'}  "
+                  f"медиана {ev['median_profit_pct']:+7.1f}%  {metric} {ev[metric]:5.1f}%  в минусе {ev['p_loss_pct']:4.1f}%  "
+                  f"ставка {ev['avg_stake_pct']:.2f}%")
         res['tasks'][task] = rows
 
     res['recommended'] = {}
     for task, (label, _, _) in TASKS.items():
-        rows = [r for r in res['tasks'][task] if all(r['eval'][k] <= v + 0.5 for k, v in rules_of(task))] or res['tasks'][task]
-        rec = dict(pick(rows))
-        rec['stakes'] = stake_table(rec['key'], rec['scale'], task)
-        print(f"\n{label}: рекомендую {FAMILIES[rec['key']][0]} {rec['param']:.3f}; устойчивость…")
-        rec['robustness'] = robustness(rec['key'], rec['scale'], task, pool, cfg_rob)
+        rows = feasible_rows(task, res['tasks'][task])
+        if not rows:
+            raise RuntimeError(f'{label}: ни одна стратегия не выполнила ограничения на перепроверке')
+        primary = next((r for r in rows if r['key'] == PRIMARY), None)
+        if primary is None:
+            raise RuntimeError(f'{label}: основной рецепт ({PRIMARY}) не выполнил ограничения на перепроверке')
+        best = max(rows, key=lambda r: r['eval']['median_profit_pct'])
+        rec = dict(primary, stakes=stake_table(primary['key'], primary['scale'], primary.get('floor')))
+        print(f"\n{label}: основной {FAMILIES[rec['key']][0]} {rec['param']:.3f}, максимум медианы — {FAMILIES[best['key']][0]}; устойчивость…")
+        rec['robustness'] = robustness(rec, pool, cfg_eval, cfg_horizon)
         rec['alternatives'] = []
-        for alt in res['tasks'][task]:
-            if alt['key'] in ('floor_kelly', 'kelly') and alt['key'] != rec['key']:
-                alt = dict(alt, stakes=stake_table(alt['key'], alt['scale'], task),
-                           robustness=robustness(alt['key'], alt['scale'], task, pool, cfg_rob))
-                rec['alternatives'].append(alt)
+        if best['key'] != primary['key']:
+            alt = dict(best, stakes=stake_table(best['key'], best['scale'], best.get('floor')))
+            alt['robustness'] = robustness(alt, pool, cfg_eval, cfg_horizon)
+            rec['alternatives'].append(alt)
         res['recommended'][task] = rec
 
     print('\nКонсервативная при разной допустимой просадке')

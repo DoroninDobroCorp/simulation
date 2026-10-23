@@ -141,6 +141,8 @@ h1 .tick { color: var(--accent); }
 .stakes span { background: var(--raise); border-radius: 6px; padding: 5px 2px; text-align: center; font: 12px/1.25 var(--f-body); color: var(--ink-2); }
 .stakes b { display: block; color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 .recipe .btn { justify-self: start; padding: 8px 12px; font-size: 13px; }
+.recipe .alt { border-top: 1px solid var(--line); padding-top: 10px; display: grid; gap: 6px; }
+.recipe .alt b { font-weight: 600; color: var(--ink); }
 .seg.inline { display: inline-grid; grid-auto-flow: column; grid-template-columns: none; }
 input[type="range"] { width: 100%; accent-color: var(--accent); margin: 0; height: 20px; }
 select, input[type="number"] {
@@ -497,7 +499,7 @@ footer code { color: var(--ink-2); }
       <!-- ================= КЕЛЛИ ================= -->
       <section id="view-kelly" role="tabpanel" aria-labelledby="tab-kelly" class="pane" hidden>
         <div class="panel">
-          <p class="lede">Полный Келли для десятичного кэфа: <code>f* = EV / (кэф − 1)</code>. Он максимизирует рост медианы, но только если EV известен точно. Здесь та же доля Келли считается в трёх мирах: стратегия знает истинный EV; модель завышает EV (средняя оценка в данных 5.1%, а истинный средний ROI задан слева); то же плюс шум модели σ = 5% на каждую ставку.</p>
+          <p class="lede">Полный Келли для десятичного кэфа: <code>f* = EV / (кэф − 1)</code>. Он максимизирует рост медианы, но только если EV известен точно. Здесь та же доля Келли считается в трёх мирах: стратегия знает истинный EV; модель ошибается в EV (стратегия видит оценку из данных, средняя <span id="k-est">5,1%</span>, а истинный средний ROI задан слева); то же плюс шум модели σ = 5% на каждую ставку.</p>
         </div>
         <div class="panel">
           <div class="toolbar">
@@ -611,7 +613,7 @@ const nf = (d) => new Intl.NumberFormat('ru-RU', { minimumFractionDigits: d, max
 const fmt = { 0: nf(0), 1: nf(1), 2: nf(2) };
 const num = (x, d = 1) => fmt[d].format(x).replace('-', '−');
 const pct = (x, d = 1) => num(x, d) + '%';
-const spct = (x, d = 1) => (x > 0 ? '+' : '') + pct(x, d);
+const spct = (x, d = 1) => (Math.abs(x) < 0.5 * Math.pow(10, -d) ? pct(0, d) : (x > 0 ? '+' : '') + pct(x, d));
 function profitLabel(mult) {
   const p = (mult - 1) * 100;
   if (Math.abs(p) < 0.5) return '0%';
@@ -683,7 +685,7 @@ function spawn() {
   return w;
 }
 let simWorker = spawn();
-let heavyWorker = null;
+let riskWorker = null, kellyWorker = null;   // у каждого тяжёлого расчёта свой воркер: один не убивает другой
 let jobId = 0;
 
 // ================= условия =================
@@ -741,7 +743,7 @@ function syncOutputs() {
   $('pre-default').setAttribute('aria-pressed', String(isPreset(DEFAULTS)));
   $('pre-month').setAttribute('aria-pressed', String(isPreset(MONTH_PRESET)));
   $('ev-hint').textContent = scaled
-    ? 'Оценки EV из данных (кап 8%) пропорционально уменьшены, чтобы средний истинный ROI был равен заданному.'
+    ? 'Оценки EV из данных (кап 8%) пропорционально пересчитаны так, чтобы средний истинный ROI был равен заданному.'
     : 'Как в simulation-current: у каждой ставки истинный EV равен среднему ROI.';
 }
 function setSource(src, fire = true) {
@@ -1005,8 +1007,12 @@ function preRiskRows(profile) {
   const block = state.ev === 'scaled' ? PRE.risk_matched.scaled_calibrated : PRE.risk_matched.flat;
   const rows = block && block.profiles[profile];
   if (!rows) return null;
-  return rows.map((r) => ({ key: r.key, scale: r.scale, scaleMax: r.scale_max, median: r.median_profit_pct, mean: r.mean_profit_pct, p5: r.p5_profit_pct,
-    pLoss: r.p_loss_pct, medianDD: r.median_max_dd_pct, pDD50: r.p_dd50_pct, pDD80: r.p_dd80_pct, avgStake: r.avg_stake_pct }));
+  return rows.map((r) => {
+    const fl = r.floor !== undefined ? r.floor : (/полом (\d+)%/.exec(r.label || '') || [])[1] / 100;
+    return { key: r.key, scale: r.scale, scaleMax: r.scale_max, median: r.median_profit_pct, mean: r.mean_profit_pct, p5: r.p5_profit_pct,
+      pLoss: r.p_loss_pct, medianDD: r.median_max_dd_pct, pDD50: r.p_dd50_pct, pDD80: r.p_dd80_pct, avgStake: r.avg_stake_pct,
+      floor: Number.isFinite(fl) ? fl : undefined };
+  });
 }
 function showRisk() {
   const profile = $('r-profile').value;
@@ -1019,6 +1025,9 @@ function showRisk() {
     if (pre && preMatches('risk')) {
       src.dataset.stale = 'false';
       src.textContent = `Предрасчёт в Python: ${num(PRE.settings.n_sims, 0)} симуляций × ${num(PRE.settings.n_bets, 0)} ставок, ROI ${pct(PRE.settings.roi * 100, 1)}`;
+    } else if (!pre) {
+      src.dataset.stale = 'true';
+      src.textContent = 'Для этого профиля нет предрасчёта. Нажмите «Пересчитать в браузере».';
     } else {
       src.dataset.stale = 'true';
       src.textContent = 'Условия слева отличаются от предрасчёта. Нажмите «Пересчитать в браузере».';
@@ -1032,18 +1041,27 @@ function showRisk() {
   $('risk-panel').classList.toggle('busy', !live && !preMatches('risk'));
   const [label, limit] = PROFILE_TEXT[profile];
   $('r-sub').textContent = `лимит: ${label} ≤ ${pct(limit, 1)}`;
-  if (riskRows) { drawRisk(); renderRiskTable(); }
+  if (riskRows) { drawRisk(); renderRiskTable(); } else {
+    // нет данных для выбранного профиля: не оставляем на экране цифры другого профиля
+    $('risk-chart').textContent = '';
+    $('risk-table').textContent = '';
+    $('risk-chart').appendChild(h('p', { class: 'sub' }, 'Для этого профиля нет предрасчёта. Нажмите «Пересчитать в браузере».'));
+  }
   $('r-note').hidden = state.ev !== 'flat';
+}
+function riskName(r) {
+  const base = STRATS[r.key] ? STRATS[r.key].label : r.key;
+  return r.floor !== undefined ? `${base}, пол ${pct(r.floor * 100, 0)}` : base;
 }
 function condSig() { return JSON.stringify([marketCfg(), simCfg(1)]); }
 function runRisk() {
-  if (heavyWorker) heavyWorker.terminate();
-  heavyWorker = spawn();
+  if (riskWorker) riskWorker.terminate();
+  riskWorker = spawn();
   const id = ++jobId, profile = $('r-profile').value, nSims = +$('r-sims').value, sig = condSig();
   $('r-run').disabled = true;
   $('r-prog').style.width = '2%';
   const items = ORDER.map((k) => ({ key: k, params: loadParams(k) }));
-  heavyWorker.onmessage = (e) => {
+  riskWorker.onmessage = (e) => {
     const m = e.data;
     if (m.id !== id) return;
     if (m.type === 'progress') { $('r-prog').style.width = (m.done / m.total * 100) + '%'; $('r-source').textContent = `Калибрую стратегии: ${m.done} из ${m.total}`; return; }
@@ -1052,7 +1070,7 @@ function runRisk() {
     riskSource = { profile, sig, rows: m.rows, nSims, ms: m.ms };
     showRisk();
   };
-  heavyWorker.postMessage({ type: 'compare', id, items, profile, market: marketCfg(), cfg: simCfg(nSims) });
+  riskWorker.postMessage({ type: 'compare', id, items, profile, market: marketCfg(), cfg: simCfg(nSims) });
 }
 function drawRisk() {
   const rows = riskRows, box = $('risk-chart');
@@ -1073,7 +1091,7 @@ function drawRisk() {
   const tip = tooltip(box);
   rows.forEach((r, i) => {
     const y = m.t + i * rowH + 7, bh = rowH - 14;
-    const name = STRATS[r.key] ? STRATS[r.key].label : r.key;
+    const name = riskName(r);
     const tl = el('text', { x: m.l - 10, y: y + bh / 2 + 4, 'text-anchor': 'end' }, svg);
     tl.textContent = name;
     tl.style.fill = css('--ink-2');
@@ -1109,7 +1127,7 @@ function renderRiskTable() {
   riskRows.forEach((r, i) => {
     const tr = h('tr');
     if (i === 0) tr.className = 'best';
-    const td = h('td', {}, STRATS[r.key] ? STRATS[r.key].label : r.key);
+    const td = h('td', {}, riskName(r));
     td.appendChild(h('span', { class: 'k' }, r.key));
     tr.appendChild(td);
     for (const v of [spct(r.median), spct(r.mean, 0), spct(r.p5, 0), pct(r.pLoss), pct(r.medianDD), pct(r.pDD50), pct(r.pDD80), pct(r.avgStake, 2), num(r.scale, 2)]) tr.appendChild(h('td', {}, v));
@@ -1147,21 +1165,22 @@ function showKelly() {
   drawKelly();
 }
 function runKelly() {
-  if (heavyWorker) heavyWorker.terminate();
-  heavyWorker = spawn();
+  if (kellyWorker) kellyWorker.terminate();
+  kellyWorker = spawn();
   const id = ++jobId, sig = condSig(), nSims = Math.min(state.sims, 2000);
   const mults = [0.1, 0.25, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.5, 2, 2.5, 3];
   $('k-run').disabled = true;
-  heavyWorker.onmessage = (e) => {
+  $('k-prog').style.width = '2%';
+  kellyWorker.onmessage = (e) => {
     const m = e.data;
     if (m.id !== id) return;
     if (m.type === 'progress') { $('k-prog').style.width = (m.done / m.total * 100) + '%'; return; }
     $('k-run').disabled = false;
     if (m.type === 'error') { $('k-source').textContent = 'Ошибка: ' + m.message; return; }
-    kellySource = { sig, data: m.out, nSims, ms: m.ms };
+    kellySource = { sig, data: m.out, k: m.k, nSims, ms: m.ms };
     showKelly();
   };
-  heavyWorker.postMessage({ type: 'kelly', id, mults, market: { ...marketCfg(), source: state.source }, cfg: simCfg(nSims) });
+  kellyWorker.postMessage({ type: 'kelly', id, mults, market: { ...marketCfg(), source: state.source }, cfg: simCfg(nSims) });
 }
 function drawLines(box, getY, yLabel, refY) {
   const H = 260;
@@ -1220,7 +1239,23 @@ function drawLines(box, getY, yLabel, refY) {
   hit.addEventListener('focus', () => at(X(1)));
   hit.addEventListener('blur', () => { tip.hidden = true; hl.setAttribute('visibility', 'hidden'); });
 }
+// k — во сколько раз истинный EV меньше оценки модели; для предрасчёта считается по данным
+const MEAN_EST_REAL = BETS.ev.reduce((a, e) => a + Math.min(e, 0.08), 0) / BETS.ev.length;
+function kellyK() {
+  const live = kellySource && kellySource.sig === condSig() ? kellySource : null;
+  return live && live.k ? live.k : PRE.settings.roi / MEAN_EST_REAL;
+}
+function kellyLabels() {
+  const k = kellyK(), over = k < 1, f = over ? 1 / k : k;
+  KELLY_CASES[1][1] = `Модель ${over ? 'завышает' : 'занижает'} EV в ${num(f, 1)} раза`;
+  KELLY_CASES[1][3] = over ? 'завышенный' : 'заниженный';
+  KELLY_CASES[2][1] = `${over ? 'Завышает' : 'Занижает'} + шум 5%`;
+  return k;
+}
 function drawKelly() {
+  const k = kellyLabels();
+  const live = kellySource && kellySource.sig === condSig();
+  $('k-est').textContent = pct((live ? state.roi / 100 : PRE.settings.roi) / k * 100, 1);
   const lg = $('k-legend');
   lg.textContent = '';
   for (const [, label, c] of KELLY_CASES) { const sp = h('span'), k = h('span', { class: 'key-line' }); k.style.background = css('--' + c); sp.append(k, document.createTextNode(label)); lg.appendChild(sp); }
@@ -1231,8 +1266,8 @@ function drawKelly() {
   const full = kellyData.calibrated.find((r) => r.mult === 1);
   $('k-callout').innerHTML = '';
   const c = $('k-callout');
-  c.append('Если EV известен точно, лучшая медиана у ', h('b', {}, `${num(bc.mult, 2)}× Келли`), ` (${spct(bc.median)}), но шанс просадки ≥ 50% там ${pct(bc.pDD50, 0)}. Если модель завышает EV, оптимум сдвигается к `,
-    h('b', {}, `${num(bo.mult, 2)}× Келли по модели`), '. Половина Келли по завышенной модели означает полный Келли по факту.');
+  c.append('Если EV известен точно, лучшая медиана у ', h('b', {}, `${num(bc.mult, 2)}× Келли`), ` (${spct(bc.median)}), но шанс просадки ≥ 50% там ${pct(bc.pDD50, 0)}. Если модель ${k < 1 ? 'завышает' : 'занижает'} EV, оптимум сдвигается к `,
+    h('b', {}, `${num(bo.mult, 2)}× Келли по модели`), `: доля m по модели — это m × ${num(1 / k, 2)} Келли по факту.`);
   if (full) c.append(` Полный Келли при точном EV: медиана ${spct(full.median)}, в минусе ${pct(full.pLoss, 0)} серий.`);
   const t = h('table'), hr = h('tr');
   hr.appendChild(h('th', {}, 'Доля Келли'));
@@ -1250,13 +1285,13 @@ function drawKelly() {
 
 // ================= аудит =================
 const FINDINGS = [
-  ['crit', '«Процент от банка» на деле был флэтом от начального банка', 'В 22 из 25 стратегий размер ставки считался в первом проходе от массива банка, который не обновлялся и всегда был равен 1000. Компаундинга не было, а «avg_bet_% от текущего банка» в отчётах ничего не значил. Пример: fixed 2% на 500-й ставке ставил 1.18% ± 1.85 п.п. живого банка.', 'simulation-current/run_strategies_real_odds.py', 'Стратегии переведены на однопроходный движок brm, формулы сохранены.'],
+  ['crit', '«Процент от банка» на деле был флэтом от начального банка', 'В 22 из 25 стратегий размер ставки считался в первом проходе от массива банка, который не обновлялся и всегда был равен 1000. Компаундинга не было, а «avg_bet_% от текущего банка» в отчётах ничего не значил. Пример: fixed 2% на 500-й ставке ставил 1.18% ± 0.93 п.п. живого банка (полуразмах 5–95%).', 'simulation-current/run_strategies_real_odds.py', 'Стратегии переведены на однопроходный движок brm, формулы сохранены.'],
   ['crit', 'Банк уходил в минус', 'Второй проход разыгрывал суммы из другого пути без проверки банка. dynamic_percentage 5% с вариацией опускал банк до −237 006 при старте 1000 (22% симуляций в минусе), fixed_fraction 2% — до −826, target_based — до −1 739. Среднее «+4502%» было артефактом.', 'run_strategies_real_odds.py, dispersion_sim.py, kelly30_report.py, sim.html', 'Ставка никогда не больше живого банка.'],
   ['crit', 'Ставки в 100 раз меньше задуманного', 'В dynamic_kelly, proportional_kelly, bayesian_kelly и test_kelly_realistic доля Келли делилась на 100 второй раз. proportional_kelly давал +1.2% вместо +239%, dynamic_kelly +0.4% вместо +50%.', 'run_strategies_real_odds.py, test_all_strategies_realistic.py:72', 'Единицы исправлены.'],
   ['crit', '«Келли не работает» — следствие p = 1/кэф', 'В test_all_strategies_realistic.py вероятность выигрыша бралась как 1/кэф, то есть с нулевым перевесом. Ставка Келли поэтому всегда была 0. Вывод в BEST_STRATEGIES.md об этом.', 'test_all_strategies_realistic.py:62, BEST_STRATEGIES.md', 'p = (1 + ROI) / кэф. Документы помечены как устаревшие.'],
-  ['crit', 'Фиксированный ROI перестановкой не измерял риск', 'honest_engine и honest_sim переставляли один набор (кэф, исход). Итоговый банк — произведение множителей и от порядка не зависит, поэтому у флэт-% и Келли он одинаков во всех симуляциях: 5-й перцентиль = медиана = +15.6%. С независимыми исходами 5-й перцентиль −70%.', 'simulation-current/honest_engine.py, honest_sim.py', 'По умолчанию исходы независимые, старый режим — флагом fixed_roi с предупреждением.'],
-  ['crit', 'Рейтинги по среднему награждали перебор ставки', 'combat_*, massive_experiments и оптимизатор сортировали по средней прибыли. Её делают несколько сверхудачных симуляций: Келли ×3 даёт среднее +5070% при медиане +115% и 37.5% серий в минусе.', 'combat_final.py, combat_parallel.py, combat_resumable.py, massive_experiments.py, strategy_optimizer.py', 'Ранжирование по медиане.'],
-  ['crit', 'Оптимизатор выбирал удачу, а не параметры', '100 случайных наборов, каждый оценён один раз на своём случайном потоке, лучший без перепроверки. Extreme adaptive_bet: заявлено 16 173%, при перепрогоне 3 591%. Скоринг рискованных профилей поощрял сливы, лимиты допускали превышение на 10%, кэш старого прогона подхватывался молча.', 'simulation-original/strategy_optimizer.py', 'Общий seed, перепроверка top-5 на независимом seed, медиана, строгие лимиты, кэш с подписью настроек.'],
+  ['crit', 'Фиксированный ROI перестановкой не измерял риск', 'honest_engine и honest_sim переставляли один набор (кэф, исход). Итоговый банк — произведение множителей и от порядка не зависит, поэтому у флэт-% и Келли он одинаков во всех симуляциях: 5-й перцентиль = медиана = +15.6%. С независимыми исходами 5-й перцентиль −71%, в минусе 44% серий.', 'simulation-current/honest_engine.py, honest_sim.py', 'По умолчанию исходы независимые, старый режим — флагом fixed_roi с предупреждением.'],
+  ['crit', 'Рейтинги по среднему награждали перебор ставки', 'combat_*, massive_experiments и оптимизатор сортировали по средней прибыли. Её делают несколько сверхудачных симуляций: Келли ×3 даёт среднее +5069% при медиане +115% и 38% серий в минусе.', 'combat_final.py, combat_parallel.py, combat_resumable.py, massive_experiments.py, strategy_optimizer.py', 'Ранжирование по медиане.'],
+  ['crit', 'Оптимизатор выбирал удачу, а не параметры', '100 случайных наборов, каждый оценён один раз на своём случайном потоке, лучший без перепроверки, по самому шумному показателю — среднему росту. У Extreme adaptive_bet с «16 173%» на четырёх независимых прогонах по 500 симуляций среднее 3 393%, 5 471%, 9 222% и 32 206%, а медиана стабильна около +300%. Скоринг рискованных профилей поощрял сливы, лимиты допускали превышение на 10%, кэш старого прогона подхватывался молча.', 'simulation-original/strategy_optimizer.py', 'Общий seed, перепроверка top-5 на независимом seed, медиана, строгие лимиты, кэш с подписью настроек.'],
   ['crit', 'Адаптивные стратегии не адаптировались', 'volatility_adjusted, sharpe_optimized и multi_objective считали волатильность по плоскому банку, и она всегда была 0: результат volatility_adjusted совпадал с fixed_fraction до цифры. В original adaptive_bet получал статичный max_bank.', 'run_strategies_real_odds.py, simulation-original/bet_simulator.py', 'Стратегии видят живой банк и его историю.'],
   ['major', 'Вариация суммы уменьшала ставку на 25%', 'Множители 0.35–1.15 в среднем дают 0.75. Вывод «вариация снижает риск и прибыль» объясняется меньшей средней ставкой, а не разбросом.', 'run_strategies_real_odds.py, README', 'В симуляторе есть вариант ×0.8–1.2 со средним 1. Описание исправлено.'],
   ['major', 'Слитые симуляции считались как «0% прибыли»', 'После банкротства хвост истории оставался равен начальному банку, и финальный банк был 1000 вместо ~0.', 'logarithmic_kelly.py, kelly_correct.py, test_all_strategies_realistic.py', 'Хвост заполняется фактическим банком.'],
@@ -1315,23 +1350,23 @@ const M_FAMILY = {
   floor_kelly: 'Келли с полом просадки', kelly_guard: 'Келли с урезанием на просадке', dynamic_percentage: 'Динамический %', anti_martingale: 'Анти-мартингейл',
 };
 const floorOf = (tier) => 100 - (TIERS[tier] ? TIERS[tier].level : 50);
-function paramText(key, param, tier) {
+function paramText(key, param, tier, floor) {
   switch (key) {
     case 'kelly': return `${num(param, 2)} от полного Келли`;
     case 'log_formula': return `risk = ${num(param, 1)}`;
-    case 'floor_kelly': return `${num(param, 2)} Келли от банка сверх ${floorOf(tier)}% пика`;
+    case 'floor_kelly': return `${num(param, 2)} Келли от банка сверх ${floor !== undefined ? pct(floor * 100, 0) : floorOf(tier) + '%'} пика`;
     case 'fixed': return `${num(param, 2)}% текущего банка`;
     case 'flat': return `${num(param, 2)}% начального банка`;
-    case 'kelly_guard': return `${num(param, 2)} Келли, ×0.5 при просадке > 10%, ×0.25 > 20%`;
+    case 'kelly_guard': return `${num(param, 2)} Келли, ×${num(0.5, 1)} при просадке > 10%, ×${num(0.25, 2)} > 20%`;
     default: return `база ${num(param, 2)}%`;
   }
 }
-function webStrategy(key, param, tier) {
+function webStrategy(key, param, tier, floor) {
   switch (key) {
     case 'kelly': return ['kelly_half', { mult: +param.toFixed(3) }];
     case 'kelly_guard': return ['kelly_guard', { mult: +param.toFixed(3), cut1: 10, cut2: 20 }];
     case 'log_formula': return ['log_formula', { risk: +param.toFixed(1), edgeCap: 8 }];
-    case 'floor_kelly': return ['floor_kelly', { mult: +param.toFixed(2), floor: floorOf(tier) }];
+    case 'floor_kelly': return ['floor_kelly', { mult: +param.toFixed(2), floor: floor !== undefined ? Math.round(floor * 100) : floorOf(tier) }];
     case 'fixed': return ['fixed', { pct: +param.toFixed(2) }];
     case 'flat': return ['flat', { pct: +param.toFixed(2) }];
     case 'dynamic_percentage': return ['dynamic_percentage', { pct: +param.toFixed(2) }];
@@ -1339,8 +1374,8 @@ function webStrategy(key, param, tier) {
     default: return null;
   }
 }
-function openInSim(key, param, tier) {
-  const ws = webStrategy(key, param, tier);
+function openInSim(key, param, tier, floor) {
+  const ws = webStrategy(key, param, tier, floor);
   if (!ws) return;
   writeConditions(MONTH_PRESET);
   readConditions();
@@ -1353,15 +1388,16 @@ function openInSim(key, param, tier) {
   runSim();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function simButton(key, param, tier, text) {
-  if (!webStrategy(key, param, tier)) return h('span');
+function simButton(key, param, tier, text, floor) {
+  if (!webStrategy(key, param, tier, floor)) return h('span');
   const b = h('button', { class: 'btn ghost', type: 'button' }, text);
-  b.addEventListener('click', () => openInSim(key, param, tier));
+  b.addEventListener('click', () => openInSim(key, param, tier, floor));
   return b;
 }
-function recipeCard(title, rule, key, param, m, stakes, tier, metric, level) {
+function recipeCard(title, rule, row, tier, metric, level) {
+  const { key, param, eval: m, stakes, floor } = row;
   const d = h('article', { class: 'recipe' });
-  d.append(h('span', { class: 'tier' }, title), h('div', { class: 'rule' }, rule), h('h3', {}, M_FAMILY[key]), h('div', { class: 'rule' }, paramText(key, param, tier)));
+  d.append(h('span', { class: 'tier' }, title), h('div', { class: 'rule' }, rule), h('h3', {}, M_FAMILY[key]), h('div', { class: 'rule' }, paramText(key, param, tier, floor)));
   const big = h('div', { class: 'big' }, spct(m.median_profit_pct));
   big.appendChild(h('small', {}, 'медианная прибыль за месяц'));
   d.appendChild(big);
@@ -1383,23 +1419,42 @@ function recipeCard(title, rule, key, param, m, stakes, tier, metric, level) {
   add(`Просадка ≥ ${level}% от пика`, pct(m[metric]));
   add('Средняя ставка', pct(m.avg_stake_pct, 2) + ' банка');
   d.appendChild(dl);
-  d.appendChild(simButton(key, param, tier, 'Открыть в симуляторе'));
+  d.appendChild(simButton(key, param, tier, 'Открыть в симуляторе', floor));
+  for (const alt of row.alternatives || []) {
+    // стратегия с максимальной медианой при том же ограничении — и её цена
+    const a = h('div', { class: 'alt' });
+    const r0 = row.robustness['true_roi_0.025'], r1 = alt.robustness['true_roi_0.025'];
+    a.append(h('span', { class: 'tier' }, 'Максимум медианы при том же ограничении'),
+      h('div', { class: 'rule' }, `${M_FAMILY[alt.key]}: ${paramText(alt.key, alt.param, tier, alt.floor)}`));
+    const dl2 = h('dl');
+    const add2 = (x, y) => dl2.append(h('dt', {}, x), h('dd', {}, y));
+    add2('Медиана за месяц', spct(alt.eval.median_profit_pct));
+    add2('Месяц в минусе', pct(alt.eval.p_loss_pct));
+    add2('Плохой месяц, 5% худших', spct(alt.eval.p5_profit_pct));
+    add2('Медиана, если ROI на деле 2,5%', `${spct(r1.median_profit_pct)} (у основного ${spct(r0.median_profit_pct)})`);
+    a.append(dl2, simButton(alt.key, alt.param, tier, 'Открыть в симуляторе', alt.floor));
+    d.appendChild(a);
+  }
   return d;
 }
 function renderMonth() {
   const s0 = MONTH.settings;
   $('m-lede').textContent = `Условия: у каждой ставки ROI ${pct(s0.roi * 100, 0)}, кэф от ${num(s0.odds_min, 1)} до ${num(s0.odds_max, 0)} `
-    + `(средний ${num(s0.avg_odds, 2)}, разброс как у реальных ставок), ${num(s0.n_bets, 0)} ставок за месяц, ставка от текущего банка и не больше `
+    + `(средний ${num(s0.avg_odds, 2)}, σ ${num(s0.sd_odds, 2)} — как у реальных ставок в этом диапазоне), ${num(s0.n_bets, 0)} ставок за месяц, ставка от текущего банка и не больше `
     + `${pct(s0.cap * 100, 0)} банка. Для каждого уровня риска найден размер ставки с наибольшей медианной прибылью месяца. `
-    + `Все цифры — проверка на ${num(s0.n_sims_eval, 0)} независимых симуляциях. Прибыль и просадка считаются внутри месяца от банка на его начало.`;
+    + `Основной рецепт — дробный Келли: при одинаковом EV это та же лог-формула backend, у него меньше месяцев в минусе и он устойчивее, если ROI окажется ниже; `
+    + `в карточке ниже — стратегия с максимальной медианой и её цена. `
+    + `Все цифры — проверка на ${num(s0.n_sims_eval, 0)} независимых симуляциях (несколько месяцев подряд — ${num(s0.n_sims_horizon || 6000, 0)}). `
+    + `Прибыль и просадка считаются внутри месяца от банка на его начало.`;
   const box = $('m-recipes');
   box.textContent = '';
   for (const [tier, t] of Object.entries(TIERS)) {
     const r = MONTH.recommended[tier];
-    if (r) box.appendChild(recipeCard(t.label, t.rule, r.key, r.param, r.eval, r.stakes, tier, t.metric, t.level));
+    if (r) box.appendChild(recipeCard(t.label, t.rule, r, tier, t.metric, t.level));
   }
   const c = MONTH.ceiling;
-  box.appendChild(recipeCard('Потолок', 'Без ограничений: дальше ставить больше бессмысленно, медиана падает', 'kelly', c.scale, c.eval, c.stakes, null, 'p_dd50_pct', 50));
+  box.appendChild(recipeCard('Потолок', 'Без ограничений: дальше ставить больше бессмысленно, медиана падает',
+    { key: 'kelly', param: c.scale, eval: c.eval, stakes: c.stakes }, null, 'p_dd50_pct', 50));
   drawFrontier();
   renderMonthTable();
   renderRobust();
@@ -1501,12 +1556,12 @@ function renderMonthTable() {
     const tr = h('tr');
     if (rec && r.key === rec.key) tr.className = 'best';
     const td = h('td', {}, M_FAMILY[r.key] || r.key);
-    td.appendChild(h('span', { class: 'k' }, paramText(r.key, r.param, monthTier)));
+    td.appendChild(h('span', { class: 'k' }, paramText(r.key, r.param, monthTier, r.floor)));
     tr.appendChild(td);
     const e = r.eval;
     for (const v of [spct(e.median_profit_pct), spct(e.mean_profit_pct, 0), spct(e.p5_profit_pct), pct(e.p_loss_pct), pct(e.p_profit_below_m10_pct ?? NaN), pct(e.median_max_dd_pct), pct(e.p_dd20_pct), pct(e.p_dd30_pct), pct(e.p_dd50_pct), pct(e.avg_stake_pct, 2)]) tr.appendChild(h('td', {}, v));
     const bt = h('td');
-    const b = simButton(r.key, r.param, monthTier, 'в симулятор');
+    const b = simButton(r.key, r.param, monthTier, 'в симулятор', r.floor);
     if (b.tagName === 'BUTTON') { b.style.padding = '4px 8px'; b.style.fontSize = '12px'; }
     bt.appendChild(b);
     tr.appendChild(bt);
@@ -1531,7 +1586,7 @@ function renderRobust() {
         const m = v.robustness[k];
         const tr = h('tr');
         const td = h('td');
-        if (i === 0) { td.textContent = info.label.split(',')[0] + ': ' + (M_FAMILY[v.key] || v.key); td.appendChild(h('span', { class: 'k' }, paramText(v.key, v.param, tier))); }
+        if (i === 0) { td.textContent = info.label.split(',')[0] + ': ' + (M_FAMILY[v.key] || v.key); td.appendChild(h('span', { class: 'k' }, paramText(v.key, v.param, tier, v.floor))); }
         tr.append(td, h('td', {}, name));
         for (const x of [spct(m.median_profit_pct), spct(m.p5_profit_pct), pct(m.p_loss_pct), pct(m.median_max_dd_pct), pct(m.p_dd20_pct), pct(m.p_dd30_pct), pct(m.p_dd50_pct)]) tr.appendChild(h('td', {}, x));
         t.appendChild(tr);
@@ -1548,15 +1603,17 @@ function renderHorizon() {
   for (const [tier, info] of Object.entries(TIERS)) {
     const rec = MONTH.recommended[tier];
     if (!rec) continue;
-    const rows = [[1, rec.eval], ...Object.entries(rec.robustness.horizon).map(([k, v]) => [+k, v])];
+    for (const v of [rec, ...(rec.alternatives || [])]) {
+    const rows = [[1, v.eval], ...Object.entries(v.robustness.horizon).map(([k, x]) => [+k, x])];
     rows.forEach(([months, m], i) => {
       const tr = h('tr');
       const td = h('td');
-      if (i === 0) { td.textContent = info.label.split(',')[0] + ': ' + M_FAMILY[rec.key]; td.appendChild(h('span', { class: 'k' }, paramText(rec.key, rec.param, tier))); }
+      if (i === 0) { td.textContent = info.label.split(',')[0] + ': ' + M_FAMILY[v.key]; td.appendChild(h('span', { class: 'k' }, paramText(v.key, v.param, tier, v.floor))); }
       tr.append(td, h('td', {}, String(months)));
       for (const x of [spct(m.median_profit_pct, months > 1 ? 0 : 1), spct(m.p5_profit_pct, months > 1 ? 0 : 1), spct(m.p95_profit_pct, 0), pct(m.p_loss_pct), pct(m.median_max_dd_pct), pct(m.p_dd50_pct)]) tr.appendChild(h('td', {}, x));
       t.appendChild(tr);
     });
+    }
   }
   $('m-horizon').textContent = '';
   $('m-horizon').appendChild(t);

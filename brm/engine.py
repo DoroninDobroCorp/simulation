@@ -200,11 +200,16 @@ class SimResult:
 # --------------------------------------------------------------------------
 
 def _recalc_periods(cfg: SimConfig, rng: np.random.Generator, n_sims: int):
+    """Период до следующего снимка банка; для диапазона (min, max) он заново тянется после каждого снимка."""
     r = cfg.recalc_every
     if isinstance(r, (int, np.integer)):
         return None if r <= 1 else np.full(n_sims, int(r))
     lo, hi = int(r[0]), int(r[1])
     return rng.integers(lo, hi + 1, n_sims)
+
+
+def _random_recalc(cfg: SimConfig) -> bool:
+    return not isinstance(cfg.recalc_every, (int, np.integer))
 
 
 def simulate(strategy, scenario, cfg: SimConfig) -> SimResult:
@@ -262,6 +267,8 @@ def simulate(strategy, scenario, cfg: SimConfig) -> SimResult:
             refresh = since_recalc >= periods
             snapshot = np.where(refresh, bank, snapshot)
             since_recalc = np.where(refresh, 0, since_recalc)
+            if _random_recalc(cfg) and refresh.any():
+                periods = np.where(refresh, _recalc_periods(cfg, stake_rng, n), periods)
             base = snapshot
         else:
             base = bank
@@ -282,9 +289,11 @@ def simulate(strategy, scenario, cfg: SimConfig) -> SimResult:
                 raise ValueError(f'неизвестная вариация: {kind}')
         if cfg.round_to:
             stake = np.round(stake / cfg.round_to) * cfg.round_to
+        # сначала не больше живого банка, потом минимум: если банк меньше минимальной ставки, ставки нет
+        stake = np.minimum(stake, bank)
         if cfg.min_stake:
             stake = np.where(stake < cfg.min_stake, 0.0, stake)
-        stake = np.where(ruined, 0.0, np.minimum(stake, bank))
+        stake = np.where(ruined, 0.0, stake)
 
         placed = stake > 0
         bank_before = bank

@@ -104,7 +104,7 @@ def write_markdown(res, path):
     a('# Результаты исследований (корректный движок brm)\n')
     a(f"Сгенерировано `python -m brm.report`: {s['n_sims']} симуляций × {s['n_bets']} ставок, "
       f"кэфы бутстрепом из {s['pool_size']} реальных ставок (средний {s['avg_odds']:.2f}), "
-      f"истинный средний ROI {s['roi'] * 100:.1f}%, кап ставки {s['cap'] * 100:.0f}% банка, seed {s['seed']}.\n")
+      f"истинный средний ROI {s['roi'] * 100:.1f}%, кап ставки {s['cap'] * 100:.0f}% банка (в разделе 3 — без капа), seed {s['seed']}.\n")
 
     h = res['horizon']
     a('## 1. Горизонт: ROI 2.5% — это много шума\n')
@@ -137,7 +137,7 @@ def write_markdown(res, path):
             a('')
 
     a('## 3. Доля Келли и ошибка модели EV\n')
-    a('Ставка = множитель × EV / (кэф − 1). Три случая: стратегия знает истинный EV; '
+    a('Ставка = множитель × EV / (кэф − 1), здесь без капа 10% (cap = 100%), чтобы было видно и перебор. Три случая: стратегия знает истинный EV; '
       'модель завышает EV (истинный = k × оценка, как если бы средний ROI модели 5.1% был на деле 2.5%); '
       'то же плюс шум модели σ = 5% на каждую ставку.\n')
     cases = list(res['kelly_model_error'])
@@ -170,7 +170,7 @@ def main():
     print('1. Горизонт')
     res['horizon'] = horizon_study(pool, replace(cfg, n_sims=min(n_sims * 4, 20000)), args.roi)
     print('\n2. Сравнение при равном риске')
-    res['risk_matched'] = risk_matched(pool, cfg, args.roi, ('conservative', 'cautious', 'balanced', 'risky'))
+    res['risk_matched'] = risk_matched(pool, cfg, args.roi, ('conservative', 'cautious', 'balanced', 'risky', 'extreme'))
     print('\n3. Келли и ошибка модели')
     res['kelly_model_error'] = kelly_model_error(pool, cfg, args.roi)
     res['settings']['seconds'] = round(time.time() - t0, 1)

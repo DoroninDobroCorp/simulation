@@ -88,6 +88,33 @@ def calibrate(build: Build, market: Market, cfg: SimConfig, metric: str, limit: 
     return best, dict(feasible[best], scale_max=s_max)
 
 
+FLOOR_GRID = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
+
+
+def calibrate_floor_kelly(market: Market, cfg: SimConfig, metric, limit, floors=FLOOR_GRID,
+                          mult_hi: float = 2.0, sampling: str = 'bootstrap', **kw):
+    """
+    Келли с полом: у стратегии две ручки — пол (доля пика, ниже которой банк не опускается)
+    и доля Келли от подушки над полом. Для каждого пола из сетки подбирается доля, затем
+    пол уточняется на ±0.05 вокруг лучшего. Возвращает (доля, метрики с полем floor).
+    """
+    def run_floor(fl):
+        scale, m = calibrate(lambda s: S.FloorKelly(s, fl), market, cfg, metric, limit,
+                             scale_hi=mult_hi, sampling=sampling, **kw)
+        return None if m is None else (scale, dict(m, floor=round(fl, 3)))
+
+    results = [r for r in (run_floor(fl) for fl in floors) if r]
+    if not results:
+        return 0.0, None
+    best = max(results, key=lambda r: r[1]['median_profit_pct'])
+    for fl in (best[1]['floor'] - 0.05, best[1]['floor'] + 0.05):
+        if 0.05 <= fl <= 0.95:
+            r = run_floor(fl)
+            if r and r[1]['median_profit_pct'] > best[1]['median_profit_pct']:
+                best = r
+    return best
+
+
 def risk_builders(profile: str) -> Dict[str, Tuple[Build, float, str]]:
     """Ручка агрессивности для каждой стратегии каталога: key -> (build(scale), scale_hi, описание)."""
     metric, _ = RISK_PROFILES[profile]
@@ -95,9 +122,8 @@ def risk_builders(profile: str) -> Dict[str, Tuple[Build, float, str]]:
     out = {}
     for key, (make, desc) in S.catalog().items():
         if key == 'floor_kelly':
-            # риск задаёт пол (просадка не глубже 1 - floor), ручка — доля Келли от подушки
-            out[key] = (lambda s, f=floor: S.FloorKelly(mult=s, floor=f), 1.5,
-                        f'Келли от подушки над полом {floor:.0%} пика')
+            # у этой стратегии две ручки (пол и доля); leaderboard подбирает обе через calibrate_floor_kelly
+            out[key] = (None, 2.0, 'Келли от подушки над полом (пол подбирается)')
         else:
             out[key] = (lambda s, mk=make: S.Scaled(mk(), s), 64.0, desc)
     return out
@@ -111,7 +137,12 @@ def leaderboard(market: Market, cfg: SimConfig, profile: str = 'cautious', keys=
     for key, (build, scale_hi, desc) in risk_builders(profile).items():
         if keys is not None and key not in keys:
             continue
-        scale, m = calibrate(build, market, cfg, metric, limit, scale_hi=scale_hi, sampling=sampling)
+        if key == 'floor_kelly':
+            scale, m = calibrate_floor_kelly(market, cfg, metric, limit, mult_hi=scale_hi, sampling=sampling)
+            if m is not None:
+                desc = f"Келли x{scale:.2f} от подушки над полом {m['floor']:.0%} пика"
+        else:
+            scale, m = calibrate(build, market, cfg, metric, limit, scale_hi=scale_hi, sampling=sampling)
         if m is None:
             continue
         rows.append(dict(m, key=key, scale=scale, label=desc))

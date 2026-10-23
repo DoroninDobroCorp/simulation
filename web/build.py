@@ -26,7 +26,7 @@ def load_bets():
 def slim_month(res):
     """Из reports/month_roi5.json — только то, что показывает вкладка «Месяц»."""
     keep_f = ('param', 'median_profit_pct', 'p5_profit_pct', 'median_max_dd_pct', 'p_dd50_pct', 'p_loss_pct', 'avg_stake_pct')
-    task = lambda r: {k: r[k] for k in ('key', 'param', 'scale', 'eval')}  # noqa: E731
+    task = lambda r: {k: r[k] for k in ('key', 'param', 'scale', 'eval', 'floor') if k in r}  # noqa: E731
     rec = lambda r: dict(task(r), stakes=r['stakes'], robustness=r['robustness'],  # noqa: E731
                          alternatives=[dict(task(x), stakes=x['stakes'], robustness=x['robustness']) for x in r.get('alternatives', [])])
     return {'settings': res['settings'], 'ceiling': res['ceiling'],
@@ -36,7 +36,9 @@ def slim_month(res):
 
 
 def compact(obj):
-    return json.dumps(obj, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
+    # в JSON символ < встречается только внутри строк, поэтому его можно заменить на \u003c: так никакие
+    # данные не закроют <script> и не откроют комментарий
+    return json.dumps(obj, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c')
 
 
 def build():
@@ -50,7 +52,7 @@ def build():
         before_after = json.load(f)
     with open(os.path.join(ROOT, 'reports', 'month_roi5.json'), encoding='utf-8') as f:
         month = slim_month(json.load(f))
-    if '</script' in engine:
+    if '</script' in engine.lower():
         raise ValueError('engine.js не должен содержать </script')
     for key, value in (('__ENGINE__', engine), ('__REAL_BETS__', compact(load_bets())),
                        ('__RESULTS__', compact(results)), ('__BEFORE_AFTER__', compact(before_after)),

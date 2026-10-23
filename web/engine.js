@@ -113,7 +113,8 @@ function makeStrategy(key, p, nSims) {
       return {
         frac: (o, e, b, pk) => {
           const dd = (pk - b) / pk;
-          return p.mult * kellyF(o, e) * (dd > p.cut2 / 100 ? 0.25 : dd > p.cut1 / 100 ? 0.5 : 1);
+          const c1 = Math.min(p.cut1, p.cut2) / 100, c2 = Math.max(p.cut1, p.cut2) / 100;
+          return p.mult * kellyF(o, e) * (dd > c2 ? 0.25 : dd > c1 ? 0.5 : 1);
         },
       };
     case 'floor_kelly': {
@@ -237,6 +238,7 @@ function simulate(strat, mk, cfg, opts = {}) {
     snap = new Float64Array(N).fill(b0); since = new Int32Array(N); period = new Int32Array(N);
     for (let s = 0; s < N; s++) period[s] = cfg.recalc === 'r30' ? 30 : 30 + Math.floor(rs() * 41);
   }
+  const redraw = cfg.recalc === 'r3070';   // случайный период тянется заново после каждого снимка
   const vr = cfg.variation;
 
   const stride = Math.max(1, Math.round(T / 120));
@@ -270,7 +272,7 @@ function simulate(strat, mk, cfg, opts = {}) {
       const b = bank[s];
       let base = b;
       if (snap !== null) {
-        if (since[s] >= period[s]) { snap[s] = b; since[s] = 0; }
+        if (since[s] >= period[s]) { snap[s] = b; since[s] = 0; if (redraw) period[s] = 30 + Math.floor(rs() * 41); }
         base = snap[s];
         since[s]++;
       }
@@ -280,9 +282,9 @@ function simulate(strat, mk, cfg, opts = {}) {
       if (vr === 'uniform') stake *= 0.8 + 0.4 * rs();
       else if (vr === 'legacy') stake *= LEGACY_VAR[(rs() * 17) | 0];
       if (cfg.roundTo > 0) stake = Math.round(stake / cfg.roundTo) * cfg.roundTo;
-      if (stake < cfg.minStake) stake = 0;
+      if (stake > b) stake = b;                 // сначала не больше живого банка,
+      if (stake < cfg.minStake) stake = 0;      // потом минимум: банк меньше минимальной ставки — ставки нет
       if (ruined[s]) stake = 0;
-      if (stake > b) stake = b;
 
       let nb = won ? b + stake * (o - 1) : b - stake;
       if (nb < 0) nb = 0;
@@ -317,13 +319,27 @@ const PROFILES = {
   conservative: ['pDD50', 0], cautious: ['pDD50', 3.5], balanced: ['pDD50', 10], risky: ['pDD80', 5], extreme: ['pDD80', 50],
 };
 
-function calibrate(key, params, mk, cfg, profile, iters = 10) {
+// Келли с полом: две ручки — пол и доля Келли от подушки; как в brm.optimize.calibrate_floor_kelly
+function calibrateFloorKelly(mk, cfg, profile, iters) {
+  const run = (fl) => {
+    const r = calibrate('floor_kelly', { floor: Math.round(fl * 1000) / 10 }, mk, cfg, profile, iters);
+    return r ? { ...r, floor: Math.round(fl * 1000) / 1000 } : null;
+  };
+  let best = null;
+  for (const fl of [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]) { const r = run(fl); if (r && (!best || r.median > best.median)) best = r; }
+  if (!best) return null;
+  for (const fl of [best.floor - 0.05, best.floor + 0.05]) {
+    if (fl >= 0.05 && fl <= 0.95) { const r = run(fl); if (r && r.median > best.median) best = r; }
+  }
+  return best;
+}
+
+function calibrate(key, params, mk, cfg, profile, iters = 12) {
   const [metric, limit] = PROFILES[profile];
   const floorKelly = key === 'floor_kelly';
-  const floor = metric === 'pDD50' ? 50 : 20;
-  const scaleHi = floorKelly ? 1.5 : 64;
+  const scaleHi = floorKelly ? 2 : 64;
   const ev = (s) => {
-    const strat = floorKelly ? makeStrategy(key, { mult: s, floor }, cfg.nSims) : makeStrategy(key, params, cfg.nSims);
+    const strat = floorKelly ? makeStrategy(key, { mult: s, floor: params.floor }, cfg.nSims) : makeStrategy(key, params, cfg.nSims);
     return simulate(strat, mk, cfg, { scale: floorKelly ? 1 : s }).summary;
   };
   const feasible = new Map();
@@ -377,7 +393,7 @@ self.onmessage = (ev) => {
     } else if (m.type === 'compare') {
       const rows = [];
       m.items.forEach((it, i) => {
-        const r = calibrate(it.key, it.params, mk, m.cfg, m.profile);
+        const r = it.key === 'floor_kelly' ? calibrateFloorKelly(mk, m.cfg, m.profile, 12) : calibrate(it.key, it.params, mk, m.cfg, m.profile);
         if (r) rows.push({ key: it.key, ...r });
         self.postMessage({ type: 'progress', id: m.id, done: i + 1, total: m.items.length, label: it.key });
       });
@@ -401,7 +417,8 @@ self.onmessage = (ev) => {
           return { mult: k, ...s };
         });
       }
-      self.postMessage({ type: 'kelly', id: m.id, out, ms: performance.now() - t0 });
+      // k — во сколько раз истинный EV меньше оценки модели (k < 1 — модель завышает)
+      self.postMessage({ type: 'kelly', id: m.id, out, k: buildMarket(cases.overstated).k, ms: performance.now() - t0 });
     }
   } catch (err) {
     self.postMessage({ type: 'error', id: m.id, message: String((err && err.message) || err) });

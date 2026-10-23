@@ -168,3 +168,37 @@ def test_beta_odds_pool_matches_request():
     assert abs(pool.odds.mean() - 2.75) < 0.01
     assert pool.odds.min() >= 1.5 and pool.odds.max() <= 4.0
     assert (pool.ev == 0.05).all()
+
+
+def test_random_recalc_period_is_redrawn_each_time():
+    """Снимок банка раз в 30–70 ставок: период тянется заново после каждого снимка."""
+    cfg = brm.SimConfig(n_sims=50, n_bets=2000, recalc_every=(30, 70), cap=1.0, record_full=True, seed=4)
+    res = brm.run(S.FixedFraction(1), single_odds_market(odds=2.37), cfg)
+    for s in range(5):
+        base = res.stakes[s] / 0.01
+        # база ставки (снимок банка) меняется только в момент пересчёта
+        refresh = np.flatnonzero(~np.isclose(base[1:], base[:-1])) + 1
+        gaps = np.diff(np.concatenate([[0], refresh]))
+        assert gaps.min() >= 30 and gaps.max() <= 70
+        assert len(set(gaps.tolist())) > 3
+
+
+def test_no_stake_when_bank_below_min_stake():
+    pool = brm.BetPool(np.array([2.0]), np.array([0.0]))
+    market = brm.make_market(pool, roi=0.0)
+    cfg = brm.SimConfig(n_sims=400, n_bets=400, bank0=100.0, cap=1.0, min_stake=10.0, record_full=True,
+                        recalc_every=50, seed=3)
+    res = brm.run(S.FixedFraction(30), market, cfg)
+    placed = res.stakes > 0
+    assert (res.stakes[placed] >= 10.0 - 1e-9).all()
+    assert (res.stakes <= res.history[:, :-1] + 1e-9).all()
+
+
+def test_floor_kelly_calibration_tunes_floor():
+    from brm.optimize import calibrate_floor_kelly
+    pool = brm.load_real_bets()
+    market = brm.make_market(pool, roi=0.05)
+    cfg = brm.SimConfig(n_sims=400, n_bets=500, seed=9)
+    scale, m = calibrate_floor_kelly(market, cfg, 'p_dd30_pct', 10.0, iters=6)
+    assert m is not None and m['p_dd30_pct'] <= 10.0
+    assert 0.05 <= m['floor'] <= 0.95
