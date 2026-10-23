@@ -47,7 +47,8 @@ def summarize(bank, bets):
             'min_bank': float(bank.min()), 'p_negative_bank': float((bank.min(axis=1) < 0).mean() * 100),
             'p_dd50': float((dd >= 50).mean() * 100),
             'stake_pct_live_median': float(np.nanmedian(pct[:, 500])),
-            'stake_pct_live_spread': float(np.nanpercentile(pct[:, 500], 95) - np.nanpercentile(pct[:, 500], 5))}
+            'stake_pct_live_p5': float(np.nanpercentile(pct[:, 500], 5)),
+            'stake_pct_live_p95': float(np.nanpercentile(pct[:, 500], 95))}
 
 
 def main():

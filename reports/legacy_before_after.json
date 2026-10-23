@@ -8,7 +8,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 21.825,
    "stake_pct_live_median": 1.7999999999999998,
-   "stake_pct_live_spread": 0.75
+   "stake_pct_live_p5": 1.0499999999999998,
+   "stake_pct_live_p95": 1.7999999999999998
   },
   "new": {
    "mean_profit": 235.54782775743882,
@@ -17,7 +18,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 21.825,
    "stake_pct_live_median": 1.7999999999999998,
-   "stake_pct_live_spread": 0.75
+   "stake_pct_live_p5": 1.0499999999999998,
+   "stake_pct_live_p95": 1.7999999999999998
   }
  },
  {
@@ -29,7 +31,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 15.6,
    "stake_pct_live_median": 1.3389056300290876,
-   "stake_pct_live_spread": 1.7776621287450036
+   "stake_pct_live_p5": 0.5867207787817301,
+   "stake_pct_live_p95": 2.3643829075267337
   },
   "new": {
    "mean_profit": 145.5774543583381,
@@ -38,7 +41,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 6.7250000000000005,
    "stake_pct_live_median": 1.2599999999999998,
-   "stake_pct_live_spread": 1.38
+   "stake_pct_live_p5": 0.6,
+   "stake_pct_live_p95": 1.9799999999999998
   }
  },
  {
@@ -50,7 +54,8 @@
    "p_negative_bank": 21.875,
    "p_dd50": 97.675,
    "stake_pct_live_median": 3.6979841431417935,
-   "stake_pct_live_spread": 10.618990514017591
+   "stake_pct_live_p5": 0.8108818971541396,
+   "stake_pct_live_p95": 11.429872411171731
   },
   "new": {
    "mean_profit": 1991.6248068988787,
@@ -59,7 +64,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 99.825,
    "stake_pct_live_median": 3.599999999999999,
-   "stake_pct_live_spread": 5.224999999999999
+   "stake_pct_live_p5": 1.3749999999999998,
+   "stake_pct_live_p95": 6.599999999999999
   }
  },
  {
@@ -71,7 +77,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 21.75,
    "stake_pct_live_median": 1.4341921130000057,
-   "stake_pct_live_spread": 2.601834219903084
+   "stake_pct_live_p5": 0.9061675925879659,
+   "stake_pct_live_p95": 3.5080018124910497
   },
   "new": {
    "mean_profit": 471.2005301879949,
@@ -80,7 +87,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 50.625,
    "stake_pct_live_median": 2.8000000000000003,
-   "stake_pct_live_spread": 4.440892098500626e-16
+   "stake_pct_live_p5": 2.8000000000000003,
+   "stake_pct_live_p95": 2.8000000000000007
   }
  },
  {
@@ -92,7 +100,8 @@
    "p_negative_bank": 0.975,
    "p_dd50": 18.5,
    "stake_pct_live_median": 1.1828720132481672,
-   "stake_pct_live_spread": 1.850869782262813
+   "stake_pct_live_p5": 0.746263130345241,
+   "stake_pct_live_p95": 2.5971329126080542
   },
   "new": {
    "mean_profit": 313.25503868174303,
@@ -101,7 +110,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 41.425,
    "stake_pct_live_median": 2.0,
-   "stake_pct_live_spread": 0.0
+   "stake_pct_live_p5": 2.0,
+   "stake_pct_live_p95": 2.0
   }
  },
  {
@@ -113,7 +123,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 7.199999999999999,
    "stake_pct_live_median": 0.9442552376393376,
-   "stake_pct_live_spread": 1.0280194957565603
+   "stake_pct_live_p5": 0.6434506666312738,
+   "stake_pct_live_p95": 1.671470162387834
   },
   "new": {
    "mean_profit": 169.41193602894577,
@@ -122,7 +133,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 11.35,
    "stake_pct_live_median": 1.4000000000000001,
-   "stake_pct_live_spread": 2.220446049250313e-16
+   "stake_pct_live_p5": 1.4000000000000001,
+   "stake_pct_live_p95": 1.4000000000000004
   }
  },
  {
@@ -134,7 +146,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 0.0,
    "stake_pct_live_median": 0.019469995949310943,
-   "stake_pct_live_spread": 0.0003065200977473252
+   "stake_pct_live_p5": 0.019317188102664043,
+   "stake_pct_live_p95": 0.019623708200411368
   },
   "new": {
    "mean_profit": 239.3765979619568,
@@ -143,7 +156,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 14.424999999999999,
    "stake_pct_live_median": 1.9600000000000002,
-   "stake_pct_live_spread": 0.0
+   "stake_pct_live_p5": 1.9600000000000002,
+   "stake_pct_live_p95": 1.9600000000000002
   }
  },
  {
@@ -155,7 +169,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 0.0,
    "stake_pct_live_median": 0.006518824281137179,
-   "stake_pct_live_spread": 3.436087933462485e-05
+   "stake_pct_live_p5": 0.006501604575916503,
+   "stake_pct_live_p95": 0.006535965455251128
   },
   "new": {
    "mean_profit": 50.42322491755493,
@@ -164,7 +179,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 0.0,
    "stake_pct_live_median": 0.6533333333333337,
-   "stake_pct_live_spread": 2.220446049250313e-16
+   "stake_pct_live_p5": 0.6533333333333335,
+   "stake_pct_live_p95": 0.6533333333333338
   }
  },
  {
@@ -176,7 +192,8 @@
    "p_negative_bank": 4.8500000000000005,
    "p_dd50": 37.3,
    "stake_pct_live_median": 1.4674950176619124,
-   "stake_pct_live_spread": 3.3625207802554886
+   "stake_pct_live_p5": 0.8518552709487526,
+   "stake_pct_live_p95": 4.214376051204241
   },
   "new": {
    "mean_profit": 216.1250525738466,
@@ -185,7 +202,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 41.4,
    "stake_pct_live_median": 1.0,
-   "stake_pct_live_spread": 2.0
+   "stake_pct_live_p5": 1.0,
+   "stake_pct_live_p95": 3.0
   }
  },
  {
@@ -197,7 +215,8 @@
    "p_negative_bank": 0.975,
    "p_dd50": 18.5,
    "stake_pct_live_median": 1.1828720132481672,
-   "stake_pct_live_spread": 1.850869782262813
+   "stake_pct_live_p5": 0.746263130345241,
+   "stake_pct_live_p95": 2.5971329126080542
   },
   "new": {
    "mean_profit": 299.26337606892946,
@@ -206,7 +225,8 @@
    "p_negative_bank": 0.0,
    "p_dd50": 38.9,
    "stake_pct_live_median": 1.9492612659933501,
-   "stake_pct_live_spread": 0.009798283757948667
+   "stake_pct_live_p5": 1.944965241350709,
+   "stake_pct_live_p95": 1.9547635251086577
   }
  }
 ]

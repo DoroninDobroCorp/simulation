@@ -525,7 +525,7 @@ footer code { color: var(--ink-2); }
           <p class="lede" id="audit-lede"></p>
         </div>
         <div class="panel">
-          <div class="panel-head"><h2>Старый код и исправленный на одних и тех же исходах</h2><span class="sub">ROI 7%, 1013 реальных кэфов, 4000 симуляций</span></div>
+          <div class="panel-head"><h2>Старый код и исправленный на одних и тех же исходах</h2><span class="sub">ROI 7%, 1013 реальных кэфов, 4000 симуляций; ставка — медиана, в скобках 5-й и 95-й перцентили</span></div>
           <div class="table-wrap" id="before-after"></div>
         </div>
         <div class="panel">
@@ -1174,10 +1174,15 @@ function renderRiskTable() {
 // ================= Келли =================
 let kellyData = null, kellySource = null;
 let kellyMsg = null;   // живой расчёт: { sig, text, running, pct }; показывается, только пока условия те же
-function kellyRun() { return kellyMsg && kellyMsg.sig === condSig() ? kellyMsg : null; }
+// свип Келли не использует кап, шум и модель EV из условий (у него свои три случая и cap = 100%),
+// поэтому их смена не делает живой результат устаревшим
+function kellySig() {
+  return JSON.stringify([{ ...marketCfg(), evModel: null, calibrated: null, noise: null }, { ...simCfg(1), cap: null }]);
+}
+function kellyRun() { return kellyMsg && kellyMsg.sig === kellySig() ? kellyMsg : null; }
 function paintKellyRun() {
   const run = kellyRun(), live = kellyLive();
-  if (run && !run.running && !live) $('k-source').textContent = run.text;
+  if (run && (run.running || !live)) $('k-source').textContent = run.text;
   $('k-run').disabled = !!(run && run.running);
   $('k-prog').style.width = run && run.running ? run.pct + '%' : live ? '100%' : '0%';
 }
@@ -1189,7 +1194,7 @@ function preKelly() {
   return out;
 }
 function showKelly() {
-  const live = kellySource && kellySource.sig === condSig() ? kellySource : null;
+  const live = kellyLive();
   const src = $('k-source');
   if (live) {
     kellyData = live.data;
@@ -1209,14 +1214,14 @@ function showKelly() {
 function runKelly() {
   if (kellyWorker) kellyWorker.terminate();
   kellyWorker = spawn();
-  const id = ++jobId, sig = condSig(), nSims = Math.min(state.sims, 2000);
+  const id = ++jobId, sig = kellySig(), nSims = Math.min(state.sims, 2000);
   const mults = [0.1, 0.25, 0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.5, 2, 2.5, 3];
-  kellyMsg = { sig, text: '', running: true, pct: 2 };
+  kellyMsg = { sig, text: 'Считаю…', running: true, pct: 2 };
   paintKellyRun();
   kellyWorker.onmessage = (e) => {
     const m = e.data;
     if (m.id !== id) return;
-    if (m.type === 'progress') { kellyMsg = { sig, text: '', running: true, pct: m.done / m.total * 100 }; paintKellyRun(); return; }
+    if (m.type === 'progress') { kellyMsg = { sig, text: `Считаю: ${m.done} из ${m.total}`, running: true, pct: m.done / m.total * 100 }; paintKellyRun(); return; }
     if (m.type === 'error') { kellyMsg = { sig, text: 'Ошибка: ' + m.message, running: false, pct: 0 }; paintKellyRun(); return; }
     kellyMsg = null;
     kellySource = { sig, data: m.out, k: m.k, meanEst: m.meanEst, nSims, ms: m.ms };
@@ -1283,7 +1288,7 @@ function drawLines(box, getY, yLabel, refY) {
 }
 // k — во сколько раз истинный EV меньше оценки модели; для предрасчёта считается по данным
 const MEAN_EST_REAL = BETS.ev.reduce((a, e) => a + Math.min(e, 0.08), 0) / BETS.ev.length;
-function kellyLive() { return kellySource && kellySource.sig === condSig() ? kellySource : null; }
+function kellyLive() { return kellySource && kellySource.sig === kellySig() ? kellySource : null; }
 function kellyK() {
   const live = kellyLive();
   return live && Number.isFinite(live.k) ? live.k : PRE.settings.roi / MEAN_EST_REAL;
@@ -1346,7 +1351,7 @@ function drawKelly() {
 
 // ================= аудит =================
 const FINDINGS = [
-  ['crit', '«Процент от банка» на деле был флэтом от начального банка', 'В 23 из 25 стратегий размер ставки считался в первом проходе от массива банка, который не обновлялся и всегда был равен 1000. Компаундинга не было, а «avg_bet_% от текущего банка» в отчётах ничего не значил. Пример: fixed 2% на 500-й ставке ставил 1,18% ± 0,93 п.п. живого банка (полуразмах 5–95%).', 'simulation-current/run_strategies_real_odds.py', 'Стратегии переведены на однопроходный движок brm, формулы сохранены.'],
+  ['crit', '«Процент от банка» на деле был флэтом от начального банка', 'В 23 из 25 стратегий размер ставки считался в первом проходе от массива банка, который не обновлялся и всегда был равен 1000. Компаундинга не было, а «avg_bet_% от текущего банка» в отчётах ничего не значил. Пример: fixed 2% на 500-й ставке ставил в медиане 1,18% живого банка, у 90% симуляций — от 0,75 до 2,60%.', 'simulation-current/run_strategies_real_odds.py', 'Стратегии переведены на однопроходный движок brm, формулы сохранены.'],
   ['crit', 'Банк уходил в минус', 'Второй проход разыгрывал суммы из другого пути без проверки банка. dynamic_percentage 5% с вариацией опускал банк до −237 007 при старте 1000 (22% симуляций в минусе), fixed_fraction 2% — до −826, target_based — до −1 739. Среднее «+4502%» было артефактом. В dispersion_sim, kelly30_report и HTML-симуляторах ставка тоже не ограничивалась банком: на их настройках по умолчанию банк в минус не уходил, но при более агрессивных мог.', 'run_strategies_real_odds.py, dispersion_sim.py, kelly30_report.py, sim.html, simulation.html, supersim.html', 'Ставка никогда не больше живого банка.'],
   ['crit', 'Ставки в 100 раз меньше задуманного', 'В dynamic_kelly, proportional_kelly, bayesian_kelly и test_kelly_realistic доля Келли делилась на 100 второй раз. proportional_kelly давал +1,2% вместо +239%, dynamic_kelly +0,4% вместо +50%. Исправленный bayesian_kelly с prior_std 0,05 по умолчанию почти не ставит: вычитание 5 п.п. из вероятности съедает перевес.', 'run_strategies_real_odds.py, test_all_strategies_realistic.py (test_kelly_realistic)', 'Единицы исправлены.'],
   ['crit', '«Келли не работает» — следствие p = 1/кэф', 'В test_all_strategies_realistic.py вероятность выигрыша бралась как 1/кэф, то есть с нулевым перевесом. Ставка Келли поэтому всегда была 0. Вывод в BEST_STRATEGIES.md об этом.', 'test_all_strategies_realistic.py (test_kelly_realistic), BEST_STRATEGIES.md', 'p = (1 + ROI) / кэф. Документы помечены как устаревшие.'],
@@ -1364,8 +1369,10 @@ const FINDINGS = [
   ['minor', 'Склейка при возобновлении и выброшенные убыточные варианты', 'combat_final узнавал готовые задачи только по параметрам, и linear_roi/sqrt_roi с одинаковыми параметрами склеивались. Фильтр profit > 0 выкидывал честные убыточные варианты. combat_parallel и combat_resumable не запускались вовсе: в пул передавалась lambda, а test_combat_system падал на проверке ошибок.', 'combat_final.py, combat_parallel.py, combat_resumable.py, test_combat_system.py, analyze_top10.py', 'Ключ (стратегия, параметры), фильтр убран, воркер пула на уровне модуля; чужой файл прогресса не подхватывается.'],
   ['minor', 'Неравные условия в combat-сравнениях', 'kelly_correct всегда применяет вариацию 0,35–1,15, а у части соперников её нет. «Келли 1,0» там на деле около 0,75 Келли с шумом.', 'kelly_correct.py, combat_final.py', null],
 ];
-// ставка на 500-й в % живого банка: медиана ± полуразмах 5–95% (разброс показываем, только если он есть)
-const stakeTxt = (x) => `${num(x.stake_pct_live_median, 2)}%` + (x.stake_pct_live_spread / 2 >= 0.005 ? ` ± ${num(x.stake_pct_live_spread / 2, 2)}` : '');
+// ставка на 500-й в % живого банка: медиана и 5–95-й перцентили (разброс показываем, только если он есть;
+// распределение бывает несимметричным, поэтому не «± полуразмах»)
+const stakeTxt = (x) => `${num(x.stake_pct_live_median, 2)}%` +
+  (x.stake_pct_live_p95 - x.stake_pct_live_p5 >= 0.01 ? ` (${num(x.stake_pct_live_p5, 2)}–${num(x.stake_pct_live_p95, 2)})` : '');
 function renderAudit() {
   const crit = FINDINGS.filter((f) => f[0] === 'crit').length;
   $('audit-count').textContent = FINDINGS.length;

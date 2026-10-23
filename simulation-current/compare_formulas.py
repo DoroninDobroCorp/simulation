@@ -174,4 +174,3 @@ kelly = (b × win_prob - (1 - win_prob)) / b
 Для консервативности используй fractional Kelly (0.25-0.50)
 """)
 print("="*100)
-EOF
